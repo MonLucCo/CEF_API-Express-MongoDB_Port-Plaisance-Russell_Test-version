@@ -215,8 +215,9 @@ Les scripts sont conservés dans le dossier privé `scratches/`.
 
 ## ☁️ Déploiement
 
-Déploiement prévu sur **Alwaysdata**.  
-Le lien sera ajouté lors de la mise en production.
+Déploiement est réalisé sur **Alwaysdata** : lien du site [API du port de plaisance Russell](https://perlucco.alwaysdata.net/api/port-plaisance-russell).  
+
+Le projet inclut un script de déploiement automatisé (`scripts/deploy.sh`). Les modalités techniques sont disponibles dans la documentation de développement [docs-dev/deploiement](./docs-dev/deploiement/README_deploiement.md)
 
 ---
 

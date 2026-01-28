@@ -1,0 +1,93 @@
+# ============================================================
+#  .rsync-filter.example — Guide complet pour filtrage rsync
+#  Projet : API Russell (Node.js / Express)
+#
+#  Ce fichier montre toutes les règles utiles pour construire
+#  une liste blanche stricte ou une liste noire sélective.
+#
+#  Rappel : rsync lit les règles DANS L’ORDRE.
+#  → Les includes doivent venir AVANT l’exclusion globale.
+#  → La dernière règle est souvent :  - *
+#
+#  Fichier opérationnel : .rsync-filter.rules
+#  → Fichier des règles de filtrage du dépôt à déployer
+#  → Fichier utilisé par le script de déploiement (deploy.sh)   
+# ============================================================
+
+
+# ============================================================
+# 1. INCLUSIONS DE BASE (liste blanche stricte)
+# ============================================================
+
+# Inclure les fichiers essentiels du projet Node
++ package.json
++ package-lock.json
+
+# Inclure le code source de l’API
++ src/
++ src/***
+
+# Inclure un fichier de configuration spécifique (si utilisé)
+# + ecosystem.config.js
+# + .nvmrc
+
+# Inclure un fichier d’environnement de production (si nécessaire)
+# ⚠️ Ne JAMAIS inclure .env local
+# + .env.production
+
+
+# ============================================================
+# 2. EXCLUSIONS GÉNÉRALES (liste noire)
+# ============================================================
+
+# Exclure les dépendances locales (elles seront installées sur le serveur)
+- node_modules/
+
+# Exclure les fichiers temporaires
+- *.log
+- *.tmp
+- *.swp
+
+# Exclure les fichiers système
+- .DS_Store
+- Thumbs.db
+
+# Exclure les fichiers de tests
+- test/
+- tests/
+- __tests__/
+- coverage/
+
+# Exclure les fichiers de documentation
+- README.md
+- docs/
+- docs/***
+
+# Exclure les fichiers de développement
+- .vscode/
+- .idea/
+- .eslintcache
+
+
+# ============================================================
+# 3. INCLUSIONS AVANCÉES (si ton projet évolue)
+# ============================================================
+
+# Inclure un dossier public (si l’API sert des assets)
+# + public/
+# + public/***
+
+# Inclure un dossier dist/ (si build TypeScript ou Babel)
+# + dist/
+# + dist/***
+
+# Inclure des scripts de maintenance
+# + scripts/maintenance.sh
+
+
+# ============================================================
+# 4. EXCLUSION GLOBALE (à mettre en DERNIER)
+# ============================================================
+
+# Exclure tout ce qui n’a pas été explicitement inclus
+- *

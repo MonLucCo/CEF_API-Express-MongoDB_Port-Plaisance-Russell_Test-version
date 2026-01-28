@@ -1,0 +1,35 @@
+{
+  "name": "cef_api-express-mongodb_port-plaisance-russell_test-version",
+  "version": "1.0.0",
+  "description": "Etablissement d'une API avec Node.js/Express et MongoDB d'une \"gestion des réservations de catway\" (petit appontement de bateau du port de plaisance Russell) selon les spécifications du CEF.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "deploy": "bash ./scripts/deploy.sh",
+    "deploy:dry": "bash ./scripts/deploy.sh --dry-run",
+    "deploy:check": "bash ./scripts/deploy.sh --check",
+    "deploy:preview": "bash ./scripts/deploy.sh --sync-preview",
+    "deploy:help": "bash ./scripts/deploy.sh --help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/issues"
+  },
+  "homepage": "https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
+  }
+}

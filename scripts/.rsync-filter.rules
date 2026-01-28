@@ -1,0 +1,7 @@
+# Fichier .rsync-filter — Liste blanche stricte utilisée par deploy.sh - Exemple dans .rsync-filter.example
+
++ package.json
++ package-lock.json
++ src/
++ src/***
+- *

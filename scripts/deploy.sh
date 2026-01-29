@@ -1,13 +1,26 @@
 #!/bin/bash
 
 # ============================================
-#  Script de déploiement vers Alwaysdata (v5)
+#  Script de déploiement vers Alwaysdata (v6)
 # ============================================
 
-SSH_KEY="$HOME/.ssh/id_ed25519"
-SSH_HOST="perlucco@ssh-perlucco.alwaysdata.net"
-REMOTE_DIR="~/www/api-port-plaisance-russell"
-TARGET="$SSH_HOST:$REMOTE_DIR"
+# Chargement du fichier de configuration publique
+PUBLIC_CONFIG="$(dirname "$0")/deploy-config.json"
+SENSITIVE_CONFIG=$(jq -r '.sensitiveConfigPath' "$PUBLIC_CONFIG")
+
+# Résolution du chemin absolu
+SENSITIVE_CONFIG="$(dirname "$0")/$SENSITIVE_CONFIG"
+
+# Extraction des variables de configuration
+SSH_USER=$(jq -r '.deploy.sshUser' "$SENSITIVE_CONFIG")
+SSH_HOST=$(jq -r '.deploy.sshHost' "$SENSITIVE_CONFIG")
+SSH_KEY=$(jq -r '.deploy.sshKey' "$SENSITIVE_CONFIG")
+REMOTE_DIR=$(jq -r '.deploy.remotePath' "$SENSITIVE_CONFIG")
+
+TARGET="$SSH_USER@$SSH_HOST:$REMOTE_DIR"
+SSH_KEY="${SSH_KEY/#\~/$HOME}"
+
+# Fichiers et dossiers utilisés
 LOG_FILE="./logs/deploy.log"
 RSYNC_FILTER_FILE="scripts/.rsync-filter.rules"
 PREVIEW_DIR="./scripts/__preview__"
@@ -62,8 +75,8 @@ fi
 #  Option : --check
 # ============================================
 if [ "$1" == "--check" ]; then
-  log "Test de connexion SSH vers $SSH_HOST"
-  ssh -i "$SSH_KEY" -o BatchMode=yes "$SSH_HOST" "echo 'Connexion OK'" || {
+  log "Test de connexion SSH vers $SSH_USER@$SSH_HOST"
+  ssh -i "$SSH_KEY" -o BatchMode=yes "$SSH_USER@$SSH_HOST" "echo 'Connexion OK'" || {
     log "ERREUR : échec de connexion SSH"
     exit 1
   }
@@ -121,7 +134,7 @@ rsync -e "ssh -i $SSH_KEY" "${RSYNC_OPTIONS[@]}" ./ "$TARGET" || {
 log "Synchronisation terminée"
 
 log "Installation des dépendances sur le serveur..."
-ssh -i "$SSH_KEY" "$SSH_HOST" "cd $REMOTE_DIR && npm install --omit=dev" || {
+ssh -i "$SSH_KEY" "$SSH_USER@$SSH_HOST" "cd $REMOTE_DIR && npm install --omit=dev" || {
   log "ERREUR : échec de npm install sur le serveur"
   exit 1
 }

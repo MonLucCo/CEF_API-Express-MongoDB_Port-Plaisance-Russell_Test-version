@@ -14,7 +14,11 @@
     "deploy:dry": "bash ./scripts/deploy.sh --dry-run",
     "deploy:check": "bash ./scripts/deploy.sh --check",
     "deploy:preview": "bash ./scripts/deploy.sh --sync-preview",
-    "deploy:help": "bash ./scripts/deploy.sh --help"
+    "deploy:help": "bash ./scripts/deploy.sh --help",
+    "ssh:connect": "bash ./scripts/ssh-connect.sh",
+    "ssh:site": "bash ./scripts/ssh-site-path.sh",
+    "check:local": "bash ./scripts/deploy-checklist-local.sh",
+    "check:site": "bash ./scripts/deploy-checklist-site.sh"
   },
   "repository": {
     "type": "git",

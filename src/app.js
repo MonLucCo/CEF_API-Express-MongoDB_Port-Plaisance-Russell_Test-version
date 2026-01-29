@@ -2,23 +2,30 @@ const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-    const status = {
-        title: "API Port de Plaisance Russell",
-        phase: "Version initiale en construction",
-        notes: [
-            "Les fonctionnalités seront activées progressivement au fil du développement.",
-            "Le projet évolue progressivement selon la roadmap accessible dans le dépôt GitHub."
-        ],
-        github: "https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version",
-        environment: "development",
-        version: "0.1-dev"
-    };
+  // Contenu du statut pour la page d'accueil de l'API
+  const status = {
+    title: "API Port de Plaisance Russell",
+    phase: "Version initiale en construction",
+    notes: [
+      "Les fonctionnalités seront activées progressivement au fil du développement.",
+      "Le projet évolue progressivement selon la roadmap accessible dans le dépôt GitHub."
+    ],
+    github: "https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version",
+    environment: "development",
+    version: "0.1-dev"
+  };
 
-    // Headers HTTP
-    res.setHeader("X-API-Status", status.environment);
-    res.setHeader("X-API-Version", status.version);
+  // Header système (version Node en dev, identifiant neutre en prod)
+  const systemInfo = process.env.NODE_ENV === 'production'
+    ? "runtime-1"
+    : process.version;
 
-    res.send(`
+  // Headers HTTP
+  res.setHeader("X-API-Status", status.environment);
+  res.setHeader("X-API-Version", status.version);
+  res.setHeader("X-API-SYSTEM", systemInfo);
+
+  res.send(`
     <html lang="fr">
       <head>
         <meta charset="UTF-8">

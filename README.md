@@ -2,11 +2,15 @@
 
 Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des réservations de catway" (petit appontement de bateau du port de plaisance Russell) selon les spécifications du CEF.
 
-![Licence MIT](https://img.shields.io/badge/License-MIT-green.svg) ![npm](https://img.shields.io/badge/npm-9+-blue) ![Node.js](https://img.shields.io/badge/node-18+-green) ![Express](https://img.shields.io/badge/Express.js-5.x-lightgrey) ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen)
+![Licence MIT](https://img.shields.io/badge/License-MIT-green.svg) ![npm](https://img.shields.io/badge/npm-9+-blue) ![Node.js](https://img.shields.io/badge/node-18+-green) ![Express](https://img.shields.io/badge/Express.js-5.x-lightgrey) ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen) ![Alwaysdata](https://img.shields.io/badge/hosted%20on-Alwaysdata-blue)
 
 ---
 
-> **Statut :** [Phase 1 — Préparation du projet](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/milestone/1) (en cours)
+![Milestone Phase 1](https://img.shields.io/badge/Phase%201-Préparation%20du%20projet-green) ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
+![Statut du dépôt](https://img.shields.io/badge/statut-en%20développement-blue)
+  
+> 🔗 [Accès aux phases](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/milestones/)
+> 🔗 [Accès aux issues](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/issues/)
 
 ---
 
@@ -41,32 +45,41 @@ Ce projet vise à :
 
 ## 🧱 Architecture du projet
 
-L’architecture suit une organisation modulaire inspirée des bonnes pratiques Express/Mongoose.
+L’architecture suit une organisation modulaire inspirée des bonnes pratiques Express/Mongoose, enrichie par une documentation versionnée et des scripts de déploiement.
 
 ```text
 ├── src/               ← Dossier principal du code de l'API
 │   ├── app.js         ← Configuration Express (middlewares, routes, erreurs)
 │   ├── server.js      ← Lancement du serveur (écoute du port)
-│   ├── models/        ← Modèles Mongoose (User, Catway, Reservation)        
+│   ├── models/        ← Modèles Mongoose        
 │   ├── middlewares/   ← Middlewares Express (authentification, validation, sécurité…)        
 │   ├── services/      ← Logique métier réutilisable (accès DB, règles métier…)  
 │   └── routes/        ← Définition des routes Express     
 │
 ├── public/            ← Fichiers statiques pour le front minimal
-│
-├── tests/             ← Tests Mocha, Chaï et Supertest
+├── tests/             ← Tests Mocha, Chai et Supertest
+├── data/              ← Fichiers catways.json et reservations.json
 │
 ├── docs/              ← Documentation JSDoc générée automatiquement
+├── docs-dev/          ← Documentation interne versionnée
+│   ├── architecture.md
+│   ├── conventions.md
+│   ├── workflow-git.md
+│   ├── securite.md
+│   ├── tests-strategy.md
+│   ├── decisions-techniques.md
+│   ├── hebergement/   ← Documentation sur Alwaysdata et MongoDB
+│   └── deploiement/   ← Procédures de validation et de mise en production
 │
-├── docs-dev/          ← Documentation interne versionnée (architecture, sécurité, workflow…)    
-│
-├── data/              ← Fichiers catways.json et reservations.json
+├── scripts/           ← Scripts de déploiement et de vérification
+├── logs/              ← Logs générés par les scripts (check:local, check:site…)
+├── scratches/         ← Dossier privé (non versionné) pour scripts sensibles, notes et brouillons
 │
 ├── .env.example       ← Modèle des variables d'environnement
 ├── .gitignore         ← Exclusions Git
 ├── .nvmrc             ← Version Node recommandée
 ├── package.json       ← Dépendances et scripts
-└── README.md          ← Documentation du dépôt du projet
+└── README.md          ← Documentation principale du projet
 ```
 
 👉 Détails complets : [docs-dev/architecture.md](./docs-dev/architecture.md)
@@ -146,7 +159,7 @@ Les tests couvrent les 9 fonctionnalités demandées.
 La documentation technique est générée avec **JSDoc** et accessible via :
 
 ```text
-/docs
+docs/
 ```
 
 Elle inclut :
@@ -160,7 +173,7 @@ Elle inclut :
 
 ## 📚 Documentation de développement
 
-La documentation interne versionnée est disponible dans le dossier `docs-dev/` :
+La **documentation interne versionnée** est disponible dans le dossier `docs-dev/` :
 
 - [Architecture](./docs-dev/architecture.md)
 - [Conventions](./docs-dev/conventions.md)
@@ -168,6 +181,18 @@ La documentation interne versionnée est disponible dans le dossier `docs-dev/` 
 - [Sécurité](./docs-dev/securite.md)
 - [Stratégie de tests](./docs-dev/tests-strategy.md)
 - [Décisions techniques](./docs-dev/decisions-techniques.md)
+- [Déploiement](./docs-dev/deploiement/README_deploiement.md)
+- [Hébergement](./docs-dev/hebergement/alwaysdata.md)
+- [Développement continu (CI/CD)](./docs-dev/developpement-continu.md)
+
+**Scripts et outils** dans le dossier `scripts/` :
+
+- [Vue d’ensemble des scripts](./scripts/README_scripts.md)
+- [Scripts de déploiement](./scripts/deploy-README.md)
+- [Checklists de déploiement](./scripts/deploy-checklist-README.md)
+- [Scripts SSH](./scripts/ssh-README.md)
+
+> Les scripts sensibles, les notes internes et les brouillons sont conservés dans le dossier privé `scratches/` (non versionné).
 
 ---
 
@@ -215,17 +240,41 @@ Les scripts sont conservés dans le dossier privé `scratches/`.
 
 ## ☁️ Déploiement
 
-Déploiement prévu sur **Alwaysdata**.  
-Le lien sera ajouté lors de la mise en production.
+Le projet est déployé sur **Alwaysdata** : 🔗 [API du port de plaisance Russell](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
+
+Le déploiement est réalisé via un script automatisé :
+
+```bash
+npm run deploy
+```
+  
+Les modalités techniques sont disponibles dans la documentation de développement [docs-dev/deploiement](./docs-dev/deploiement/README_deploiement.md).
+  
+Le processus de validation inclut :
+
+- vérification locale (script : `npm run check:local`)
+- transfert (`rsync`) des fichiers (script : `npm run deploy`)
+- redémarrage manuel du site (via Alwaysdata)
+- vérification distante (script : `npm run check:site`)
+- archivage des logs (résultats : `logs/deploy-checklist-*.log`)
+
+Le projet intègre une logique de **[développement continu (CI/CD)](./docs-dev/developpement-continu.md)**
 
 ---
 
 ## 🔧 Prérequis
 
-- Node.js 18+ (version recommandée via `.nvmrc`)  
-- NPM 9+  
-- MongoDB Atlas  
-- Git  
+- **Node.js** : version minimale recommandée `18+`  
+  - version locale actuelle : `v24.12.0`  
+  - version hébergée sur Alwaysdata : `v24.13.0` (mise à jour automatique)
+  - version fixée localement via `.nvmrc` : 24
+- **NPM** : `9+`
+- **MongoDB Atlas**
+- **Git**
+
+> La version Node utilisée sur le site est gérée par Alwaysdata et peut être légèrement supérieure à la version locale.
+> Le fichier `.nvmrc` est fixé à 24 pour garantir la cohérence entre les environnements.
+> Le script `check:site` permet de vérifier la version réelle utilisée par l’API via le header `X-API-SYSTEM`.
 
 ---
 
@@ -251,7 +300,7 @@ Créer un fichier `.env` à partir de `.env.example`.
 ### 4. Lancer le serveur en développement
 
 ```bash
-npm run dev
+npm start
 ```
 
 ### 5. Lancer les tests

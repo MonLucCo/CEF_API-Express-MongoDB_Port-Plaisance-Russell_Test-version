@@ -11,7 +11,8 @@ node_modules/
 .env.*.local
 
 # Logs
-logs/
+logs/*
+!*.gitkeep
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -88,7 +89,8 @@ Desktop.ini
 #        Il est possible de décider plus tard de les suivre ou non.
 #        Pour l’instant, ils sont ignorés pour éviter les conflits multi‑environnements.
 
-package-lock.json
+!package-lock.json      # Commenter cette ligne pour ne pas versionner package-lock.json
+!package.json           # Commenter cette ligne pour ne pas versionner package.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -98,8 +100,8 @@ pnpm-lock.yaml
 # ============================================================
 
 dump/
-*.bson
-*.json
+*.bson  # Ignore tous les fichiers BSON (générés lors des exports MongoDB) et qui se trouvent à la racine
+*.json  # Ignore tous les fichiers JSON (générés lors des exports MongoDB) et qui se trouvent à la racine
 
 
 # ============================================================

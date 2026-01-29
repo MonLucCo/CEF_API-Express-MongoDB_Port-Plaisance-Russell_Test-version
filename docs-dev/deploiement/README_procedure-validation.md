@@ -16,10 +16,6 @@ Cette procédure garantit :
 
 ---
 
-Tu veux que je t’aide à intégrer cette procédure dans ton script `check:site` ou à générer automatiquement les noms de log archivés ?
-
----
-
 ## 📦 Étapes de validation
 
 La démarche de validation est composée de 9 étapes majeures :
@@ -188,11 +184,5 @@ logs/
 - Ne jamais exposer les versions techniques en production (voir `X-API-SYSTEM`).
 - Toujours archiver les logs pour traçabilité.
 - Toujours redémarrer manuellement le site après déploiement.
-
----
-
-## 🟩 Résultat : une procédure complète, professionnelle et sécurisée
-
-
 
 ---

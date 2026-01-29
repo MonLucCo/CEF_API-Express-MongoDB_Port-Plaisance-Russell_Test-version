@@ -10,6 +10,12 @@ L’objectif est de protéger les données, limiter les attaques courantes et ga
 
 ---
 
+## 🎯 Objectif
+
+Garantir une API robuste, sécurisée et conforme aux bonnes pratiques Express/MongoDB, tout en restant simple et adaptée au cadre pédagogique du projet.
+
+---
+
 ## 🔐 Helmet
 
 La librairie **Helmet** est utilisée pour renforcer les headers HTTP et réduire l’exposition de l’API à plusieurs attaques :
@@ -88,7 +94,3 @@ Ces éléments peuvent être ajoutés ultérieurement :
 - **CSP personnalisée** via Helmet pour le front minimal
 
 ---
-
-## 🎯 Objectif
-
-Garantir une API robuste, sécurisée et conforme aux bonnes pratiques Express/MongoDB, tout en restant simple et adaptée au cadre pédagogique du projet.

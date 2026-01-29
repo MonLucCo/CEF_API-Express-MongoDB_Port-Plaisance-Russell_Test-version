@@ -1,6 +1,6 @@
 # 📘 Déploiement — Documentation technique complète
 
-*(Script `deploy.sh` v5 + filtrage rsync)*
+*(Script `deploy.sh` v6 + filtrage rsync)*
 
 ## 1. Objectifs du système de déploiement
 

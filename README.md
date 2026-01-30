@@ -52,6 +52,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── app.js         ← Configuration Express (middlewares, routes, erreurs)
 │   ├── server.js      ← Lancement du serveur (écoute du port)
 │   ├── models/        ← Modèles Mongoose        
+│   ├── controllers/   ← Contrôleurs Express (logique métier liée aux routes)
 │   ├── middlewares/   ← Middlewares Express (authentification, validation, sécurité…)        
 │   ├── services/      ← Logique métier réutilisable (accès DB, règles métier…)  
 │   └── routes/        ← Définition des routes Express     
@@ -327,7 +328,7 @@ npm test
 ## 🧭 Roadmap
 
 - [x] Phase 1 — Préparation du projet  
-- [ ] Phase 2 — Authentification  
+- [+] Phase 2 — Authentification  
 - [ ] Phase 3 — Modèles & données  
 - [ ] Phase 4 — Catways  
 - [ ] Phase 5 — Reservations  

@@ -5,31 +5,41 @@
  * Champs :
  * - name : nom de l'utilisateur
  * - email : adresse email unique
- * - password : mot de passe (hashé dans une étape ultérieure)
+ * - password : mot de passe hashé (bcrypt)
  * - createdAt / updatedAt : timestamps automatiques
  *
  * Structure du document :
  * {
  *   name: String,
  *   email: String,
- *   password: String,
+ *   password: String (hash bcrypt),
  *   createdAt: Date,
  *   updatedAt: Date
  * }
  *
+ * Règles structurelles :
+ * - Le champ `password` doit obligatoirement contenir un hash bcrypt valide.
+ *   Une validation personnalisée empêche l'enregistrement d'un mot de passe en clair.
+ *
+ * Méthodes d'instance :
+ * - comparePassword(password: string): Promise<boolean>
+ *   Compare un mot de passe en clair avec le hash stocké dans le document.
+ *   Utilisée lors de la connexion.
+ *
  * Utilisations :
- * - inscription
- * - connexion
+ * - inscription (hashage dans la couche contrôleur)
+ * - connexion (comparaison via méthode d'instance)
  * - gestion des profils
  * - permissions d'accès
  *
  * @module models/user
  * @requires mongoose
- * @version 1.0.0
+ * @requires bcrypt
+ * @version 1.1.0
  */
 
-
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -53,5 +63,15 @@ const userSchema = new mongoose.Schema({
     // Ajoute des champs createdAt et updatedAt automatiquement
     timestamps: true
 });
+
+// Validation personnalisée pour s'assurer que le mot de passe est hashé
+userSchema.path('password').validate(function (value) {
+    return typeof value === 'string' && value.startsWith('$2b$');
+}, 'Le mot de passe doit être un hash bcrypt.');
+
+// Méthode pour comparer un mot de passe en clair avec le hash stocké
+userSchema.methods.comparePassword = async function (password) {
+    return bcrypt.compare(password, this.password);
+};
 
 module.exports = mongoose.model('User', userSchema);

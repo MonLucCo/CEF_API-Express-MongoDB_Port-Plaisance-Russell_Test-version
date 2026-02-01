@@ -211,14 +211,134 @@ Cette validation clôture techniquement l’issue 13.
 
 ---
 
-#### 2.1.4 Issue 14 — Hashage du mot de passe
+#### 2.1.4 — Issue 14 : Hashage du mot de passe (bcrypt)
 
-Intégration de **bcrypt** dans le contrôleur :
+Cette issue introduit la sécurisation du mot de passe en appliquant une séparation stricte des responsabilités entre :
 
-- hashage du mot de passe lors du register  
-- comparaison du mot de passe lors du login  
+- **la couche métier (contrôleur)**, responsable du hashage et de la logique d’authentification  
+- **la couche donnée (modèle Mongoose)**, responsable de garantir la cohérence structurelle des données stockées  
 
-Mise à jour du contrôleur et de la documentation.
+L’objectif est d’empêcher qu’un mot de passe en clair puisse être enregistré dans la base, même en cas d’erreur humaine dans un contrôleur.  
+Cette étape s’appuie sur l’architecture validée lors de l’issue 13 et prépare l’intégration du JWT (issue 15).
+
+À l’issue de cette issue 14 :
+
+- le hashage est effectué explicitement dans la couche métier  
+- la couche donnée impose une validation structurelle empêchant tout mot de passe non hashé  
+- la comparaison du mot de passe est factorisée via une méthode d’instance du modèle  
+- l’architecture reste claire, robuste, testable et évolutive
+
+---
+
+##### 2.1.4.1 Hashage du mot de passe dans la couche métier
+
+Le hashage est effectué **dans le contrôleur**, car il s’agit d’une **règle métier** :
+
+- un utilisateur ne peut être créé qu’avec un mot de passe sécurisé  
+- la logique métier doit rester explicite et contrôlée  
+- le contrôleur reste responsable des statuts HTTP et des messages d’erreur  
+
+Extrait du contrôleur :
+
+```js
+const hashedPassword = await bcrypt.hash(password, 10);
+
+const user = await User.create({
+    name,
+    email,
+    password: hashedPassword
+});
+```
+
+En cas d’erreur de validation (mot de passe non hashé), le contrôleur renvoie un **400 Bad Request** :
+
+```js
+if (error.name === 'ValidationError') {
+    return res.status(400).json({ error: error.message });
+}
+```
+
+---
+
+##### 2.1.4.2 Validation structurelle dans la couche donnée
+
+Le modèle impose une règle structurelle :
+
+> **Le champ `password` doit obligatoirement contenir un hash bcrypt valide.**
+
+Cette validation empêche toute insertion d’un mot de passe en clair dans la base, même si un développeur oublie de hasher dans un contrôleur.
+
+```js
+userSchema.path('password').validate(function (value) {
+    return typeof value === 'string' && value.startsWith('$2b$');
+}, 'Le mot de passe doit être un hash bcrypt.');
+```
+
+Cette validation :
+
+- protège la cohérence de la donnée  
+- ne mélange pas logique métier et logique donnée  
+- constitue une barrière de sécurité structurelle  
+- renvoie une `ValidationError` capturable dans le contrôleur  
+
+---
+
+##### 2.1.4.3 Méthode d’instance : comparaison du mot de passe
+
+Pour factoriser la comparaison du mot de passe sans introduire de logique métier dans le modèle, une **méthode d’instance** est ajoutée :
+
+```js
+userSchema.methods.comparePassword = async function (password) {
+    return bcrypt.compare(password, this.password);
+};
+```
+
+Utilisée dans le contrôleur `login` :
+
+```js
+const isValid = await user.comparePassword(password);
+```
+
+Cette approche :
+
+- garde le contrôleur lisible  
+- évite la duplication  
+- ne mélange pas les responsabilités  
+
+---
+
+##### 2.1.4.4 Tests Postman (sans base de données)
+
+Même sans MongoDB, les tests permettent de valider :
+
+###### ✔ `POST /auth/register`
+
+- bcrypt est exécuté  
+- la validation structurelle fonctionne  
+- aucune erreur interne  
+
+###### ✔ `POST /auth/login`
+
+- la méthode `comparePassword` est appelée  
+- la logique métier est correcte  
+
+###### ✔ `DELETE /auth/delete/:id`
+
+- inchangé par rapport à l’issue‑13  
+
+---
+
+##### 2.1.4.5 Mise à jour du modèle (JSDoc)
+
+Le modèle `User` évolue en version **1.1.0** afin de refléter les nouvelles responsabilités introduites dans cette issue.
+
+Évolutions documentées dans la JSDoc du modèle :
+
+- ajout d’une **validation structurelle** garantissant que le champ `password` contient un hash bcrypt valide  
+- ajout d’une **méthode d’instance** `comparePassword(password)` permettant de comparer un mot de passe en clair avec le hash stocké  
+- clarification du rôle du modèle dans la **protection de la cohérence des données**, sans prise en charge de la logique métier  
+
+Cette mise à jour documentaire assure la traçabilité des évolutions du modèle et renforce la lisibilité de l’architecture pour les futurs développements.
 
 ---
 

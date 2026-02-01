@@ -185,6 +185,32 @@ Aucune sécurité appliquée à ce stade.
 
 ---
 
+##### 2.1.3.3 Tests de validation architecturale
+
+Avant de poursuivre avec les issues 14 à 16 (sécurisation), une vérification technique minimale a été réalisée afin de valider le câblage Express et la cohérence de l’architecture.
+
+Tests effectués via Postman :
+
+- **GET /**  
+  → statut 200, page HTML conforme, headers X‑API présents  
+- **POST /auth/register**  
+  → statut 500 attendu (absence de base), contrôleur correctement appelé  
+- **POST /auth/login**  
+  → statut 500 attendu, contrôleur correctement appelé  
+- **DELETE /auth/delete/:id**  
+  → erreur Mongoose “Cast to ObjectId failed” attendue, route fonctionnelle  
+
+Ces tests confirment :
+
+- la bonne intégration des modules `accueilRoutes.js` et `authRoutes.js`  
+- la bonne réception du body JSON (middleware ajouté dans `app.js`)  
+- l’absence d’erreurs de syntaxe ou de câblage  
+- la stabilité du serveur avant l’ajout de la sécurité  
+
+Cette validation clôture techniquement l’issue 13.
+
+---
+
 #### 2.1.4 Issue 14 — Hashage du mot de passe
 
 Intégration de **bcrypt** dans le contrôleur :

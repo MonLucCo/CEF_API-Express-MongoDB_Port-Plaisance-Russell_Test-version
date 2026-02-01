@@ -35,19 +35,22 @@ L’arborescence du projet suit les bonnes pratiques Express/Mongoose :
 
 ```text
 src/
-  ├── app.js             ← Configuration Express (middlewares, routes, erreurs)
-  ├── server.js          ← Lancement du serveur
+  ├── app.js                ← Configuration Express (middlewares, routes, erreurs)
+  ├── server.js             ← Lancement du serveur
   │
-  ├── models/            ← Modèles Mongoose
-  ├── controllers/       ← Contrôleurs Express (logique métier)
-  ├── middlewares/       ← Middlewares (auth, validation, sécurité)
-  ├── services/          ← Logique métier réutilisable
-  └── routes/            ← Définition des routes Express
+  ├── models/               ← Modèles Mongoose
+  ├── controllers/          ← Contrôleurs Express (logique métier)
+  │   └── authController.js ← Contrôleur d’authentification (register, login, deleteUser)
+  ├── middlewares/          ← Middlewares (auth, validation, sécurité)
+  ├── services/             ← Logique métier réutilisable
+  └── routes/               ← Définition des routes Express
+      ├── accueilRoutes.js  ← Route d’accueil (GET /)
+      └── authRoutes.js     ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
 
-public/                ← Front-end minimal
-tests/                 ← Tests Mocha/Chai/Supertest
-docs/                  ← Documentation JSDoc générée
-docs-dev/              ← Documentation interne versionnée
+public/                     ← Front-end minimal
+tests/                      ← Tests Mocha/Chai/Supertest
+docs/                       ← Documentation JSDoc générée
+docs-dev/                   ← Documentation interne versionnée
 ```
 
 Les dossiers `models/`, `controllers/`, `middlewares/`, `services/` et `routes/` sont créés dès l’initialisation pour refléter l’architecture prévue.  
@@ -151,6 +154,23 @@ Aucune sécurité dans cette version :
 ---
 
 #### 2.1.3 Issue 13 — Routes d’authentification
+
+La mise en place des routes conduit à établir un module dédié pour respecter la séparation des responsabilités.  
+La route d'accueil fait l'objet d'une reprise pour établir un module spécifique à cette route (`accueilRoutes.js`).
+  
+##### 2.1.3.1 Route d’accueil (GET /)
+
+La route d’accueil fournit une page HTML décrivant l’état de l’API (origine Phase 1).
+
+Endpoint :
+
+- `GET /`
+
+**Emplacement :** `src/routes/accueilRoutes.js`
+
+---
+
+##### 2.1.3.2 Routes d’authentification
 
 Définition des routes Express :
 

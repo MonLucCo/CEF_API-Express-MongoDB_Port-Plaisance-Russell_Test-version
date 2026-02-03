@@ -2,6 +2,8 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const jwt = require('jsonwebtoken');
 
+const { mockFindOne, mockCreate, mockDelete } = require('../mocks/user.mock');
+
 const { register, login, deleteUser } = require('../../src/controllers/authController');
 const User = require('../../src/models/user');
 
@@ -27,7 +29,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it('retourne 401 si utilisateur inexistant', async () => {
-            sinon.stub(User, 'findOne').resolves(null);
+            mockFindOne(null);
 
             const req = { body: { email: 'x@test.com', password: '1234' } };
             const res = mockResponse();
@@ -40,7 +42,7 @@ describe('authController – tests niveau 1', () => {
 
         it('retourne 401 si mot de passe incorrect', async () => {
             const fakeUser = { comparePassword: sinon.stub().resolves(false) };
-            sinon.stub(User, 'findOne').resolves(fakeUser);
+            mockFindOne(fakeUser);
 
             const req = { body: { email: 'x@test.com', password: 'wrong' } };
             const res = mockResponse();
@@ -57,7 +59,7 @@ describe('authController – tests niveau 1', () => {
                 comparePassword: sinon.stub().resolves(true)
             };
 
-            sinon.stub(User, 'findOne').resolves(fakeUser);
+            mockFindOne(fakeUser);
             sinon.stub(jwt, 'sign').returns('header.payload.signature');
 
             const req = { body: { email: 'x@test.com', password: '1234' } };
@@ -111,7 +113,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it('retourne 201 si création valide', async () => {
-            sinon.stub(User, 'create').resolves({ _id: '123', name: 'X' });
+            mockCreate({ _id: '123', name: 'X' });
 
             const req = { body: { name: 'X', email: 'x@test.com', password: '1234' } };
             const res = mockResponse();
@@ -140,7 +142,7 @@ describe('authController – tests niveau 1', () => {
     describe('deleteUser()', () => {
 
         it('retourne 404 si utilisateur introuvable', async () => {
-            sinon.stub(User, 'findByIdAndDelete').resolves(null);
+            mockDelete(null);
 
             const req = { params: { id: '123' } };
             const res = mockResponse();
@@ -151,7 +153,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it('retourne 200 si suppression valide', async () => {
-            sinon.stub(User, 'findByIdAndDelete').resolves({ _id: '123' });
+            mockDelete({ _id: '123' });
 
             const req = { params: { id: '123' } };
             const res = mockResponse();

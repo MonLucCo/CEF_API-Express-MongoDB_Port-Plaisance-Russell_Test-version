@@ -28,3 +28,7 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 ## Exemple
 
 Issue‑15 : tests unitaires du contrôleur `authController.js`.
+
+**Résultats des tests (issue-15) :**
+
+![alt text](./assets/img_issue-15_resultats-tests-niveau-1.png)

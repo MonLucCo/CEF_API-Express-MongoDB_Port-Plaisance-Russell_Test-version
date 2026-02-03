@@ -47,6 +47,8 @@ src/
       ├── accueilRoutes.js  ← Route d’accueil (GET /)
       └── authRoutes.js     ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
 
+config/                     ← Configuration globale (JWT, paramètres transversaux)
+
 public/                     ← Front-end minimal
 
 tests/                      ← Tests Mocha/Chai/Supertest
@@ -58,7 +60,18 @@ tests/                      ← Tests Mocha/Chai/Supertest
   └── mocks/                ← Mocks/stubs isolant les dépendances (ex : modèle User)
 
 docs/                       ← Documentation JSDoc générée
+
 docs-dev/                   ← Documentation interne versionnée
+  ├── architecture.md
+  ├── conventions.md
+  ├── workflow-git.md
+  ├── securite.md
+  ├── tests-strategy.md
+  ├── decisions-techniques.md
+  ├── hebergement/   ← Documentation sur Alwaysdata et MongoDB
+  ├── deploiement/   ← Procédures de validation et de mise en production
+  └── tests/         ← Procédures de tests par niveau (unitaire, intégration, e2e)
+
 ```
 
 Les dossiers `models/`, `controllers/`, `middlewares/`, `services/` et `routes/` sont créés dès l’initialisation pour refléter l’architecture prévue.  

@@ -57,11 +57,22 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── services/      ← Logique métier réutilisable (accès DB, règles métier…)  
 │   └── routes/        ← Définition des routes Express     
 │
+├── config/            ← Configuration globale (JWT, paramètres transversaux)
+│
 ├── public/            ← Fichiers statiques pour le front minimal
-├── tests/             ← Tests Mocha, Chai et Supertest
+│
+├── tests/             ← Tests Mocha, Chai, Sinon et Supertest
+│   ├── controllers/   ← Tests unitaires (niveau‑1)
+│   ├── middlewares/   ← Tests unitaires (niveau‑1)
+│   ├── integration/   ← Tests d’intégration (niveau‑2)
+│   ├── e2e/           ← Tests E2E (niveau‑3)
+│   └── mocks/         ← Mocks/stubs pour isoler les dépendances
+│   └── mocks/         ← Mocks/stubs pour isoler les dépendances
+│
 ├── data/              ← Fichiers catways.json et reservations.json
 │
 ├── docs/              ← Documentation JSDoc générée automatiquement
+│
 ├── docs-dev/          ← Documentation interne versionnée
 │   ├── architecture.md
 │   ├── conventions.md
@@ -70,7 +81,8 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── tests-strategy.md
 │   ├── decisions-techniques.md
 │   ├── hebergement/   ← Documentation sur Alwaysdata et MongoDB
-│   └── deploiement/   ← Procédures de validation et de mise en production
+│   ├── deploiement/   ← Procédures de validation et de mise en production
+│   └── tests/         ← Procédures de tests par niveau (unitaire, intégration, e2e)
 │
 ├── scripts/           ← Scripts de déploiement et de vérification
 ├── logs/              ← Logs générés par les scripts (check:local, check:site…)
@@ -181,6 +193,7 @@ La **documentation interne versionnée** est disponible dans le dossier `docs-de
 - [Workflow Git](./docs-dev/workflow-git.md)
 - [Sécurité](./docs-dev/securite.md)
 - [Stratégie de tests](./docs-dev/tests-strategy.md)
+- [Tests niveau‑1, niveau‑2, niveau‑3](./docs-dev/tests/)
 - [Décisions techniques](./docs-dev/decisions-techniques.md)
 - [Déploiement](./docs-dev/deploiement/README_deploiement.md)
 - [Hébergement](./docs-dev/hebergement/alwaysdata.md)
@@ -318,7 +331,7 @@ npm test
 - MongoDB / Mongoose  
 - JWT / bcrypt  
 - Helmet (sécurisation des headers HTTP)
-- Mocha / Chai / Supertest  
+- Mocha / Chai / Sinon / Supertest  
 - JSDoc  
 - Alwaysdata (hébergement)  
 - GitHub Actions (CI/CD)  

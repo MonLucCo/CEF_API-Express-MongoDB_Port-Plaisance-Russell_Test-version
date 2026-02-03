@@ -3,6 +3,7 @@ const sinon = require('sinon');
 const jwt = require('jsonwebtoken');
 
 const { mockFindOne, mockCreate, mockDelete } = require('../mocks/user.mock');
+const { mockFindOneError, mockCreateError, mockDeleteError } = require('../mocks/user.mock');
 
 const { register, login, deleteUser } = require('../../src/controllers/authController');
 const User = require('../../src/models/user');
@@ -72,7 +73,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it('retourne 500 en cas d’erreur interne', async () => {
-            sinon.stub(User, 'findOne').throws(new Error('DB error'));
+            mockFindOneError();
 
             const req = { body: { email: 'x@test.com', password: '1234' } };
             const res = mockResponse();
@@ -102,7 +103,7 @@ describe('authController – tests niveau 1', () => {
             const error = new Error('Validation failed');
             error.name = 'ValidationError';
 
-            sinon.stub(User, 'create').throws(error);
+            mockCreateError(error);
 
             const req = { body: { name: 'X', email: 'x@test.com', password: '1234' } };
             const res = mockResponse();
@@ -124,7 +125,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it('retourne 500 en cas d’erreur interne', async () => {
-            sinon.stub(User, 'create').throws(new Error('DB error'));
+            mockCreateError();
 
             const req = { body: { name: 'X', email: 'x@test.com', password: '1234' } };
             const res = mockResponse();
@@ -164,7 +165,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it('retourne 500 en cas d’erreur interne', async () => {
-            sinon.stub(User, 'findByIdAndDelete').throws(new Error('DB error'));
+            mockDeleteError();
 
             const req = { params: { id: '123' } };
             const res = mockResponse();

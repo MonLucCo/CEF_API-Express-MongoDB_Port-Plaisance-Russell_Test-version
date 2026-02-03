@@ -3,6 +3,8 @@
 const sinon = require('sinon');
 const User = require('../../src/models/user');
 
+// --- SUCCESS CASES ---
+
 function mockFindOne(result) {
     return sinon.stub(User, 'findOne').resolves(result);
 }
@@ -15,4 +17,25 @@ function mockDelete(result) {
     return sinon.stub(User, 'findByIdAndDelete').resolves(result);
 }
 
-module.exports = { mockFindOne, mockCreate, mockDelete };
+// --- ERROR CASES ---
+
+function mockFindOneError(error = new Error('DB error')) {
+    return sinon.stub(User, 'findOne').throws(error);
+}
+
+function mockCreateError(error = new Error('DB error')) {
+    return sinon.stub(User, 'create').throws(error);
+}
+
+function mockDeleteError(error = new Error('DB error')) {
+    return sinon.stub(User, 'findByIdAndDelete').throws(error);
+}
+
+module.exports = {
+    mockFindOne,
+    mockCreate,
+    mockDelete,
+    mockFindOneError,
+    mockCreateError,
+    mockDeleteError
+};

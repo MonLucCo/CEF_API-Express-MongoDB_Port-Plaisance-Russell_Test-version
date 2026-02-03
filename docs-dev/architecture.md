@@ -48,7 +48,15 @@ src/
       └── authRoutes.js     ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
 
 public/                     ← Front-end minimal
+
 tests/                      ← Tests Mocha/Chai/Supertest
+  │
+  ├── controllers/          ← Tests unitaires (niveau‑1) des contrôleurs via Mocha + Chai + Sinon
+  ├── middlewares/          ← Tests unitaires (niveau‑1) des middlewares (issue‑16)
+  ├── integration/          ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
+  ├── e2e/                  ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
+  └── mocks/                ← Mocks/stubs isolant les dépendances (ex : modèle User)
+
 docs/                       ← Documentation JSDoc générée
 docs-dev/                   ← Documentation interne versionnée
 ```
@@ -356,6 +364,10 @@ Cette issue :
   - d’un **middleware d’authentification** chargé de vérifier le token  
   - de **routes protégées** nécessitant un token valide  
   - de la propagation de l’identité utilisateur via `req.userId`
+- introduit les tests unitaires de **niveau-1** du contrôleur d'authentification `authController.js` qui :
+  - utilisent **Mocha**, **Chai** et **Sinon**
+  - ne nécessitent aucune base de données
+  - valident les scénario métier
 
 ---
 
@@ -420,6 +432,25 @@ Ce flux reste **stateless** : aucune session n’est conservée côté serveur.
 - L’API est désormais capable de fournir une identité portable au client.  
 - La base de données reste indépendante du mécanisme JWT.  
 - L’issue‑15 prépare directement l’issue‑16, qui introduira un middleware de vérification du token.
+
+---
+
+##### 2.1.5.6 Tests unitaires (niveau-1) - Issue 15
+
+Les tests unitaires du contrôleur d’authentification (authController.js) :
+
+- utilisent **Mocha**, **Chai** et **Sinon**
+- isolent totalement la logique métier
+- remplacent les dépendances (ex : `User.findOne`, `comparePassword`, `jwt.sign`) par des **stubs**
+- ne nécessitent **aucune base de données**
+- valident les scénarios métier :
+  - champs manquants
+  - utilisateur inexistant
+  - mot de passe incorrect
+  - génération du token JWT
+  - gestion des erreurs internes
+
+Ces tests constituent le [niveau‑1 (unitaire)](./tests/01-niveau-1-unitaires.md) de la [stratégie globale de tests](./tests-strategy.md).
 
 ---
 

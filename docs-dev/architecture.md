@@ -47,10 +47,31 @@ src/
       ├── accueilRoutes.js  ← Route d’accueil (GET /)
       └── authRoutes.js     ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
 
+config/                     ← Configuration globale (JWT, paramètres transversaux)
+
 public/                     ← Front-end minimal
+
 tests/                      ← Tests Mocha/Chai/Supertest
+  │
+  ├── controllers/          ← Tests unitaires (niveau‑1) des contrôleurs via Mocha + Chai + Sinon
+  ├── middlewares/          ← Tests unitaires (niveau‑1) des middlewares (issue‑16)
+  ├── integration/          ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
+  ├── e2e/                  ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
+  └── mocks/                ← Mocks/stubs isolant les dépendances (ex : modèle User)
+
 docs/                       ← Documentation JSDoc générée
+
 docs-dev/                   ← Documentation interne versionnée
+  ├── architecture.md
+  ├── conventions.md
+  ├── workflow-git.md
+  ├── securite.md
+  ├── tests-strategy.md
+  ├── decisions-techniques.md
+  ├── hebergement/   ← Documentation sur Alwaysdata et MongoDB
+  ├── deploiement/   ← Procédures de validation et de mise en production
+  └── tests/         ← Procédures de tests par niveau (unitaire, intégration, e2e)
+
 ```
 
 Les dossiers `models/`, `controllers/`, `middlewares/`, `services/` et `routes/` sont créés dès l’initialisation pour refléter l’architecture prévue.  
@@ -344,14 +365,105 @@ Cette mise à jour documentaire assure la traçabilité des évolutions du modè
 
 #### 2.1.5 Issue 15 — Génération du JWT
 
-Intégration de **jsonwebtoken** :
+Cette issue introduit la génération d’un **JSON Web Token (JWT)** lors de la connexion d’un utilisateur.  
+Elle constitue la première étape de la mise en place d’une authentification basée sur un jeton signé, permettant au client d’accéder ultérieurement à des routes protégées (issue‑16).
 
-- génération du token lors du login  
-- signature avec `JWT_SECRET`  
-- durée de validité  
-- retour du token dans la réponse  
+L’objectif est de fournir un mécanisme d’identification **stateless**, indépendant de la session serveur.
 
-Mise à jour du contrôleur et de la documentation.
+Cette issue :
+
+- se concentre sur la **production** du token, afin de maintenir une séparation claire des responsabilités et une progression maîtrisée de l’architecture.
+- prépare l’introduction :
+  - d’un **middleware d’authentification** chargé de vérifier le token  
+  - de **routes protégées** nécessitant un token valide  
+  - de la propagation de l’identité utilisateur via `req.userId`
+- introduit les tests unitaires de **niveau-1** du contrôleur d'authentification `authController.js` qui :
+  - utilisent **Mocha**, **Chai** et **Sinon**
+  - ne nécessitent aucune base de données
+  - valident les scénario métier
+
+---
+
+##### 2.1.5.1 Décision architecturale
+
+- Le token JWT est **généré dans la couche métier**, au sein du contrôleur `login`.  
+- Le modèle `User` **n’est pas modifié** : aucune logique JWT n’est introduite dans la couche donnée.  
+- La configuration JWT (clé secrète, durée d’expiration) est **centralisée** dans un module dédié.  
+- Le token contient uniquement l’identifiant utilisateur (`userId`), conformément au principe de **minimisation des données**.  
+- Le token n’est **pas encore vérifié** dans cette issue : la vérification et la protection des routes seront traitées dans l’issue‑16.
+
+---
+
+##### 2.1.5.2 Responsabilités des couches
+
+###### Couche métier (contrôleur `login`)
+
+- Vérifie les identifiants (email + mot de passe).  
+- Génère un JWT signé en cas de succès.  
+- Retourne le token au client dans la réponse HTTP.  
+- Ne stocke pas le token : l’API reste stateless.
+
+###### Couche donnée (modèle Mongoose)
+
+- Inchangée par rapport à l’issue‑14.  
+- Continue d’assurer la cohérence structurelle (mot de passe hashé).  
+- Ne participe pas à la génération du token.
+
+###### Couche configuration
+
+- Centralise la clé secrète et la durée d’expiration.  
+- Permet une modification simple et sécurisée des paramètres JWT.
+
+---
+
+##### 2.1.5.3 Flux d’authentification (issue‑15)
+
+1. Le client envoie email + mot de passe au point d’entrée `/auth/login`.  
+2. Le contrôleur vérifie l’existence de l’utilisateur.  
+3. Le contrôleur vérifie le mot de passe via la méthode d’instance `comparePassword`.  
+4. Si les identifiants sont valides, le contrôleur génère un JWT signé.  
+5. Le token est renvoyé au client dans la réponse HTTP.  
+6. Le client pourra utiliser ce token dans les futures requêtes protégées (issue‑16).
+
+Ce flux reste **stateless** : aucune session n’est conservée côté serveur.
+
+---
+
+##### 2.1.5.4 Contraintes et règles de sécurité
+
+- Le secret JWT doit être stocké **hors du code source**, dans une variable d’environnement.  
+- Le token doit avoir une **durée d’expiration** définie (ex. 24h).  
+- Le contenu du token doit être **minimal** : uniquement l’identifiant utilisateur.  
+- Aucun mot de passe, rôle, email ou donnée sensible ne doit être inclus dans le token.  
+- Le token doit être signé avec un algorithme standard (HS256).
+
+---
+
+##### 2.1.5.5 Impacts sur l’architecture
+
+- Le contrôleur `login` devient la **seule source de tokens valides**.  
+- L’API est désormais capable de fournir une identité portable au client.  
+- La base de données reste indépendante du mécanisme JWT.  
+- L’issue‑15 prépare directement l’issue‑16, qui introduira un middleware de vérification du token.
+
+---
+
+##### 2.1.5.6 Tests unitaires (niveau-1) - Issue 15
+
+Les tests unitaires du contrôleur d’authentification (authController.js) :
+
+- utilisent **Mocha**, **Chai** et **Sinon**
+- isolent totalement la logique métier
+- remplacent les dépendances (ex : `User.findOne`, `comparePassword`, `jwt.sign`) par des **stubs**
+- ne nécessitent **aucune base de données**
+- valident les scénarios métier :
+  - champs manquants
+  - utilisateur inexistant
+  - mot de passe incorrect
+  - génération du token JWT
+  - gestion des erreurs internes
+
+Ces tests constituent le [niveau‑1 (unitaire)](./tests/01-niveau-1-unitaires.md) de la [stratégie globale de tests](./tests-strategy.md).
 
 ---
 

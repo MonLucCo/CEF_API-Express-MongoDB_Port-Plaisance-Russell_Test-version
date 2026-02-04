@@ -1,16 +1,9 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const jwt = require('jsonwebtoken');
+const { mockResponse, mockNext } = require('../mocks/tests.mock');
 
 const authMiddleware = require('../../src/middlewares/authMiddleware');
-
-// Helper pour simuler res.status().json()
-function mockResponse() {
-    return {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub().returnsThis()
-    };
-}
 
 describe('authMiddleware – tests niveau 1', () => {
 
@@ -21,7 +14,7 @@ describe('authMiddleware – tests niveau 1', () => {
     it('retourne 401 si aucun token n’est fourni', () => {
         const req = { headers: {} };
         const res = mockResponse();
-        const next = sinon.spy();
+        const next = mockNext();
 
         authMiddleware(req, res, next);
 
@@ -34,7 +27,7 @@ describe('authMiddleware – tests niveau 1', () => {
 
         const req = { headers: { authorization: 'Bearer invalidtoken' } };
         const res = mockResponse();
-        const next = sinon.spy();
+        const next = mockNext();
 
         authMiddleware(req, res, next);
 
@@ -48,7 +41,7 @@ describe('authMiddleware – tests niveau 1', () => {
 
         const req = { headers: { authorization: 'Bearer expiredtoken' } };
         const res = mockResponse();
-        const next = sinon.spy();
+        const next = mockNext();
 
         authMiddleware(req, res, next);
 
@@ -62,7 +55,7 @@ describe('authMiddleware – tests niveau 1', () => {
 
         const req = { headers: { authorization: 'Bearer validtoken' } };
         const res = mockResponse();
-        const next = sinon.spy();
+        const next = mockNext();
 
         authMiddleware(req, res, next);
 
@@ -75,7 +68,7 @@ describe('authMiddleware – tests niveau 1', () => {
 
         const req = { headers: { authorization: 'Bearer sometoken' } };
         const res = mockResponse();
-        const next = sinon.spy();
+        const next = mockNext();
 
         authMiddleware(req, res, next);
 

@@ -21,7 +21,10 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 - Chaque dépendance externe est stubée :  
   - `User.findOne`, `User.create`, `User.findByIdAndDelete`  
   - `user.comparePassword`  
-  - `jwt.sign`  
+  - `jwt.sign`
+- Centralisation dans le fichier `tests.mock.js` des fonctions communes aux tests unitaires :
+  - `mockResponse()` : simule la réponse Express `res.status().json()`
+  - `mockNext()` : spy pour les middlewares
 - Aucun accès à MongoDB  
 - Chaque test est isolé via `afterEach(() => sinon.restore())`
 

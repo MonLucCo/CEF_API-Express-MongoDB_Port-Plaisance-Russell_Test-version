@@ -1,7 +1,8 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const jwt = require('jsonwebtoken');
+
 const { mockResponse, mockNext } = require('../mocks/tests.mock');
+const { mockJwtVerify, mockJwtVerifyError } = require('../mocks/jwt.mock');
 
 const authMiddleware = require('../../src/middlewares/authMiddleware');
 
@@ -23,7 +24,7 @@ describe('authMiddleware – tests niveau 1', () => {
     });
 
     it('retourne 401 si le token est invalide', () => {
-        sinon.stub(jwt, 'verify').throws({ name: 'JsonWebTokenError' });
+        mockJwtVerifyError({ name: 'JsonWebTokenError' });
 
         const req = { headers: { authorization: 'Bearer invalidtoken' } };
         const res = mockResponse();
@@ -37,7 +38,7 @@ describe('authMiddleware – tests niveau 1', () => {
     });
 
     it('retourne 401 si le token est expiré', () => {
-        sinon.stub(jwt, 'verify').throws({ name: 'TokenExpiredError' });
+        mockJwtVerifyError({ name: 'TokenExpiredError' });
 
         const req = { headers: { authorization: 'Bearer expiredtoken' } };
         const res = mockResponse();
@@ -51,7 +52,7 @@ describe('authMiddleware – tests niveau 1', () => {
     });
 
     it('appelle next() si le token est valide', () => {
-        sinon.stub(jwt, 'verify').returns({ userId: '123' });
+        mockJwtVerify({ userId: '123' });
 
         const req = { headers: { authorization: 'Bearer validtoken' } };
         const res = mockResponse();
@@ -64,7 +65,7 @@ describe('authMiddleware – tests niveau 1', () => {
     });
 
     it('retourne 500 en cas d’erreur interne', () => {
-        sinon.stub(jwt, 'verify').throws(new Error('Unexpected error'));
+        mockJwtVerifyError(new Error('Unexpected error'));
 
         const req = { headers: { authorization: 'Bearer sometoken' } };
         const res = mockResponse();

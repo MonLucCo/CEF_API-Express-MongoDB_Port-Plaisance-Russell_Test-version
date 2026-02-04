@@ -59,6 +59,9 @@ tests/                      ← Tests Mocha/Chai/Supertest
   ├── integration/          ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
   ├── e2e/                  ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
   └── mocks/                ← Mocks/stubs isolant les dépendances (ex : modèle User)
+      ├── tests.mock.js     ← Helpers transverses (mockResponse, mockNext, afterEachRestore)
+      ├── jwt.mock.js       ← Stubs JWT (verify, sign)
+      └── user.mock.js      ← Mocks/stubs du modèle User
 
 docs/                       ← Documentation JSDoc générée
 
@@ -452,7 +455,7 @@ Ce flux reste **stateless** : aucune session n’est conservée côté serveur.
 
 ---
 
-##### 2.1.5.6 Tests unitaires (niveau-1) - Issue 15
+##### 2.1.5.6 Tests unitaires (niveau-1) - Génération JWT - Issue 15
 
 Les tests unitaires du contrôleur d’authentification (authController.js) :
 
@@ -472,6 +475,8 @@ Ces tests constituent le [niveau‑1 (unitaire)](./tests/01-niveau-1-unitaires.m
 ---
 
 #### 2.1.6 Issue 16 — Middleware JWT et routes protégées
+
+##### 2.1.6.1 Intégration du Middleware JWT et de la protection des routes
 
 Cette issue introduit le middleware d’authentification JWT, chargé de vérifier la validité du token transmis par le client.  
 Il constitue la première étape de la sécurisation des routes sensibles de l’API.
@@ -498,6 +503,23 @@ Les autres routes sensibles (Catways, Reservations) seront protégées lors des 
 
 Les principes de sécurité liés à l’authentification, au JWT, à la gestion des erreurs et aux bonnes pratiques Express/MongoDB sont détaillés dans  
 [`docs-dev/securite.md`](../securite.md).
+
+---
+
+##### 2.1.6.2 Tests unitaires (niveau-1) - Middleware JWT - Issue 16
+
+Le middleware `authMiddleware.js` est testé de manière isolée.  
+Les dépendances externes (`jwt.verify`) sont stubées via Sinon.
+
+Cas testés :
+
+- token manquant → 401  
+- token invalide → 401  
+- token expiré → 401  
+- token valide → next() et `req.userId` défini  
+- erreur interne → 500  
+
+Ces tests garantissent la robustesse du mécanisme d’authentification avant l’intégration des routes protégées (issues Phase 4 et 5).
 
 ---
 

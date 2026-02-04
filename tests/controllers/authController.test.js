@@ -1,18 +1,25 @@
 const { expect } = require('chai');
-const sinon = require('sinon');
-const jwt = require('jsonwebtoken');
 
-const { mockFindOne, mockCreate, mockDelete } = require('../mocks/user.mock');
-const { mockFindOneError, mockCreateError, mockDeleteError } = require('../mocks/user.mock');
+const { mockResponse, afterEachRestore } = require('../mocks/tests.mock');
+const { mockJwtSign } = require('../mocks/jwt.mock');
+const {
+    mockFindOne,
+    mockCreate,
+    mockDelete,
+    mockFindOneError,
+    mockCreateError,
+    mockDeleteError
+} = require('../mocks/user.mock');
 
-const { register, login, deleteUser } = require('../../src/controllers/authController');
-const User = require('../../src/models/user');
+const {
+    register,
+    login,
+    deleteUser
+} = require('../../src/controllers/authController');
 
 describe('authController – tests niveau 1', () => {
 
-    afterEach(() => {
-        sinon.restore();
-    });
+    afterEachRestore();
 
     // -----------------------------
     // LOGIN
@@ -42,7 +49,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it('retourne 401 si mot de passe incorrect', async () => {
-            const fakeUser = { comparePassword: sinon.stub().resolves(false) };
+            const fakeUser = { comparePassword: async () => false };
             mockFindOne(fakeUser);
 
             const req = { body: { email: 'x@test.com', password: 'wrong' } };
@@ -57,11 +64,11 @@ describe('authController – tests niveau 1', () => {
         it('retourne 200 et un token si identifiants valides', async () => {
             const fakeUser = {
                 _id: '123',
-                comparePassword: sinon.stub().resolves(true)
+                comparePassword: async () => true
             };
 
             mockFindOne(fakeUser);
-            sinon.stub(jwt, 'sign').returns('header.payload.signature');
+            mockJwtSign('header.payload.signature');
 
             const req = { body: { email: 'x@test.com', password: '1234' } };
             const res = mockResponse();
@@ -178,13 +185,3 @@ describe('authController – tests niveau 1', () => {
     });
 
 });
-
-// -----------------------------
-// MOCK RESPONSE
-// -----------------------------
-function mockResponse() {
-    return {
-        status: sinon.stub().returnsThis(),
-        json: sinon.stub().returnsThis()
-    };
-}

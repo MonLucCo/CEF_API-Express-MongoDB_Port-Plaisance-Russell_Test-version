@@ -42,6 +42,7 @@ src/
   ├── controllers/          ← Contrôleurs Express (logique métier)
   │   └── authController.js ← Contrôleur d’authentification (register, login, deleteUser)
   ├── middlewares/          ← Middlewares (auth, validation, sécurité)
+  │     └── authMiddleware.js ← Middleware JWT (issue‑16), vérification du token et protection des routes
   ├── services/             ← Logique métier réutilisable
   └── routes/               ← Définition des routes Express
       ├── accueilRoutes.js  ← Route d’accueil (GET /)
@@ -76,6 +77,9 @@ docs-dev/                   ← Documentation interne versionnée
 
 Les dossiers `models/`, `controllers/`, `middlewares/`, `services/` et `routes/` sont créés dès l’initialisation pour refléter l’architecture prévue.  
 Les autres dossiers apparaissent au fur et à mesure des phases fonctionnelles.
+  
+Les mécanismes de sécurité (JWT, hashage, bonnes pratiques Express/MongoDB) sont détaillés dans  
+[`docs-dev/securite.md`](./securite.md).
 
 ---
 
@@ -469,16 +473,31 @@ Ces tests constituent le [niveau‑1 (unitaire)](./tests/01-niveau-1-unitaires.m
 
 #### 2.1.6 Issue 16 — Middleware JWT et routes protégées
 
-Création du middleware d’authentification :
+Cette issue introduit le middleware d’authentification JWT, chargé de vérifier la validité du token transmis par le client.  
+Il constitue la première étape de la sécurisation des routes sensibles de l’API.
 
-- extraction du token  
-- vérification du token  
-- ajout de `req.userId`  
-- protection des routes sensibles  
+**Responsabilités du middleware :**
 
-Mise à jour des routes Catways et Reservations.
+- extraction du token depuis l’en-tête `Authorization: Bearer <token>`
+- vérification du token via `jwt.verify`
+- gestion des erreurs (token manquant, invalide, expiré)
+- ajout de `req.userId` pour les routes protégées
+- transmission au contrôleur via `next()` si le token est valide
+
+**Routes protégées :**
+
+À ce stade du projet, seule la route suivante est protégée :
+
+- `DELETE /auth/delete/:id`
+
+Les autres routes sensibles (Catways, Reservations) seront protégées lors des phases ultérieures.
 
 **Emplacement :** `src/middlewares/authMiddleware.js`
+
+**Références sécurité :**
+
+Les principes de sécurité liés à l’authentification, au JWT, à la gestion des erreurs et aux bonnes pratiques Express/MongoDB sont détaillés dans  
+[`docs-dev/securite.md`](../securite.md).
 
 ---
 

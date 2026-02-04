@@ -25,6 +25,7 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 - Centralisation dans le fichier `tests.mock.js` des fonctions communes aux tests unitaires :
   - `mockResponse()` : simule la réponse Express `res.status().json()`
   - `mockNext()` : spy pour les middlewares
+  - `afterEachRestore()` : restaure automatiquement les stubs/spies Sinon après chaque test
 - Centralisation des stubs JWT dans `jwt.mock.js` :
   - `mockJwtVerify()` : simule un token valide
   - `mockJwtVerifyError()` : simule les erreurs JWT (invalide, expiré…)

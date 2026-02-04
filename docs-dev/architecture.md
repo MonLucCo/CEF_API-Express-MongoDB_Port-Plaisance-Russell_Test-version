@@ -59,7 +59,7 @@ tests/                      ← Tests Mocha/Chai/Supertest
   ├── integration/          ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
   ├── e2e/                  ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
   └── mocks/                ← Mocks/stubs isolant les dépendances (ex : modèle User)
-      ├── tests.mock.js     ← Helpers transverses (fonctions communes) aux tests
+      ├── tests.mock.js     ← Helpers transverses (mockResponse, mockNext, afterEachRestore)
       ├── jwt.mock.js       ← Stubs JWT (verify, sign)
       └── user.mock.js      ← Mocks/stubs du modèle User
 

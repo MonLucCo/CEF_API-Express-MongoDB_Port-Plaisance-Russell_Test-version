@@ -1,16 +1,13 @@
 const { expect } = require('chai');
-const sinon = require('sinon');
 
-const { mockResponse, mockNext } = require('../mocks/tests.mock');
+const { mockResponse, mockNext, afterEachRestore } = require('../mocks/tests.mock');
 const { mockJwtVerify, mockJwtVerifyError } = require('../mocks/jwt.mock');
 
 const authMiddleware = require('../../src/middlewares/authMiddleware');
 
 describe('authMiddleware – tests niveau 1', () => {
 
-    afterEach(() => {
-        sinon.restore();
-    });
+    afterEachRestore();
 
     it('retourne 401 si aucun token n’est fourni', () => {
         const req = { headers: {} };

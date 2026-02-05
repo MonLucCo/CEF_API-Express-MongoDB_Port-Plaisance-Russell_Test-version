@@ -49,8 +49,9 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 
 ```text
 ├── src/               ← Dossier principal du code de l'API
-│   ├── app.js         ← Configuration Express (middlewares, routes, erreurs)
-│   ├── server.js      ← Lancement du serveur (écoute du port)
+│   ├── app.js                   ← Configuration Express (middlewares, routes, erreurs)
+│   ├── server.js                ← Lancement du serveur (écoute du port)
+│   │
 │   ├── models/        ← Modèles Mongoose        
 │   ├── controllers/   ← Contrôleurs Express (logique métier liée aux routes)
 │   ├── middlewares/   ← Middlewares Express (authentification, validation, sécurité…)        
@@ -62,28 +63,28 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 ├── public/            ← Fichiers statiques pour le front minimal
 │
 ├── tests/             ← Tests Mocha, Chai, Sinon et Supertest
-│   ├── controllers/   ← Tests unitaires (niveau‑1)
-│   ├── middlewares/   ← Tests unitaires (niveau‑1)
-│   ├── integration/   ← Tests d’intégration (niveau‑2)
-│   ├── e2e/           ← Tests E2E (niveau‑3)
-│   └── mocks/         ← Mocks/stubs pour isoler les dépendances
-│   └── mocks/         ← Mocks/stubs pour isoler les dépendances
+│   ├── controllers/             ← Tests unitaires (niveau‑1)
+│   ├── middlewares/             ← Tests unitaires (niveau‑1)
+│   ├── integration/             ← Tests d’intégration (niveau‑2)
+│   ├── e2e/                     ← Tests E2E (niveau‑3)
+│   └── mocks/                   ← Mocks/stubs pour isoler les dépendances
 │
 ├── data/              ← Fichiers catways.json et reservations.json
 │
 ├── docs/              ← Documentation JSDoc générée automatiquement
 │
 ├── docs-dev/          ← Documentation interne versionnée
-│   ├── architecture.md
-│   ├── conventions.md
-│   ├── workflow-git.md
-│   ├── securite.md
-│   ├── tests-strategy.md
-│   ├── decisions-techniques.md
-│   ├── hebergement/   ← Documentation sur Alwaysdata et MongoDB
-│   ├── deploiement/   ← Procédures de validation et de mise en production
-│   └── tests/         ← Procédures de tests par niveau (unitaire, intégration, e2e)
-│
+│   ├── architecture.md          ← Structure technique et organisation du projet
+│   ├── conventions.md           ← Conventions de code, nommage et organisation
+│   ├── workflow-git.md          ← Stratégie Git (branches, commits, PR)
+│   ├── securite.md              ← Mesures de sécurité (JWT, bcrypt, Helmet, CORS…)
+│   ├── tests-strategy.md        ← Stratégie globale des tests (niveaux 1 à 3)
+│   ├── decisions-techniques.md  ← Historique des choix techniques majeurs
+│   │
+│   ├── hebergement/             ← Documentation Alwaysdata & MongoDB
+│   ├── deploiement/             ← Procédures de déploiement et validation
+│   └── tests/                   ← Documentation détaillée des tests par niveau
+
 ├── scripts/           ← Scripts de déploiement et de vérification
 ├── logs/              ← Logs générés par les scripts (check:local, check:site…)
 ├── scratches/         ← Dossier privé (non versionné) pour scripts sensibles, notes et brouillons
@@ -91,6 +92,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 ├── .env.example       ← Modèle des variables d'environnement
 ├── .gitignore         ← Exclusions Git
 ├── .nvmrc             ← Version Node recommandée
+│
 ├── package.json       ← Dépendances et scripts
 └── README.md          ← Documentation principale du projet
 ```
@@ -147,6 +149,7 @@ Tests réalisés avec :
 
 - **Mocha**
 - **Chai**
+- **Sinon**
 - **Supertest**
 
 Les tests couvrent les **9 fonctionnalités demandées** :

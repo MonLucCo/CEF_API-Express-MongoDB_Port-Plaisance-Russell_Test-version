@@ -90,6 +90,7 @@ Chaque fichier de test correspond à une fonctionnalité ou un groupe de routes.
 
 ### Outils
 
-- Mocha
-- Chai
-- Supertest
+- **Mocha** : moteur de tests
+- **Chai** : assertions
+- **Sinon** : stubs, spies, mocks
+- **Supertest** : tests d’intégration des routes Express

@@ -34,7 +34,7 @@ L’API repose sur plusieurs principes structurants :
 L’arborescence du projet suit les bonnes pratiques Express/Mongoose :
 
 ```text
-src/
+src/                        ← Dossier principal du code de l'API
   ├── app.js                ← Configuration Express (middlewares, routes, erreurs)
   ├── server.js             ← Lancement du serveur
   │
@@ -42,6 +42,7 @@ src/
   ├── controllers/          ← Contrôleurs Express (logique métier)
   │   └── authController.js ← Contrôleur d’authentification (register, login, deleteUser)
   ├── middlewares/          ← Middlewares (auth, validation, sécurité)
+  │     └── authMiddleware.js ← Middleware JWT (issue‑16), vérification du token et protection des routes
   ├── services/             ← Logique métier réutilisable
   └── routes/               ← Définition des routes Express
       ├── accueilRoutes.js  ← Route d’accueil (GET /)
@@ -58,24 +59,32 @@ tests/                      ← Tests Mocha/Chai/Supertest
   ├── integration/          ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
   ├── e2e/                  ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
   └── mocks/                ← Mocks/stubs isolant les dépendances (ex : modèle User)
+      ├── tests.mock.js     ← Helpers transverses (mockResponse, mockNext, afterEachRestore)
+      ├── jwt.mock.js       ← Stubs JWT (verify, sign)
+      └── user.mock.js      ← Mocks/stubs du modèle User
 
 docs/                       ← Documentation JSDoc générée
 
 docs-dev/                   ← Documentation interne versionnée
-  ├── architecture.md
-  ├── conventions.md
-  ├── workflow-git.md
-  ├── securite.md
-  ├── tests-strategy.md
-  ├── decisions-techniques.md
-  ├── hebergement/   ← Documentation sur Alwaysdata et MongoDB
-  ├── deploiement/   ← Procédures de validation et de mise en production
-  └── tests/         ← Procédures de tests par niveau (unitaire, intégration, e2e)
+  │
+  ├── architecture.md          ← Description complète de l’architecture logicielle et technique
+  ├── conventions.md           ← Conventions de développement (code, dossiers, nommage, JSDoc)
+  ├── workflow-git.md          ← Workflow Git détaillé (branches, PR, milestones, bonnes pratiques)
+  ├── securite.md              ← Politique de sécurité de l’API (JWT, bcrypt, Helmet, CORS, MongoDB)
+  ├── tests-strategy.md        ← Stratégie de tests (unitaires, intégration, E2E) et organisation du dossier tests/
+  ├── decisions-techniques.md  ← Journal des décisions techniques (ADR simplifié)
+  │
+  ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
+  ├── deploiement/             ← Procédures de déploiement, validation, scripts associés
+  └── tests/                   ← Documentation par niveau : unitaires (01), intégration (02), E2E (03)
 
 ```
 
 Les dossiers `models/`, `controllers/`, `middlewares/`, `services/` et `routes/` sont créés dès l’initialisation pour refléter l’architecture prévue.  
 Les autres dossiers apparaissent au fur et à mesure des phases fonctionnelles.
+  
+Les mécanismes de sécurité (JWT, hashage, bonnes pratiques Express/MongoDB) sont détaillés dans  
+[`docs-dev/securite.md`](./securite.md).
 
 ---
 
@@ -448,7 +457,7 @@ Ce flux reste **stateless** : aucune session n’est conservée côté serveur.
 
 ---
 
-##### 2.1.5.6 Tests unitaires (niveau-1) - Issue 15
+##### 2.1.5.6 Tests unitaires (niveau-1) - Génération JWT - Issue 15
 
 Les tests unitaires du contrôleur d’authentification (authController.js) :
 
@@ -469,16 +478,50 @@ Ces tests constituent le [niveau‑1 (unitaire)](./tests/01-niveau-1-unitaires.m
 
 #### 2.1.6 Issue 16 — Middleware JWT et routes protégées
 
-Création du middleware d’authentification :
+##### 2.1.6.1 Intégration du Middleware JWT et de la protection des routes
 
-- extraction du token  
-- vérification du token  
-- ajout de `req.userId`  
-- protection des routes sensibles  
+Cette issue introduit le middleware d’authentification JWT, chargé de vérifier la validité du token transmis par le client.  
+Il constitue la première étape de la sécurisation des routes sensibles de l’API.
 
-Mise à jour des routes Catways et Reservations.
+**Responsabilités du middleware :**
+
+- extraction du token depuis l’en-tête `Authorization: Bearer <token>`
+- vérification du token via `jwt.verify`
+- gestion des erreurs (token manquant, invalide, expiré)
+- ajout de `req.userId` pour les routes protégées
+- transmission au contrôleur via `next()` si le token est valide
+
+**Routes protégées :**
+
+À ce stade du projet, seule la route suivante est protégée :
+
+- `DELETE /auth/delete/:id`
+
+Les autres routes sensibles (Catways, Reservations) seront protégées lors des phases ultérieures.
 
 **Emplacement :** `src/middlewares/authMiddleware.js`
+
+**Références sécurité :**
+
+Les principes de sécurité liés à l’authentification, au JWT, à la gestion des erreurs et aux bonnes pratiques Express/MongoDB sont détaillés dans  
+[`docs-dev/securite.md`](../securite.md).
+
+---
+
+##### 2.1.6.2 Tests unitaires (niveau-1) - Middleware JWT - Issue 16
+
+Le middleware `authMiddleware.js` est testé de manière isolée.  
+Les dépendances externes (`jwt.verify`) sont stubées via Sinon.
+
+Cas testés :
+
+- token manquant → 401  
+- token invalide → 401  
+- token expiré → 401  
+- token valide → next() et `req.userId` défini  
+- erreur interne → 500  
+
+Ces tests garantissent la robustesse du mécanisme d’authentification avant l’intégration des routes protégées (issues Phase 4 et 5).
 
 ---
 

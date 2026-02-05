@@ -34,7 +34,7 @@ L’API repose sur plusieurs principes structurants :
 L’arborescence du projet suit les bonnes pratiques Express/Mongoose :
 
 ```text
-src/
+src/                        ← Dossier principal du code de l'API
   ├── app.js                ← Configuration Express (middlewares, routes, erreurs)
   ├── server.js             ← Lancement du serveur
   │
@@ -66,15 +66,17 @@ tests/                      ← Tests Mocha/Chai/Supertest
 docs/                       ← Documentation JSDoc générée
 
 docs-dev/                   ← Documentation interne versionnée
-  ├── architecture.md
-  ├── conventions.md
-  ├── workflow-git.md
-  ├── securite.md
-  ├── tests-strategy.md
-  ├── decisions-techniques.md
-  ├── hebergement/   ← Documentation sur Alwaysdata et MongoDB
-  ├── deploiement/   ← Procédures de validation et de mise en production
-  └── tests/         ← Procédures de tests par niveau (unitaire, intégration, e2e)
+  │
+  ├── architecture.md          ← Description complète de l’architecture logicielle et technique
+  ├── conventions.md           ← Conventions de développement (code, dossiers, nommage, JSDoc)
+  ├── workflow-git.md          ← Workflow Git détaillé (branches, PR, milestones, bonnes pratiques)
+  ├── securite.md              ← Politique de sécurité de l’API (JWT, bcrypt, Helmet, CORS, MongoDB)
+  ├── tests-strategy.md        ← Stratégie de tests (unitaires, intégration, E2E) et organisation du dossier tests/
+  ├── decisions-techniques.md  ← Journal des décisions techniques (ADR simplifié)
+  │
+  ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
+  ├── deploiement/             ← Procédures de déploiement, validation, scripts associés
+  └── tests/                   ← Documentation par niveau : unitaires (01), intégration (02), E2E (03)
 
 ```
 

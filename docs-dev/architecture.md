@@ -165,7 +165,7 @@ Utilisé pour l’inscription, la connexion, la gestion des comptes et la protec
 
 ---
 
-#### 2.1.2 Issue 12 — Contrôleur d’authentification (sans sécurité)
+#### 2.1.2 Issue 12 — Contrôleur d’authentification (évolutions issues 14 à 17)
 
 Le contrôleur `authController.js` gère les opérations de base sur le modèle `User` :
 
@@ -173,13 +173,32 @@ Le contrôleur `authController.js` gère les opérations de base sur le modèle 
 - `login` : recherche d’un utilisateur par email  
 - `deleteUser` : suppression d’un utilisateur par ID  
 
-Aucune sécurité dans cette version :
+La version initiale est établit dans l'issue-12 et ne comportait aucune sécurité  :
 
 - pas de hashage  
 - pas de vérification du mot de passe  
 - pas de jeton JWT  
 
+les évolutions successives sont introduites dans les issues 14 à 17 :
+
+- **Issue 14** : haschage du mot de passe dans la couche métier
+- **Issue 15** : génération du token JWT via `jsonwebtoken`
+- **Issue 16** : protection de la route DELETE via le middleware JWT
+- **Issue 17** :
+  - gestion explicite de l'erreur MongoDB `E11000` (email déjà utilisé)
+  - ajout d'un contrôle `mongoose.Types.ObjectId.isValid()`pour éviter les CastError
+  - mise à jour des tests unitaires et d'intégration
+
 **Emplacement :** `src/controllers/authController.js`
+**version actuelle :** 0.4.0
+
+> **Description fonctionnelle actuelle :**
+>
+> Le contrôleur `authController.js` gère les opérations d’authentification :
+>
+> - `register` : création d’un utilisateur avec hashage bcrypt
+> - `login` : vérification du mot de passe et génération d’un token JWT
+> - `deleteUser` : suppression d’un utilisateur par ID avec vérification préalable de l’ObjectId
 
 ---
 

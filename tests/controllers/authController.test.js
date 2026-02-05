@@ -1,4 +1,6 @@
 const { expect } = require('chai');
+const mongoose = require('mongoose');
+const User = require('../../src/models/user');
 
 const { mockResponse, afterEachRestore } = require('../mocks/tests.mock');
 const { mockJwtSign } = require('../mocks/jwt.mock');
@@ -149,37 +151,61 @@ describe('authController – tests niveau 1', () => {
     // -----------------------------
     describe('deleteUser()', () => {
 
-        it('retourne 404 si utilisateur introuvable', async () => {
+        it("retourne 400 si l'ID est invalide", async () => {
+            const req = { params: { id: "123" } }; // ID invalide
+            const res = mockResponse();
+
+            await deleteUser(req, res);
+
+            expect(res.status.calledWith(400)).to.be.true;
+            expect(res.json.calledWithMatch({ error: "ID utilisateur invalide" })).to.be.true;
+        });
+
+        it("retourne 404 si l'utilisateur est introuvable", async () => {
+            const fakeId = new mongoose.Types.ObjectId();
+
             mockDelete(null);
 
-            const req = { params: { id: '123' } };
+            const req = { params: { id: fakeId.toString() } };
             const res = mockResponse();
 
             await deleteUser(req, res);
 
             expect(res.status.calledWith(404)).to.be.true;
+            expect(res.json.calledWithMatch({ error: "Utilisateur introuvable" })).to.be.true;
+
+            User.findByIdAndDelete.restore();
         });
 
-        it('retourne 200 si suppression valide', async () => {
-            mockDelete({ _id: '123' });
+        it("retourne 200 si la suppression est valide", async () => {
+            const validId = new mongoose.Types.ObjectId();
 
-            const req = { params: { id: '123' } };
+            mockDelete({ _id: validId });
+
+            const req = { params: { id: validId.toString() } };
             const res = mockResponse();
 
             await deleteUser(req, res);
 
             expect(res.status.calledWith(200)).to.be.true;
+            expect(res.json.calledWithMatch({ message: "Utilisateur supprimé" })).to.be.true;
+
+            User.findByIdAndDelete.restore();
         });
 
         it('retourne 500 en cas d’erreur interne', async () => {
+            const validId = new mongoose.Types.ObjectId();
+
             mockDeleteError();
 
-            const req = { params: { id: '123' } };
+            const req = { params: { id: validId.toString() } };
             const res = mockResponse();
 
             await deleteUser(req, res);
 
             expect(res.status.calledWith(500)).to.be.true;
+
+            User.findByIdAndDelete.restore();
         });
 
     });

@@ -8,7 +8,11 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "mocha tests/**/*.test.js --exit",
+    "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:unit": "mocha tests/controllers/**/*.test.js tests/middlewares/**/*.test.js --exit",
+    "test:integration": "mocha tests/integration/**/*.test.js --exit",
+    "test:e2e": "echo \"Tests E2E exécutés via Postman (collection dans docs-dev/tests/03-niveau-3-e2e.md)\" && exit 0",
+    "tests": "mocha tests/**/*.test.js --exit",
     "start": "node src/server.js",
     "deploy": "bash ./scripts/deploy.sh",
     "deploy:dry": "bash ./scripts/deploy.sh --dry-run",
@@ -42,7 +46,8 @@
   "devDependencies": {
     "chai": "^6.2.2",
     "mocha": "^11.7.5",
+    "mongodb-memory-server": "^11.0.1",
     "sinon": "^7.5.0",
-    "sinon-mongoose": "^2.3.0"
+    "supertest": "^7.2.2"
   }
 }

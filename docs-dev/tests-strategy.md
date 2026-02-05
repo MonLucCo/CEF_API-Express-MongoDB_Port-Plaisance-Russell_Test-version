@@ -17,14 +17,27 @@ La stratégie de tests repose sur trois niveaux complémentaires, introduits pro
 - Objectif : tester la logique métier de manière isolée  
 - Aucune base de données  
 - Les dépendances (Mongoose, bcrypt, JWT) sont remplacées par des stubs  
-- Exemple : tests du contrôleur d’authentification (issue‑15)
+- Les tests couvrent désormais :
+  - contrôleur `authController` (register, login, deleteUser)
+  - middleware JWT (issue‑16)
+- Les stubs Mongoose incluent maintenant :
+  - `User.findOne`
+  - `User.create`
+  - `User.findByIdAndDelete`
+- Les tests de `deleteUser` utilisent désormais des **ObjectId valides** pour refléter le contrôle ajouté dans l’issue‑17.
 
-#### Niveau‑2 : Tests d’intégration
+### Niveau‑2 : Tests d’intégration
 
 - Outils : **Supertest**, **MongoMemoryServer**  
-- Objectif : tester les routes Express et leur interaction avec Mongoose  
-- Base MongoDB en mémoire, sans impact sur la base réelle  
-- Exemple : tests du middleware JWT et des routes protégées (issue‑16)
+- Objectif : tester les routes Express et leur interaction réelle avec Mongoose  
+- Base MongoDB en mémoire  
+- bcrypt et JWT réels  
+- Les tests couvrent :
+  - `/auth/register` (champs manquants, email déjà utilisé, création valide)
+  - `/auth/login` (champs manquants, identifiants invalides, token valide)
+  - `/auth/delete/:id` (401, 404, 200)
+- Le secret JWT est défini dans les tests via `process.env.JWT_SECRET = 'testsecret'`  
+  afin de permettre la génération réelle du token.
 
 #### Niveau‑3 : Tests E2E
 
@@ -93,4 +106,5 @@ Chaque fichier de test correspond à une fonctionnalité ou un groupe de routes.
 - **Mocha** : moteur de tests
 - **Chai** : assertions
 - **Sinon** : stubs, spies, mocks
+- **MongoMemoryServer** : base MongoDB en mémoire
 - **Supertest** : tests d’intégration des routes Express

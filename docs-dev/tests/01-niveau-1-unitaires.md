@@ -33,6 +33,13 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 - Aucun accès à MongoDB  
 - Chaque test est isolé via `afterEach(() => sinon.restore())`
 
+- Les tests unitaires du contrôleur `authController` ont été mis à jour suite à l’issue‑17 :
+  - utilisation d’`ObjectId` valides pour tester `deleteUser`
+  - gestion du cas `ID invalide → 400`
+  - gestion du cas `email déjà utilisé → 400`
+  - simulation d’erreurs internes via `mockDeleteError()`
+- Les stubs sont restaurés automatiquement via `afterEachRestore()`, sauf pour les stubs créés dans les helpers qui nécessitent un `restore()` explicite.
+
 ## Exemples
 
 ### Issue‑15 : tests unitaires du contrôleur `authController.js`
@@ -45,8 +52,28 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 
 ### Issue‑16 : tests unitaires du middleware `authMiddleware.js`
 
-**Résultats des tests (issue-15 : non-regression) et (issue 16 : consommation):**
+**Résultats des tests (issue 15 : non-regression) et (issue 16 : consommation):**
 
 ![alt text](./assets/img_issue-16_resultats-tests-niveau-1.png)
+
+---
+
+### Issue‑17 : mise à jour des tests unitaires du contrôleur `authController.js`
+
+Les tests unitaires ont été adaptés pour refléter les évolutions du contrôleur :
+
+- ajout du contrôle `mongoose.Types.ObjectId.isValid()`  
+- gestion de l’erreur MongoDB `E11000`  
+- mise à jour des tests de `deleteUser` :
+  - 400 si ID invalide  
+  - 404 si utilisateur introuvable  
+  - 200 si suppression valide  
+  - 500 en cas d’erreur interne  
+
+Ces tests garantissent la cohérence entre la logique métier et les tests d’intégration.
+
+**Résultats des tests (issues 15 et 16 : non-regression) et (issue 17 : intégration):**
+
+![alt text](./assets/img_issue-17_resultats-tests-niveau-1.png)
 
 ---

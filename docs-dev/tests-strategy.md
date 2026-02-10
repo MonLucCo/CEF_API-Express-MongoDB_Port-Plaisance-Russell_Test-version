@@ -17,22 +17,42 @@ La stratégie de tests repose sur trois niveaux complémentaires, introduits pro
 - Objectif : tester la logique métier de manière isolée  
 - Aucune base de données  
 - Les dépendances (Mongoose, bcrypt, JWT) sont remplacées par des stubs  
-- Exemple : tests du contrôleur d’authentification (issue‑15)
+- Les tests couvrent désormais :
+  - contrôleur `authController` (register, login, deleteUser)
+  - middleware JWT (issue‑16)
+- Les stubs Mongoose incluent maintenant :
+  - `User.findOne`
+  - `User.create`
+  - `User.findByIdAndDelete`
+- Les tests de `deleteUser` utilisent désormais des **ObjectId valides** pour refléter le contrôle ajouté dans l’issue‑17.
 
-#### Niveau‑2 : Tests d’intégration
+### Niveau‑2 : Tests d’intégration
 
 - Outils : **Supertest**, **MongoMemoryServer**  
-- Objectif : tester les routes Express et leur interaction avec Mongoose  
-- Base MongoDB en mémoire, sans impact sur la base réelle  
-- Exemple : tests du middleware JWT et des routes protégées (issue‑16)
+- Objectif : tester les routes Express et leur interaction réelle avec Mongoose  
+- Base MongoDB en mémoire  
+- bcrypt et JWT réels  
+- Les tests couvrent :
+  - `/auth/register` (champs manquants, email déjà utilisé, création valide)
+  - `/auth/login` (champs manquants, identifiants invalides, token valide)
+  - `/auth/delete/:id` (401, 404, 200)
+- Le secret JWT est défini dans les tests via `process.env.JWT_SECRET = 'testsecret'`  
+  afin de permettre la génération réelle du token.
 
 #### Niveau‑3 : Tests E2E
 
 - Outils : **Postman**  
-- Objectif : valider l’API complète en conditions réelles  
-- Base MongoDB réelle  
+- Objectif : valider l’API complète en conditions réelles (déployées) ou simulées (locales)  
+- Base MongoDB réelle ou en mémoire (locale)
 - Scénarios complets : inscription, connexion, suppression, accès protégé  
-- Exemple : issue‑17
+- Exemples :
+  - **Tests simulés (issue-17)**
+    - Les tests E2E simulés (issue‑17) s’exécutent via Postman sur un serveur Express dédié (`tests/test-app.js`). Ce serveur utilise MongoMemoryServer et ne doit pas être confondu avec `src/server.js`.
+    - Deux scripts permettent de lancer cet environnement :
+      - `npm run test:app` → exécution simple, base stable
+      - `npm run test:app:watch` → exécution avec nodemon (config dev), utile pour le développement
+    - Cet environnement est strictement local et n’est pas utilisé pour les tests E2E réels (issue‑22).
+  - **Tests réels (issue-22)**
 
 ---
 
@@ -93,4 +113,5 @@ Chaque fichier de test correspond à une fonctionnalité ou un groupe de routes.
 - **Mocha** : moteur de tests
 - **Chai** : assertions
 - **Sinon** : stubs, spies, mocks
+- **MongoMemoryServer** : base MongoDB en mémoire
 - **Supertest** : tests d’intégration des routes Express

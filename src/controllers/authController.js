@@ -8,13 +8,15 @@
  * @requires bcrypt
  * @requires jsonwebtoken
  * @requires config/jwt
- * @version 0.3.0
+ * @requires mongoose
+ * @version 0.4.0
  */
 
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const jwtConfig = require('../../config/jwt');
+const { default: mongoose } = require('mongoose');
 
 /**
  * Inscription d'un utilisateur (avec hashage du mot de passe)
@@ -23,10 +25,10 @@ const jwtConfig = require('../../config/jwt');
  * @memberof module:controllers/authController
  * @route POST /api/auth/register
  * @returns {Object} 201 - Utilisateur créé
- * @returns {Object} 400 - Erreur de validation ou champs manquants
+ * @returns {Object} 400 - Champs manquants, validation Mongoose ou email déjà utilisé
  * @returns {Object} 500 - Erreur interne du serveur
  * 
- * @version 0.2.0
+ * @version 0.3.0
  */
 const register = async (req, res) => {
     try {
@@ -48,6 +50,10 @@ const register = async (req, res) => {
         res.status(201).json({ message: "Utilisateur créé", user });
 
     } catch (error) {
+        // Gestion des erreurs de duplication d'email (section "Error handling")
+        if (error.code === 11000) {
+            return res.status(400).json({ error: "Email déjà utilisé" });
+        }
         // Gestion des erreurs de validation Mongoose (section "Error handling")
         if (error.name === 'ValidationError') {
             return res.status(400).json({ error: error.message });
@@ -117,14 +123,19 @@ const login = async (req, res) => {
  * @memberof module:controllers/authController
  * @route DELETE /api/auth/user/:id
  * @returns {Object} 200 - Utilisateur supprimé
+ * @returns {Object} 400 - ID utilisateur invalide
  * @returns {Object} 404 - Utilisateur introuvable
  * @returns {Object} 500 - Erreur interne du serveur
  * 
- * @version 0.1.0
+ * @version 0.2.0
  */
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "ID utilisateur invalide" });
+        }
 
         const deleted = await User.findByIdAndDelete(id);
 

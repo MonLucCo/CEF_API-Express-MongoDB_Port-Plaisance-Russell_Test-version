@@ -1,0 +1,11 @@
+{
+    "ignore": [
+        "scratches",
+        "docs-dev",
+        "logs",
+        "scripts",
+        "**/*.md"
+    ],
+    "signal": "SIGINT",
+    "delay": "200ms"
+}

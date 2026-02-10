@@ -6,7 +6,7 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 1](https://img.shields.io/badge/Phase%201-Préparation%20du%20projet-green) ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
+![Milestone Phase 2](https://img.shields.io/badge/Phase%202-Authentification-green) ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
 ![Statut du dépôt](https://img.shields.io/badge/statut-en%20développement-blue)
   
 > 🔗 [Accès aux phases](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/milestones/)
@@ -59,10 +59,13 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   └── routes/        ← Définition des routes Express     
 │
 ├── config/            ← Configuration globale (JWT, paramètres transversaux)
+│   └── dev/                     ← Configurations de l'environnement de développement (nodemon…)
 │
 ├── public/            ← Fichiers statiques pour le front minimal
 │
 ├── tests/             ← Tests Mocha, Chai, Sinon et Supertest
+│   ├── test-app.js              ← Serveur Express dédié aux tests E2E simulés
+│   │
 │   ├── controllers/             ← Tests unitaires (niveau‑1)
 │   ├── middlewares/             ← Tests unitaires (niveau‑1)
 │   ├── integration/             ← Tests d’intégration (niveau‑2)
@@ -316,15 +319,48 @@ Créer un fichier `.env` à partir de `.env.example`.
 
 ### 4. Lancer le serveur en développement
 
+Deux modes sont disponibles :
+
+#### 4.1 Mode développement (avec nodemon)
+
+Recharge automatique à chaque modification :
+
+```bash
+npm run dev
+```
+
+#### 4.2 Mode standard (sans nodemon)
+
+Lancement simple du serveur :
+
 ```bash
 npm start
 ```
 
 ### 5. Lancer les tests
 
+Deux modes sont disponibles :
+
+#### 5.1 Tests automatisés
+
 ```bash
 npm test
 ```
+
+#### 5.2 Tests manuels avec Postman
+
+Un serveur Express dédié (`tests/test-app.js`) permet d’exécuter les tests E2E locaux via Postman, avec une base MongoMemoryServer.
+
+Commandes disponibles :
+
+```bash
+npm run test:app         # sans nodemon (recommandé)
+npm run test:app:watch   # avec nodemon (développement)
+```
+
+👉 Collection Postman :  [docs-dev/tests/assets/collection-e2e-local.json](./docs-dev/tests/assets/collection-e2e-local.json)
+
+👉 Détails complets : [docs-dev/tests/03-niveau-3-e2e.md](./docs-dev/tests/03-niveau-3-e2e.md)
 
 ---
 
@@ -344,7 +380,7 @@ npm test
 ## 🧭 Roadmap
 
 - [x] Phase 1 — Préparation du projet  
-- [+] Phase 2 — Authentification  
+- [x] Phase 2 — Authentification  
 - [ ] Phase 3 — Modèles & données  
 - [ ] Phase 4 — Catways  
 - [ ] Phase 5 — Reservations  

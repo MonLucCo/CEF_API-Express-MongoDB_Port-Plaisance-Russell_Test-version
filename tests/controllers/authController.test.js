@@ -1,0 +1,213 @@
+const { expect } = require('chai');
+const mongoose = require('mongoose');
+const User = require('../../src/models/user');
+
+const { mockResponse, afterEachRestore } = require('../mocks/tests.mock');
+const { mockJwtSign } = require('../mocks/jwt.mock');
+const {
+    mockFindOne,
+    mockCreate,
+    mockDelete,
+    mockFindOneError,
+    mockCreateError,
+    mockDeleteError
+} = require('../mocks/user.mock');
+
+const {
+    register,
+    login,
+    deleteUser
+} = require('../../src/controllers/authController');
+
+describe('authController – tests niveau 1', () => {
+
+    afterEachRestore();
+
+    // -----------------------------
+    // LOGIN
+    // -----------------------------
+    describe('login()', () => {
+
+        it('retourne 400 si champs manquants', async () => {
+            const req = { body: { email: '' } };
+            const res = mockResponse();
+
+            await login(req, res);
+
+            expect(res.status.calledWith(400)).to.be.true;
+            expect(res.json.calledWithMatch({ error: "Email et mot de passe requis" })).to.be.true;
+        });
+
+        it('retourne 401 si utilisateur inexistant', async () => {
+            mockFindOne(null);
+
+            const req = { body: { email: 'x@test.com', password: '1234' } };
+            const res = mockResponse();
+
+            await login(req, res);
+
+            expect(res.status.calledWith(401)).to.be.true;
+            expect(res.json.calledWithMatch({ error: "Identifiants invalides" })).to.be.true;
+        });
+
+        it('retourne 401 si mot de passe incorrect', async () => {
+            const fakeUser = { comparePassword: async () => false };
+            mockFindOne(fakeUser);
+
+            const req = { body: { email: 'x@test.com', password: 'wrong' } };
+            const res = mockResponse();
+
+            await login(req, res);
+
+            expect(res.status.calledWith(401)).to.be.true;
+            expect(res.json.calledWithMatch({ error: "Identifiants invalides" })).to.be.true;
+        });
+
+        it('retourne 200 et un token si identifiants valides', async () => {
+            const fakeUser = {
+                _id: '123',
+                comparePassword: async () => true
+            };
+
+            mockFindOne(fakeUser);
+            mockJwtSign('header.payload.signature');
+
+            const req = { body: { email: 'x@test.com', password: '1234' } };
+            const res = mockResponse();
+
+            await login(req, res);
+
+            expect(res.status.calledWith(200)).to.be.true;
+            expect(res.json.calledWithMatch({ token: 'header.payload.signature' })).to.be.true;
+        });
+
+        it('retourne 500 en cas d’erreur interne', async () => {
+            mockFindOneError();
+
+            const req = { body: { email: 'x@test.com', password: '1234' } };
+            const res = mockResponse();
+
+            await login(req, res);
+
+            expect(res.status.calledWith(500)).to.be.true;
+        });
+
+    });
+
+    // -----------------------------
+    // REGISTER
+    // -----------------------------
+    describe('register()', () => {
+
+        it('retourne 400 si champs manquants', async () => {
+            const req = { body: { email: 'x@test.com' } };
+            const res = mockResponse();
+
+            await register(req, res);
+
+            expect(res.status.calledWith(400)).to.be.true;
+        });
+
+        it('retourne 400 si ValidationError', async () => {
+            const error = new Error('Validation failed');
+            error.name = 'ValidationError';
+
+            mockCreateError(error);
+
+            const req = { body: { name: 'X', email: 'x@test.com', password: '1234' } };
+            const res = mockResponse();
+
+            await register(req, res);
+
+            expect(res.status.calledWith(400)).to.be.true;
+        });
+
+        it('retourne 201 si création valide', async () => {
+            mockCreate({ _id: '123', name: 'X' });
+
+            const req = { body: { name: 'X', email: 'x@test.com', password: '1234' } };
+            const res = mockResponse();
+
+            await register(req, res);
+
+            expect(res.status.calledWith(201)).to.be.true;
+        });
+
+        it('retourne 500 en cas d’erreur interne', async () => {
+            mockCreateError();
+
+            const req = { body: { name: 'X', email: 'x@test.com', password: '1234' } };
+            const res = mockResponse();
+
+            await register(req, res);
+
+            expect(res.status.calledWith(500)).to.be.true;
+        });
+
+    });
+
+    // -----------------------------
+    // DELETE USER
+    // -----------------------------
+    describe('deleteUser()', () => {
+
+        it("retourne 400 si l'ID est invalide", async () => {
+            const req = { params: { id: "123" } }; // ID invalide
+            const res = mockResponse();
+
+            await deleteUser(req, res);
+
+            expect(res.status.calledWith(400)).to.be.true;
+            expect(res.json.calledWithMatch({ error: "ID utilisateur invalide" })).to.be.true;
+        });
+
+        it("retourne 404 si l'utilisateur est introuvable", async () => {
+            const fakeId = new mongoose.Types.ObjectId();
+
+            mockDelete(null);
+
+            const req = { params: { id: fakeId.toString() } };
+            const res = mockResponse();
+
+            await deleteUser(req, res);
+
+            expect(res.status.calledWith(404)).to.be.true;
+            expect(res.json.calledWithMatch({ error: "Utilisateur introuvable" })).to.be.true;
+
+            User.findByIdAndDelete.restore();
+        });
+
+        it("retourne 200 si la suppression est valide", async () => {
+            const validId = new mongoose.Types.ObjectId();
+
+            mockDelete({ _id: validId });
+
+            const req = { params: { id: validId.toString() } };
+            const res = mockResponse();
+
+            await deleteUser(req, res);
+
+            expect(res.status.calledWith(200)).to.be.true;
+            expect(res.json.calledWithMatch({ message: "Utilisateur supprimé" })).to.be.true;
+
+            User.findByIdAndDelete.restore();
+        });
+
+        it('retourne 500 en cas d’erreur interne', async () => {
+            const validId = new mongoose.Types.ObjectId();
+
+            mockDeleteError();
+
+            const req = { params: { id: validId.toString() } };
+            const res = mockResponse();
+
+            await deleteUser(req, res);
+
+            expect(res.status.calledWith(500)).to.be.true;
+
+            User.findByIdAndDelete.restore();
+        });
+
+    });
+
+});

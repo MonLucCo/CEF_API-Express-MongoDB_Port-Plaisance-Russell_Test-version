@@ -22,3 +22,20 @@ Sécurisation des headers HTTP.
 ## Organisation du code
 
 Séparation stricte modèles / contrôleurs / routes.
+
+## Environnement de développement
+
+### Tests E2E simulés
+
+Décision : introduire un serveur Express dédié (`tests/test-app.js`) pour exécuter les tests E2E simulés via Postman.
+
+Motivations :
+
+- isoler l’environnement de test de l’environnement de production
+- utiliser MongoMemoryServer pour éviter toute dépendance externe
+- permettre un cycle complet register → login → delete
+- garantir un environnement reproductible pour les tests manuels
+
+### Serveur local - Activation Nodemon
+
+Décision : ajouter une configuration nodemon locale (`config/dev/nodemon.json`) pour faciliter le développement, sans impacter le déploiement.

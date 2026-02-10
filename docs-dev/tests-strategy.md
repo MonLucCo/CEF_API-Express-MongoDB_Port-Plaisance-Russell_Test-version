@@ -42,10 +42,17 @@ La stratégie de tests repose sur trois niveaux complémentaires, introduits pro
 #### Niveau‑3 : Tests E2E
 
 - Outils : **Postman**  
-- Objectif : valider l’API complète en conditions réelles  
-- Base MongoDB réelle  
+- Objectif : valider l’API complète en conditions réelles (déployées) ou simulées (locales)  
+- Base MongoDB réelle ou en mémoire (locale)
 - Scénarios complets : inscription, connexion, suppression, accès protégé  
-- Exemple : issue‑17
+- Exemples :
+  - **Tests simulés (issue-17)**
+    - Les tests E2E simulés (issue‑17) s’exécutent via Postman sur un serveur Express dédié (`tests/test-app.js`). Ce serveur utilise MongoMemoryServer et ne doit pas être confondu avec `src/server.js`.
+    - Deux scripts permettent de lancer cet environnement :
+      - `npm run test:app` → exécution simple, base stable
+      - `npm run test:app:watch` → exécution avec nodemon (config dev), utile pour le développement
+    - Cet environnement est strictement local et n’est pas utilisé pour les tests E2E réels (issue‑22).
+  - **Tests réels (issue-22)**
 
 ---
 

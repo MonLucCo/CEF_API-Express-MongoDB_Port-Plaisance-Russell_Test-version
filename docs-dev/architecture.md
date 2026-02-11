@@ -39,10 +39,13 @@ src/                        ← Dossier principal du code de l'API
   ├── server.js                 ← Lancement du serveur
   │
   ├── models/                   ← Modèles Mongoose
+  │   ├── user.js                   ← Modèle User (issue‑11)
+  │   └── catway.js                 ← Modèle Catway (issue‑18)
+  │
   ├── controllers/              ← Contrôleurs Express (logique métier)
   │   └── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
-  │     └── authMiddleware.js       ← Middleware JWT (issue‑16), vérification du token et protection des routes
+  │   └── authMiddleware.js         ← Middleware JWT (issue‑16), vérification du token et protection des routes
   ├── services/                 ← Logique métier réutilisable
   └── routes/                   ← Définition des routes Express
       ├── accueilRoutes.js          ← Route d’accueil (GET /)
@@ -592,7 +595,32 @@ Cet environnement permet de valider l’API sans dépendre de MongoDB Atlas ni d
 
 ### 2.2 Phase 3 — Modèles & données
 
-(sera complété avec les issues correspondantes)
+#### 2.2.1 Issue‑18 — Modèle Catway
+
+Cette issue introduit le modèle `Catway`, représentant les catways du port de plaisance Russell.
+Le schéma définit trois champs : `catwayNumber` (unique), `type` (enum short/long) et `catwayState`.
+Un index explicite est ajouté sur `catwayNumber` pour optimiser les futures recherches et la gestion des réservations.
+
+**Structure du document :**
+
+```json
+{
+  "catwayNumber": "Number",
+  "type": "String",
+  "catwayState": "String",
+  "createdAt": "Date",
+  "updatedAt": "Date"
+}
+```
+
+**Règles principales :**
+
+- `catwayNumber` : requis, unique, indexé, min[1]
+- `type` : requis, trim, enum['short','long'], lowercase  
+- `catwayState` : requis, trim  
+- timestamps automatiques
+
+**Emplacement :** `src/models/catway.js`
 
 ---
 

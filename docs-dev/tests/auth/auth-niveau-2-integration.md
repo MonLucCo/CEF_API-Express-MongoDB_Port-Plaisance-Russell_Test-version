@@ -1,4 +1,4 @@
-# Tests de niveau‑2 : Tests d’intégration
+# Tests Authentification de niveau‑2 : Tests d’intégration
 
 Les tests d’intégration valident le fonctionnement complet des routes Express, en interaction avec Mongoose.
 
@@ -57,6 +57,6 @@ Les tests d’intégration valident le fonctionnement complet des routes Express
 
 **Résultats des tests :**
 
-![alt text](./assets/img_issue-17_resultats-tests-niveau-2.png)
+![alt text](../assets/img_issue-17_resultats-tests-niveau-2.png)
 
 ---

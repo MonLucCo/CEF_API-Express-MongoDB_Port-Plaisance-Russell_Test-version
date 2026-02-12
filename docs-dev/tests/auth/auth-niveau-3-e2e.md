@@ -1,4 +1,4 @@
-# Tests de niveau‑3 : Tests E2E
+# Tests Authentification de niveau‑3 : Tests E2E
 
 Les tests E2E valident l’API complète dans un environnement simulé ou réel.
 
@@ -153,17 +153,17 @@ La collection `docs-dev/tests/assets/collection-e2e-local.json` contient :
 
 L'import dans Postman de la collection `docs-dev/tests/assets/collection-e2e-local.json` permet d'accéder à une JSDoc des différentes requêtes.
 
-![alt text](./assets/img_postman_collection-issue-17_jsdoc.png)
+![alt text](../assets/img_postman_collection-issue-17_jsdoc.png)
 
 ##### 1. Résultats de la requête `01 - Register`
 
 La création d'un utilisateur rend les informations associées à l'enregistrement demandé.
 
-![alt text](./assets/img_postman_collection-issue-17_01-register.png)
+![alt text](../assets/img_postman_collection-issue-17_01-register.png)
 
 Le script associé à cette requête permet un traitement de la réponse pour stocker dans une variable de la collection {userid} l'identifiant de l'utilisateur créé `user._id`.
 
-![alt text](./assets/img_postman_collection-issue-17_01-register-script.png)
+![alt text](../assets/img_postman_collection-issue-17_01-register-script.png)
 
 Cet identifiant est réutilisé pour supprimer l'utilisateur par son identifiant (requête `03 - Delete User`).
 
@@ -171,11 +171,11 @@ Cet identifiant est réutilisé pour supprimer l'utilisateur par son identifiant
 
 La connexion d'un utilisateur rend les informations associées au Token de l'utilisateur.
 
-![alt text](./assets/img_postman_collection-issue-17_02-login.png)
+![alt text](../assets/img_postman_collection-issue-17_02-login.png)
 
 Le script associé à cette requête permet un traitement de la réponse pour stocker dans une variable de la collection {token} le jeton JWT.
 
-![alt text](./assets/img_postman_collection-issue-17_02-login-script.png)
+![alt text](../assets/img_postman_collection-issue-17_02-login-script.png)
 
 Ce jeton JWT est réutilisé pour autoriser la suppression de l'utilisateur (requête `03 - Delete User`).
 
@@ -191,7 +191,7 @@ La réponse confirme la suppression de l'utilisateur référencé.
 
 En testant la connexion avec la requête de connexion (`02 - Login`), il est alors vérifiable que les informations de connexion ne sont plus valides pour cet utilisateur qui vient d'être supprimé.
 
-![alt text](./assets/img_postman_collection-issue-17_02-login-refus.png)
+![alt text](../assets/img_postman_collection-issue-17_02-login-refus.png)
 
 La réponse avec le `statut 401` et le message d'erreur permet de confirmer la suppression de l'utilisateur.
 

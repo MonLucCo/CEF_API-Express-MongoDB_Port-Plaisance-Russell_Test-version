@@ -1,4 +1,4 @@
-# Tests de niveau‑1 : Tests unitaires
+# Tests Authentification de niveau‑1 : Tests unitaires
 
 Les tests unitaires valident la logique métier de manière isolée.  
 Ils ne dépendent d’aucune base de données ni d’aucun service externe.
@@ -46,7 +46,7 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 
 **Résultats des tests (issue-15) :**
 
-![alt text](./assets/img_issue-15_resultats-tests-niveau-1.png)
+![alt text](../assets/img_issue-15_resultats-tests-niveau-1.png)
 
 ---
 
@@ -54,7 +54,7 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 
 **Résultats des tests (issue 15 : non-regression) et (issue 16 : consommation):**
 
-![alt text](./assets/img_issue-16_resultats-tests-niveau-1.png)
+![alt text](../assets/img_issue-16_resultats-tests-niveau-1.png)
 
 ---
 
@@ -74,6 +74,6 @@ Ces tests garantissent la cohérence entre la logique métier et les tests d’i
 
 **Résultats des tests (issues 15 et 16 : non-regression) et (issue 17 : intégration):**
 
-![alt text](./assets/img_issue-17_resultats-tests-niveau-1.png)
+![alt text](../assets/img_issue-17_resultats-tests-niveau-1.png)
 
 ---

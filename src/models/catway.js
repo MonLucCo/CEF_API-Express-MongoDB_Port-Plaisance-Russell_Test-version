@@ -64,7 +64,4 @@ const catwaySchema = new mongoose.Schema(
     }
 );
 
-// Index optimisé pour les futures recherches (réservations)
-catwaySchema.index({ catwayNumber: 1 });
-
 module.exports = mongoose.model('Catway', catwaySchema);

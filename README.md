@@ -66,11 +66,12 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 ├── tests/             ← Tests Mocha, Chai, Sinon et Supertest
 │   ├── test-app.js              ← Serveur Express dédié aux tests E2E simulés
 │   │
-│   ├── controllers/             ← Tests unitaires (niveau‑1)
-│   ├── middlewares/             ← Tests unitaires (niveau‑1)
-│   ├── integration/             ← Tests d’intégration (niveau‑2)
-│   ├── e2e/                     ← Tests E2E (niveau‑3)
-│   └── mocks/                   ← Mocks/stubs pour isoler les dépendances
+│   ├── controllers/             ← Tests unitaires (auth-niveau‑1)
+│   ├── middlewares/             ← Tests unitaires (auth-niveau‑1)
+│   ├── integration/             ← Tests d’intégration (auth-niveau‑2)
+│   ├── e2e/                     ← Tests E2E (auth-niveau‑3)
+│   ├── mocks/                   ← Mocks/stubs pour isoler les dépendances
+│   └── modeles/                 ← Tests des modèles
 │
 ├── data/              ← Fichiers catways.json et reservations.json
 │
@@ -86,7 +87,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   │
 │   ├── hebergement/             ← Documentation Alwaysdata & MongoDB
 │   ├── deploiement/             ← Procédures de déploiement et validation
-│   └── tests/                   ← Documentation détaillée des tests par niveau
+│   └── tests/                   ← Documentation détaillée des tests par catégorie et par niveau
 
 ├── scripts/           ← Scripts de déploiement et de vérification
 ├── logs/              ← Logs générés par les scripts (check:local, check:site…)
@@ -146,7 +147,7 @@ L’API utilise :
 
 ---
 
-## 🧪 Tests unitaires
+## 🧪 Tests
 
 Tests réalisés avec :
 
@@ -167,9 +168,11 @@ Les tests couvrent les **9 fonctionnalités demandées** :
 8. Suppression utilisateur  
 9. Connexion utilisateur  
 
-Les tests couvrent les 9 fonctionnalités demandées.
-
 👉 Détails complets : [docs-dev/tests-strategy.md](./docs-dev/tests-strategy.md)
+
+> Les tests sont organisés par **catégorie** (authentification, modèles, fonctionnalités) et par **niveau** (unitaires, intégration, E2E).
+>
+> 👉 Détails complets : [docs-dev/tests/README_tests.md](./docs-dev/tests/README_tests.md)
 
 ---
 
@@ -360,7 +363,7 @@ npm run test:app:watch   # avec nodemon (développement)
 
 👉 Collection Postman :  [docs-dev/tests/assets/collection-e2e-local.json](./docs-dev/tests/assets/collection-e2e-local.json)
 
-👉 Détails complets : [docs-dev/tests/03-niveau-3-e2e.md](./docs-dev/tests/03-niveau-3-e2e.md)
+👉 Détails complets de l'authentification : [docs-dev/tests/auth/auth-niveau-3-e2e.md](./docs-dev/tests/auth/auth-niveau-3-e2e.md)
 
 ---
 

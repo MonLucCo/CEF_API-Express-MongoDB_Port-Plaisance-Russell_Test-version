@@ -300,7 +300,8 @@ Les captures des résultats sont disponibles dans :
 
 #### 3.3.2 Tests du modèle Reservation (issue-19)
 
-Les tests du modèle Reservation suivent la même structure que ceux du modèle Catway.
+Les tests unitaires du modèle Reservation suivent la même logique que ceux du modèle Catway :  
+validation via `validate()`, gestion des erreurs via try/catch, aucune dépendance à MongoDB.
 
 ##### 3.3.2.1 Niveau‑1 — Tests unitaires
 
@@ -314,10 +315,10 @@ Objectif : valider la cohérence structurelle du schéma sans base MongoDB.
 - cohérence des dates (structure uniquement)
 
 Fichier associé :  
-`tests/modeles/reservation.test.js` (sera ajouté lors du second commit de l'issue-19)
+`tests/modeles/reservation.test.js` (ajouté lors du second commit de l'issue-19)
 
 Documentation :  
-`docs-dev/tests/modeles/modeles-niveau-1-unitaires.md` (les résultats seront ajoutés lors du second commit de l'issue-19)
+`docs-dev/tests/modeles/modeles-niveau-1-unitaires.md`
 
 ---
 

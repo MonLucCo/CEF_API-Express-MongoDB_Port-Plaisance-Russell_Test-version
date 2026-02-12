@@ -71,6 +71,9 @@ tests/                      ← Tests Mocha/Chai/Supertest
   │   ├── jwt.mock.js               ← Stubs JWT (verify, sign)
   │   └── user.mock.js              ← Mocks/stubs du modèle User
   └── modeles/                  ← Tests des modèles (Catway, Reference, User) 
+      ├── catway.test.js              ← Tests unitaires (niveau-1) de Catway
+      ├── catway.integration.test.js  ← Tests d'intégration (niveau-2) de Catway
+      └── reservation.test.js         ← tests unitaires (niveau-2) de Reservation 
 
 docs/                       ← Documentation JSDoc générée
 

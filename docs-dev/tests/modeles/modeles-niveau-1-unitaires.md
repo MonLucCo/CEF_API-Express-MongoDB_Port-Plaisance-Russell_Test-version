@@ -58,13 +58,12 @@ Fichier associé :
 
 ### 2. Modèle **Reservation** (issue‑19)
 
-Tests prévus :
+Tests réalisés :
 
-- validation d’une réservation correcte  
-- dates invalides (`checkIn > checkOut`)  
-- absence de champs requis  
-- cohérence du type `catwayNumber`  
-- normalisation des chaînes (`trim`)  
+- champs requis (`catwayNumber`, `clientName`, `boatName`, `checkIn`, `checkOut`)
+- contrainte `catwayNumber >= 1`
+- cohérence des dates (`checkOut > checkIn`)
+- normalisation (`trim`)
 
 Fichier associé :  
 `tests/modeles/reservation.test.js`
@@ -95,11 +94,9 @@ Fichier associé :
 Chaque fichier de test suit la structure :
 
 ```js
-describe('Model X – Tests unitaires (niveau‑1)', () => {
+mongoose.set('strictQuery', false);
 
-    before(() => {
-        mongoose.set('strictQuery', false);
-    });
+describe('Model X – Tests unitaires (niveau‑1)', () => {
 
     it('devrait valider un document correct', async () => { ... });
 
@@ -138,5 +135,11 @@ Ces éléments sont testés au **niveau 2** (intégration).
 **Résultats des tests (issue-18) :**
 
 ![alt text](../assets/img_issue-18_resultats-tests-niveau-1.png)
+
+### Issue-9 : tests unitaires du modèle `Reservation`
+
+**Résultats des tests (issue-19) :**
+
+![alt text](../assets/img_issue-19_resultats-tests-niveau-1.png)
 
 ---

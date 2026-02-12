@@ -23,6 +23,8 @@ Sécurisation des headers HTTP.
 
 Séparation stricte modèles / contrôleurs / routes.
 
+---
+
 ## Environnement de développement
 
 ### Tests E2E simulés
@@ -39,3 +41,15 @@ Motivations :
 ### Serveur local - Activation Nodemon
 
 Décision : ajouter une configuration nodemon locale (`config/dev/nodemon.json`) pour faciliter le développement, sans impacter le déploiement.
+
+---
+
+## Modélisation
+
+### Modèle Catway
+
+- Le champ `catwayNumber` est unique et indexé car il constitue la clé fonctionnelle principale.
+- Le champ `type` utilise une validation `enum` pour garantir la cohérence des données.
+- Le champ `catwayState` est trimé pour éviter les espaces parasites.
+- Le champ `__v` est supprimé (`versionKey: false`) pour garder des documents propres.
+- Les timestamps sont activés pour assurer la traçabilité.

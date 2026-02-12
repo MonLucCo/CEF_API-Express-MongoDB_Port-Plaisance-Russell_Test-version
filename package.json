@@ -15,6 +15,7 @@
     "test:app": "node tests/test-app.js",
     "test:app:watch": "nodemon --config ./config/dev/nodemon.json tests/test-app.js",
     "tests": "mocha tests/**/*.test.js --exit",
+    "tests:models": "mocha tests/models/**/*.test.js --exit",
     "start": "node src/server.js",
     "dev": "nodemon --config ./config/dev/nodemon.json src/server.js",
     "deploy": "bash ./scripts/deploy.sh",

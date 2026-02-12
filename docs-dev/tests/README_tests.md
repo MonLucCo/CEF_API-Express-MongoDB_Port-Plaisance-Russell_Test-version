@@ -39,6 +39,7 @@ Dossier :
 ### ⚙️ 3. Fonctionnalités
 
 Tests portant sur :
+
 - les routes Catways
 - les routes Reservations
 - les workflows complets (CRUD)
@@ -61,7 +62,6 @@ Objectif : tester la logique interne de manière isolée.
 
 - Aucun accès à MongoDB  
 - Utilisation de stubs (authentification)  
-- Utilisation de `validate()` sans connexion (modèles)  
 - Tests rapides et indépendants
 
 ### 🟩 Niveau 2 — Tests d’intégration
@@ -81,6 +81,8 @@ Deux environnements :
 
 - **E2E simulé** (local, MongoMemoryServer, Postman)
 - **E2E réel** (Alwaysdata + MongoDB Atlas)
+
+> Les tests de niveau-3 seront ajoutés lors de l'issue-22.
 
 ---
 

@@ -126,8 +126,8 @@ Ces éléments sont testés au **niveau 2** (intégration).
 ## 📎 Références
 
 - Stratégie globale des tests : [docs-dev/tests-strategy.md](../../tests-strategy.md)
-- Tests d’intégration des modèles : `docs-dev/tests/modeles/modeles-niveau-2-integration.md`
-- Tests E2E : `docs-dev/tests/modeles/modeles-niveau-3-e2e.md`
+- Tests d’intégration des modèles : [docs-dev/tests/modeles/modeles-niveau-2-integration.md](./modeles-niveau-2-integration.md)
+- Tests E2E : `docs-dev/tests/modeles/modeles-niveau-3-e2e.md` (sera ajouté lors de l'issue-22)
 
 ---
 

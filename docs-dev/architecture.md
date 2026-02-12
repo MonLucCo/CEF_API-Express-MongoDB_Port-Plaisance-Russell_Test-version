@@ -94,7 +94,8 @@ docs-dev/                   ← Documentation interne versionnée
       │   ├── auth-niveau-2-integration.md          ← Tests de niveau 2 - tests d'intégration
       │   └── auth-niveau-3-e2e.md                  ← Tests de niveau 1 - tests E2E
       └── modeles/                             ← Catégorie Modélisation
-          └── modeles-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires
+          ├── modeles-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires
+          └── modeles-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
 
 ```
 
@@ -613,11 +614,14 @@ Cet environnement permet de valider l’API sans dépendre de MongoDB Atlas ni d
 
 #### 2.2.1 Issue‑18 — Modèle Catway
 
+##### 2.2.1.1 Description technique
+
 Cette issue introduit le modèle `Catway`, représentant les catways du port de plaisance Russell.
 Le schéma définit trois champs : `catwayNumber` (unique), `type` (enum short/long) et `catwayState`.
 
 > **Note :**
-> La définition `catwayNumber` _unique_ génère automatiquement dans Mongoose une indexation permettant d'optimiser les futures recherches et la gestion des réservations.
+> La propriété `unique: true` sur `catwayNumber` génère automatiquement un index unique dans MongoDB.  
+> Aucun `schema.index()` supplémentaire n’est nécessaire.
 
 **Structure du document :**
 
@@ -633,12 +637,39 @@ Le schéma définit trois champs : `catwayNumber` (unique), `type` (enum short/l
 
 **Règles principales :**
 
-- `catwayNumber` : requis, **unique**, min[1]
+- `catwayNumber` : requis, **unique**, min[1]  
 - `type` : requis, trim, enum['short','long'], lowercase  
 - `catwayState` : requis, trim  
 - timestamps automatiques
 
 **Emplacement :** `src/models/catway.js`
+
+---
+
+##### 2.2.1.2 Tests associés
+
+Ces tests garantissent que le modèle Catway est **structurellement correct**, **fonctionnel en base**, et prêt pour les routes Catways de la Phase 4.
+
+###### 2.2.1.2.1 Niveau‑1 — Tests unitaires (validation du schéma)
+
+- Aucun accès à MongoDB  
+- Utilisation de `validate()`  
+- Vérification des règles : required, enum, min, trim, lowercase  
+- Tests rapides et isolés
+
+Documentation : [docs-dev/tests/modeles/modeles-niveau-1-unitaires.md](./tests/modeles/modeles-niveau-1-unitaires.md)
+
+---
+
+###### 2.2.1.2.2 Niveau‑2 — Tests d’intégration (MongoMemoryServer)
+
+- Base MongoDB en mémoire  
+- Tests réels : `save()`, `find()`, `delete()`  
+- Vérification de l’unicité (`E11000`)  
+- Vérification des timestamps  
+- Validation complète en conditions réelles
+
+Documentation : [docs-dev/tests/modeles/modeles-niveau-2-integration.md](./tests/modeles/modeles-niveau-2-integration.md)
 
 ---
 

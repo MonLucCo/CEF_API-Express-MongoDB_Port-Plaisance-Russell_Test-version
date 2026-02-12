@@ -29,7 +29,10 @@ Dossier :
 
 Tests portant sur :
 
-- les modèles Mongoose (`User`, `Catway`, `Reservation`)
+- les modèles Mongoose :
+  - `Catway` : issue-18
+  - `Reservation` : issue-19
+  - `User` : issue-20
 - la validation des schémas
 - les comportements internes des modèles
 

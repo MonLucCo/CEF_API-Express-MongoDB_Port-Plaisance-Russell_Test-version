@@ -40,7 +40,8 @@ src/                        ← Dossier principal du code de l'API
   │
   ├── models/                   ← Modèles Mongoose
   │   ├── user.js                   ← Modèle User (issue‑11)
-  │   └── catway.js                 ← Modèle Catway (issue‑18)
+  │   ├── catway.js                 ← Modèle Catway (issue‑18)
+  │   └── reservation.js            ← Modèle Reservation (issue‑19)
   │
   ├── controllers/              ← Contrôleurs Express (logique métier)
   │   └── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
@@ -65,10 +66,11 @@ tests/                      ← Tests Mocha/Chai/Supertest
   ├── middlewares/              ← Tests unitaires (niveau‑1) des middlewares (issue‑16)
   ├── integration/              ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
   ├── e2e/                      ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
-  └── mocks/                    ← Mocks/stubs isolant les dépendances (ex : modèle User)
-      ├── tests.mock.js             ← Helpers transverses (mockResponse, mockNext, afterEachRestore)
-      ├── jwt.mock.js               ← Stubs JWT (verify, sign)
-      └── user.mock.js              ← Mocks/stubs du modèle User
+  ├── mocks/                    ← Mocks/stubs isolant les dépendances (ex : modèle User)
+  │   ├── tests.mock.js             ← Helpers transverses (mockResponse, mockNext, afterEachRestore)
+  │   ├── jwt.mock.js               ← Stubs JWT (verify, sign)
+  │   └── user.mock.js              ← Mocks/stubs du modèle User
+  └── modeles/                  ← Tests des modèles (Catway, Reference, User) 
 
 docs/                       ← Documentation JSDoc générée
 
@@ -670,6 +672,79 @@ Documentation : [docs-dev/tests/modeles/modeles-niveau-1-unitaires.md](./tests/m
 - Validation complète en conditions réelles
 
 Documentation : [docs-dev/tests/modeles/modeles-niveau-2-integration.md](./tests/modeles/modeles-niveau-2-integration.md)
+
+---
+
+#### 2.2.2 Issue‑19 — Modèle Reservation
+
+##### 2.2.2.1 Description technique
+
+Cette issue introduit le modèle `Reservation`, représentant les réservations effectuées sur les catways du port de plaisance Russell.
+
+Le schéma définit cinq champs :  
+`catwayNumber`, `clientName`, `boatName`, `checkIn`, `checkOut`.
+
+> **Note - contraintes de date de `checkIn` :**  
+>> Le modèle Reservation ne contient volontairement aucune contrainte métier sur les dates (ex : checkIn ≥ aujourd’hui).  
+>> Ces règles seront gérées dans les contrôleurs lors de la Phase 5 (fonctionnalités Reservations).
+>
+> **Note - relation Catway ↔ Reservation** :
+>> Le modèle Reservation ne contient pas de référence Mongoose (`ref`) vers le modèle Catway.
+>> Cette décision respecte strictement les fichiers de données fournis dans le sujet du devoir, qui utilisent un champ numérique `catwayNumber` plutôt qu’un identifiant MongoDB.
+>> La cohérence entre les deux modèles sera assurée dans les contrôleurs lors de la Phase 5 (vérification que le catway existe avant de créer une réservation).
+
+**Structure du document :**
+
+```json
+{
+  "catwayNumber": "Number",
+  "clientName": "String",
+  "boatName": "String",
+  "checkIn": "Date",
+  "checkOut": "Date",
+  "createdAt": "Date",
+  "updatedAt": "Date"
+}
+```
+
+**Règles principales :**
+
+- `catwayNumber` : requis, min[1]  
+- `clientName` : requis, trim  
+- `boatName` : requis, trim  
+- `checkIn` : requis, type Date  
+- `checkOut` : requis, type Date  
+- timestamps automatiques
+
+**Emplacement :** `src/models/reservation.js`
+
+---
+
+##### 2.2.2.2 Tests associés
+
+Les tests garantissent que le modèle Reservation est **structurellement correct**, **fonctionnel en base**, et prêt pour les routes de réservation de la Phase 5.
+
+###### Niveau‑1 — Tests unitaires (validation du schéma)
+
+- aucun accès à MongoDB  
+- utilisation de `validate()`  
+- vérification des règles : required, min, trim, type Date  
+- tests rapides et isolés
+
+Documentation :  
+`docs-dev/tests/modeles/modeles-niveau-1-unitaires.md`  (sera ajouté au second commit de l'issue-19)
+
+---
+
+###### Niveau‑2 — Tests d’intégration (MongoMemoryServer)
+
+- base MongoDB en mémoire  
+- tests réels : `save()`, `find()`, `delete()`  
+- validation complète du schéma en conditions réelles  
+- vérification des timestamps
+
+Documentation :  
+`docs-dev/tests/modeles/modeles-niveau-2-integration.md`  (sera ajouté au troisième commit de l'issue-19)
 
 ---
 

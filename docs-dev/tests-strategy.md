@@ -234,6 +234,113 @@ Le contenu documentaire par niveau de l'authentification se trouve dans `docs-de
 
 ---
 
+### 3.3 Tests des modélisations
+
+#### 3.3.1 Tests du modèle Catway (issue‑18)
+
+Les tests du modèle Catway ont été réalisés dans l’issue‑18 et constituent la première étape de la validation des modèles de la Phase 3.
+
+##### 3.3.1.1 Niveau‑1 — Tests unitaires
+
+Objectif : valider la cohérence structurelle du schéma Catway **sans base MongoDB**.
+
+Éléments testés :
+
+- champs requis (`required`)
+- contraintes (`min`, `enum`)
+- normalisation (`trim`, `lowercase`)
+- cohérence du document via `validate()`
+- absence de `catwayState`
+- type invalide (`medium`)
+- `catwayNumber < 1`
+
+Fichier associé :  
+`tests/modeles/catway.test.js`
+
+Documentation :  
+`docs-dev/tests/modeles/modeles-niveau-1-unitaires.md`
+
+---
+
+##### 3.3.1.2 Niveau‑2 — Tests d’intégration
+
+Objectif : valider le comportement réel du modèle Catway avec **MongoMemoryServer**.
+
+Éléments testés :
+
+- insertion valide (`save()`)
+- unicité (`unique`) → erreur MongoDB `E11000`
+- type invalide (`enum`)
+- `catwayNumber < 1`
+- champ requis manquant (`catwayState`)
+- présence des timestamps (`createdAt`, `updatedAt`)
+
+Fichier associé :  
+`tests/modeles/catway.integration.test.js`
+
+Documentation :  
+`docs-dev/tests/modeles/modeles-niveau-2-integration.md`
+
+---
+
+##### 3.3.1.3 Résultats
+
+Les tests Catway niveaux 1 et 2 passent avec succès :
+
+- validation structurelle correcte  
+- comportement conforme aux attentes du schéma  
+- unicité fonctionnelle (`E11000`)  
+- timestamps générés automatiquement  
+
+Les captures des résultats sont disponibles dans :  
+`docs-dev/tests/assets/img_issue-18_resultats-tests-niveau-1.png`  
+`docs-dev/tests/assets/img_issue-18_resultats-tests-niveau-2.png`
+
+---
+
+#### 3.3.2 Tests du modèle Reservation (issue-19)
+
+Les tests du modèle Reservation suivent la même structure que ceux du modèle Catway.
+
+##### 3.3.2.1 Niveau‑1 — Tests unitaires
+
+Objectif : valider la cohérence structurelle du schéma sans base MongoDB.
+
+Éléments testés :
+
+- champs requis (`required`)
+- types (`String`, `Date`)
+- normalisation (`trim`)
+- cohérence des dates (structure uniquement)
+
+Fichier associé :  
+`tests/modeles/reservation.test.js` (sera ajouté lors du second commit de l'issue-19)
+
+Documentation :  
+`docs-dev/tests/modeles/modeles-niveau-1-unitaires.md` (les résultats seront ajoutés lors du second commit de l'issue-19)
+
+---
+
+##### 3.3.2.2 Niveau‑2 — Tests d’intégration
+
+Objectif : valider le comportement réel du modèle avec MongoMemoryServer.
+
+Éléments testés :
+
+- insertion valide  
+- dates valides (type Date)  
+- champs requis manquants  
+- cohérence du type `catwayNumber`  
+- timestamps automatiques  
+
+Fichier associé :  
+`tests/modeles/reservation.integration.test.js` (sera ajouté lors du troisième commit de l'issue-19)
+
+Documentation :  
+`docs-dev/tests/modeles/modeles-niveau-2-integration.md` (les résultats seront ajoutés lors du troisième commit de l'issue-19)
+
+---
+
 ## 4. Tests de la catégorie Fonctionnalité
 
 ### 4.1 Objectif

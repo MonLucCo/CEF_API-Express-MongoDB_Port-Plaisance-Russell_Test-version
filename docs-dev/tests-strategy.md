@@ -254,11 +254,9 @@ Objectif : valider la cohérence structurelle du schéma Catway **sans base Mong
 - type invalide (`medium`)
 - `catwayNumber < 1`
 
-Fichier associé :  
-`tests/modeles/catway.test.js`
+Fichier associé : [tests/modeles/catway.test.js](../tests/models/catway.test.js)
 
-Documentation :  
-`docs-dev/tests/modeles/modeles-niveau-1-unitaires.md`
+Documentation : [docs-dev/tests/modeles/modeles-niveau-1-unitaires.md](./tests/modeles/modeles-niveau-1-unitaires.md)
 
 ---
 
@@ -275,11 +273,9 @@ Objectif : valider le comportement réel du modèle Catway avec **MongoMemorySer
 - champ requis manquant (`catwayState`)
 - présence des timestamps (`createdAt`, `updatedAt`)
 
-Fichier associé :  
-`tests/modeles/catway.integration.test.js`
+Fichier associé : [tests/modeles/catway.integration.test.js](../tests/models/catway.integration.test.js)
 
-Documentation :  
-`docs-dev/tests/modeles/modeles-niveau-2-integration.md`
+Documentation : [docs-dev/tests/modeles/modeles-niveau-2-integration.md](./tests/modeles/modeles-niveau-2-integration.md)
 
 ---
 
@@ -314,31 +310,28 @@ Objectif : valider la cohérence structurelle du schéma sans base MongoDB.
 - normalisation (`trim`)
 - cohérence des dates (structure uniquement)
 
-Fichier associé :  
-`tests/modeles/reservation.test.js` (ajouté lors du second commit de l'issue-19)
+Fichier associé : [tests/modeles/reservation.test.js](../tests/models/reservation.test.js)
 
-Documentation :  
-`docs-dev/tests/modeles/modeles-niveau-1-unitaires.md`
+Documentation : [docs-dev/tests/modeles/modeles-niveau-1-unitaires.md](./tests/modeles/modeles-niveau-1-unitaires.md)
 
 ---
 
 ##### 3.3.2.2 Niveau‑2 — Tests d’intégration
 
-Objectif : valider le comportement réel du modèle avec MongoMemoryServer.
+Objectif : valider le comportement réel du modèle Reservation avec MongoMemoryServer.
 
 Éléments testés :
 
-- insertion valide  
-- dates valides (type Date)  
-- champs requis manquants  
-- cohérence du type `catwayNumber`  
-- timestamps automatiques  
+- insertion valide
+- validations Mongoose (required, min, type Date)
+- cohérence des dates (`checkOut > checkIn`)
+- recherche (`findOne`)
+- suppression (`findByIdAndDelete`)
+- timestamps automatiques
 
-Fichier associé :  
-`tests/modeles/reservation.integration.test.js` (sera ajouté lors du troisième commit de l'issue-19)
+Fichier associé : [tests/modeles/reservation.integration.test.js](../tests/models/reservation.integration.test.js)
 
-Documentation :  
-`docs-dev/tests/modeles/modeles-niveau-2-integration.md` (les résultats seront ajoutés lors du troisième commit de l'issue-19)
+Documentation : [docs-dev/tests/modeles/modeles-niveau-2-integration.md](./tests/modeles/modeles-niveau-2-integration.md)
 
 ---
 

@@ -71,9 +71,10 @@ tests/                      ← Tests Mocha/Chai/Supertest
   │   ├── jwt.mock.js               ← Stubs JWT (verify, sign)
   │   └── user.mock.js              ← Mocks/stubs du modèle User
   └── modeles/                  ← Tests des modèles (Catway, Reference, User) 
-      ├── catway.test.js              ← Tests unitaires (niveau-1) de Catway
-      ├── catway.integration.test.js  ← Tests d'intégration (niveau-2) de Catway
-      └── reservation.test.js         ← tests unitaires (niveau-2) de Reservation 
+      ├── catway.test.js                    ← Tests unitaires (niveau-1) de Catway
+      ├── catway.integration.test.js        ← Tests d'intégration (niveau-2) de Catway
+      ├── reservation.test.js               ← tests unitaires (niveau-1) de Reservation 
+      └── reservation.integration.test.js   ← tests d'intégration (niveau-2) de Reservation 
 
 docs/                       ← Documentation JSDoc générée
 
@@ -734,20 +735,19 @@ Les tests garantissent que le modèle Reservation est **structurellement correct
 - vérification des règles : required, min, trim, type Date  
 - tests rapides et isolés
 
-Documentation :  
-`docs-dev/tests/modeles/modeles-niveau-1-unitaires.md`  (sera ajouté au second commit de l'issue-19)
+Documentation : [docs-dev/tests/modeles/modeles-niveau-1-unitaires.md](./tests/modeles/modeles-niveau-1-unitaires.md)
 
 ---
 
 ###### Niveau‑2 — Tests d’intégration (MongoMemoryServer)
 
-- base MongoDB en mémoire  
-- tests réels : `save()`, `find()`, `delete()`  
-- validation complète du schéma en conditions réelles  
+- base MongoDB en mémoire
+- tests réels : `save()`, `find()`, `delete()`
+- validation complète du schéma en conditions réelles
+- cohérence des dates (`checkOut > checkIn`)
 - vérification des timestamps
 
-Documentation :  
-`docs-dev/tests/modeles/modeles-niveau-2-integration.md`  (sera ajouté au troisième commit de l'issue-19)
+Documentation : [ocs-dev/tests/modeles/modeles-niveau-2-integration.md](./tests/modeles/modeles-niveau-2-integration.md)
 
 ---
 

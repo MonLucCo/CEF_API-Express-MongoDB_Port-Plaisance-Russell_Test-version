@@ -75,7 +75,8 @@ tests/                      ← Tests Mocha/Chai/Supertest
       ├── catway.integration.test.js        ← Tests d'intégration (niveau-2) de Catway
       ├── reservation.unitaires.test.js     ← tests unitaires (niveau-1) de Reservation 
       ├── reservation.integration.test.js   ← tests d'intégration (niveau-2) de Reservation 
-      └── user.unitaires.test.js            ← tests unitaires (niveau-1) de User 
+      ├── user.unitaires.test.js            ← tests unitaires (niveau-1) de User 
+      └── user.integration.test.js          ← tests d'intégration (niveau-2) de User 
 
 docs/                       ← Documentation JSDoc générée
 

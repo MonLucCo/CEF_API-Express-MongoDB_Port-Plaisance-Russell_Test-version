@@ -94,7 +94,7 @@ Les tests passent avec succès et confirment le bon fonctionnement du modèle Ca
 
 ---
 
-### 3.2 TModèle testé : Reservation (issue‑19)
+### 3.2 Modèle testé : Reservation (issue‑19)
 
 Les tests d’intégration du modèle Reservation valident le comportement réel du schéma avec une base MongoDB en mémoire (MongoMemoryServer).
 
@@ -125,6 +125,40 @@ Les tests d’intégration du modèle Reservation valident le comportement réel
 Les tests passent avec succès et confirment le bon fonctionnement du modèle Reservation en base MongoDB.
 
 ![Résultats des tests Reservation niveau‑2](../assets/img_issue-19_resultats-tests-niveau-2.png)
+
+---
+
+### 3.3 Modèle testé : User (issue-20A)
+
+Les tests d’intégration valident le comportement réel des modèles Mongoose avec une base MongoDB en mémoire via **MongoMemoryServer**.
+
+#### 3.3.1 Objectifs
+
+- vérifier les validations Mongoose en conditions réelles  
+- tester les insertions (`save()` / `create()`)  
+- tester les recherches (`find()`, `findOne()`)  
+- tester les suppressions (`deleteOne()`, `findByIdAndDelete()`)  
+- vérifier les timestamps automatiques  
+- vérifier les erreurs MongoDB (`E11000`)  
+- garantir la cohérence entre les modèles User, Catway et Reservation  
+
+#### 3.3.2 Modèles testés
+
+- **User** (issue‑20A)  
+- **Catway** (issue‑18, harmonisé issue‑20A)  
+- **Reservation** (issue‑19, harmonisé issue‑20A)
+
+#### 3.3.3 Fichiers associés
+
+```txt
+tests/modeles/user.integration.test.js
+tests/modeles/catway.integration.test.js
+tests/modeles/reservation.integration.test.js
+```
+
+#### 3.3.4 Résultats
+
+![résultats des tests d'intégration des Modèles](../assets/img_issue-20A_resultats-tests-niveau-2_Models.png)
 
 ---
 

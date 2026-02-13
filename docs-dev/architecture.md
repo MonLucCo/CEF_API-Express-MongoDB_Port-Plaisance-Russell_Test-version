@@ -71,10 +71,11 @@ tests/                      ← Tests Mocha/Chai/Supertest
   │   ├── jwt.mock.js               ← Stubs JWT (verify, sign)
   │   └── user.mock.js              ← Mocks/stubs du modèle User
   └── modeles/                  ← Tests des modèles (Catway, Reference, User) 
-      ├── catway.test.js                    ← Tests unitaires (niveau-1) de Catway
+      ├── catway.unitaires.test.js          ← Tests unitaires (niveau-1) de Catway
       ├── catway.integration.test.js        ← Tests d'intégration (niveau-2) de Catway
-      ├── reservation.test.js               ← tests unitaires (niveau-1) de Reservation 
-      └── reservation.integration.test.js   ← tests d'intégration (niveau-2) de Reservation 
+      ├── reservation.unitaires.test.js     ← tests unitaires (niveau-1) de Reservation 
+      ├── reservation.integration.test.js   ← tests d'intégration (niveau-2) de Reservation 
+      └── user.unitaires.test.js            ← tests unitaires (niveau-1) de User 
 
 docs/                       ← Documentation JSDoc générée
 
@@ -193,6 +194,11 @@ Utilisé pour l’inscription, la connexion, la gestion des comptes et la protec
 - timestamps automatiques
 
 **Emplacement :** `src/models/user.js`
+
+> **Note — évolution du modèle User (issue‑20A)**  
+> Le modèle User a été mis à jour dans l’issue‑20A afin de supprimer la normalisation automatique `lowercase: true` sur le champ `email`.  
+> Cette modification garantit que l’email est stocké tel que fourni par l’utilisateur, conformément aux exigences de cohérence des données et à l’unicité stricte.  
+> Voir la section [2.2.3.1 — Issue‑20A : Cohérence des modèles](#2231-issue-20a---cohérence-des-modèles) pour la version finale du modèle.
 
 ---
 
@@ -748,6 +754,34 @@ Documentation : [docs-dev/tests/modeles/modeles-niveau-1-unitaires.md](./tests/m
 - vérification des timestamps
 
 Documentation : [ocs-dev/tests/modeles/modeles-niveau-2-integration.md](./tests/modeles/modeles-niveau-2-integration.md)
+
+---
+
+#### 2.2.3 Issue-20 - Modèles cohérents et import des données dans MongoDB
+
+L'issue-20 se compose de 2 sous-issues qui permettent :
+
+- Issue-20A : cohérence des modèles User, Catway et Reservation
+- Issue-20B : import des données JSON dans MongoDB
+
+##### 2.2.3.1 Issue-20A - Cohérence des modèles
+
+Cette issue assure la cohérence complète des modèles User, Catway et Reservation.
+
+**Modifications du modèle User :**
+
+- suppression de la normalisation `lowercase: true` sur le champ `email`
+- mise à jour de la JSDoc (version 1.2.0)
+- harmonisation des validations structurelles
+- mise à jour des tests unitaires et d’intégration associés
+
+Ces modifications garantissent que l’email est stocké tel que fourni par l’utilisateur, sans transformation automatique, tout en conservant l’unicité stricte et la validation du format.
+
+---
+
+##### 2.2.3.2 Issue-20B - Imports JSON dans MongoDB
+
+Cette section sera complétée lors de l'issue-20B.
 
 ---
 

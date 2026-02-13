@@ -19,7 +19,9 @@
  *
  * Règles structurelles :
  * - Le champ `password` doit obligatoirement contenir un hash bcrypt valide.
- *   Une validation personnalisée empêche l'enregistrement d'un mot de passe en clair.
+ * - Une validation personnalisée empêche l'enregistrement d'un mot de passe en clair.
+ * - Le champ `email` doit être unique et respecter un format d'email valide.  
+ *   Aucun forçage de casse n'est appliqué, mais une validation stricte est en place pour s'assurer que l'email est bien formé.
  *
  * Méthodes d'instance :
  * - comparePassword(password: string): Promise<boolean>
@@ -35,7 +37,7 @@
  * @module models/user
  * @requires mongoose
  * @requires bcrypt
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 const mongoose = require('mongoose');
@@ -51,7 +53,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'L\'email est requis'],
         unique: true,
-        lowercase: true,
         trim: true,
         match: [/^\S+@\S+\.\S+$/, 'Veuillez fournir une adresse email valide']
     },

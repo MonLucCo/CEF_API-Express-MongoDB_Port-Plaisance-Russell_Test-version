@@ -5,7 +5,7 @@ Ils constituent le **niveau 2** de la stratégie globale de tests.
 
 ---
 
-## Objectif
+## 1. Objectif
 
 Tester les modèles en conditions réelles :
 
@@ -20,7 +20,7 @@ Ces tests garantissent que les modèles sont prêts à être utilisés dans les 
 
 ---
 
-## Outils utilisés
+## 2. Outils utilisés
 
 - **Mocha** : moteur de tests  
 - **Chai** : assertions  
@@ -29,9 +29,11 @@ Ces tests garantissent que les modèles sont prêts à être utilisés dans les 
 
 ---
 
-## Modèle testé : Catway (issue‑18)
+## 3. Modèles testés
 
-### Tests réalisés
+### 3.1 Modèle testé : Catway (issue‑18)
+
+#### 3.1.1 Tests réalisés
 
 - insertion valide (`save()`)  
 - unicité (`unique`) → erreur MongoDB `E11000`  
@@ -40,41 +42,41 @@ Ces tests garantissent que les modèles sont prêts à être utilisés dans les 
 - champ requis manquant (`catwayState`)  
 - vérification des timestamps (`createdAt`, `updatedAt`)  
 
-### Fichier associé
+#### 3.1.2 Fichier associé
 
 `tests/modeles/catway.integration.test.js`
 
 ---
 
-## Scénarios testés
+#### 3.1.3 Scénarios testés
 
-### ✔ Insertion valide
+##### 3.1.3.1 ✔ Insertion valide
 
 - un catway complet est inséré  
 - un `_id` est généré  
 - les timestamps sont présents  
 
-### ✔ Unicité (`unique`)
+##### 3.1.3.2 ✔ Unicité (`unique`)
 
 - insertion d’un premier catway `catwayNumber = 1`  
 - tentative d’insertion d’un second catway avec le même numéro  
 - MongoDB renvoie `error.code = 11000`  
 
-### ✔ Enum invalide
+##### 3.1.3.3 ✔ Enum invalide
 
 - `type = "medium"` → rejeté  
 
-### ✔ Min invalide
+##### 3.1.3.4 ✔ Min invalide
 
 - `catwayNumber = 0` → rejeté  
 
-### ✔ Champ requis manquant
+##### 3.1.3.5 ✔ Champ requis manquant
 
 - absence de `catwayState` → rejeté  
 
 ---
 
-## 🚫 Ce qui n’est **pas** testé au niveau 2
+#### 3.1.4 🚫 Ce qui n’est **pas** testé au niveau 2
 
 - logique métier (contrôleurs)  
 - routes Express (tests d’intégration fonctionnels)  
@@ -84,16 +86,52 @@ Ces éléments sont testés dans les niveaux supérieurs.
 
 ---
 
-## 📎 Références
+#### 3.1.5 📸 Résultats (issue‑18)
+
+Les tests passent avec succès et confirment le bon fonctionnement du modèle Catway en base MongoDB.
+
+![Résultats des tests Catway niveau‑2](../assets/img_issue-18_resultats-tests-niveau-2.png)
+
+---
+
+### 3.2 TModèle testé : Reservation (issue‑19)
+
+Les tests d’intégration du modèle Reservation valident le comportement réel du schéma avec une base MongoDB en mémoire (MongoMemoryServer).
+
+#### 3.2.1 Objectifs
+
+- vérifier l’insertion réelle (`save()` / `create()`)
+- vérifier les validations Mongoose en conditions réelles
+- vérifier la cohérence des dates (`checkOut > checkIn`)
+- vérifier les types (`Number`, `String`, `Date`)
+- vérifier la suppression (`findByIdAndDelete`)
+- vérifier la présence des timestamps (`createdAt`, `updatedAt`)
+
+#### 3.2.2 Scénarios testés
+
+- ✔ insertion valide  
+- ✔ absence de champs requis  
+- ✔ `catwayNumber < 1`  
+- ✔ `checkOut < checkIn`  
+- ✔ recherche (`findOne`)  
+- ✔ suppression (`findByIdAndDelete`)  
+
+#### 3.2.3 Fichier associé
+
+`tests/modeles/reservation.integration.test.js`
+
+#### 3.2.4 Résultats
+
+Les tests passent avec succès et confirment le bon fonctionnement du modèle Reservation en base MongoDB.
+
+![Résultats des tests Reservation niveau‑2](../assets/img_issue-19_resultats-tests-niveau-2.png)
+
+---
+
+## 4.📎 Références
 
 - Stratégie globale des tests : [docs-dev/tests-strategy.md](../../tests-strategy.md)  
 - Tests unitaires des modèles : [docs-dev/tests/modeles/modeles-niveau-1-unitaires.md](./modeles-niveau-1-unitaires.md)  
 - Tests E2E : `docs-dev/tests/modeles/modeles-niveau-3-e2e.md` (sera ajouté lors de l'issue-22)
-
----
-
-## 📸 Résultats (issue‑18)
-
-![Résultats des tests Catway niveau‑2](../assets/img_issue-18_resultats-tests-niveau-2.png)
 
 ---

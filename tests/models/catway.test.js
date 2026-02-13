@@ -7,13 +7,10 @@ const { expect } = require('chai');
 const mongoose = require('mongoose');
 const Catway = require('../../src/models/catway');
 
-describe('Model Catway – Tests unitaires (niveau‑1)', () => {
+// Mode permissif (aucune connexion DB)
+mongoose.set('strictQuery', false);
 
-    before(async () => {
-        // Initialisation minimale du driver Mongoose
-        // Suppression du warning depuis Mongoose 7 :  pas de base réelle utilisée, pas de connexion nécessaire.
-        await mongoose.set('strictQuery', false);
-    });
+describe('Model Catway – Tests unitaires (niveau‑1)', () => {
 
     it('devrait valider un catway correct', async () => {
         const catway = new Catway({

@@ -16,6 +16,8 @@
     "test:app:watch": "nodemon --config ./config/dev/nodemon.json tests/test-app.js",
     "tests": "mocha tests/**/*.test.js --exit",
     "tests:models": "mocha tests/models/**/*.test.js --exit",
+    "tests:models:unitaires": "mocha tests/models/**/*.unitaires.test.js --exit",
+    "tests:models:integration": "mocha tests/models/**/*.integration.test.js --exit",
     "tests:models:catway": "mocha tests/models/**/catway*.test.js --exit",
     "tests:models:reservation": "mocha tests/models/**/reservation*.test.js --exit",
     "tests:models:user": "mocha tests/models/**/user*.test.js --exit",

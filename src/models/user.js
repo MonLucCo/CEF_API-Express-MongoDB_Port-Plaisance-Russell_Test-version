@@ -62,7 +62,10 @@ const userSchema = new mongoose.Schema({
     }
 }, {
     // Ajoute des champs createdAt et updatedAt automatiquement
-    timestamps: true
+    timestamps: true,
+    // Suppression du champ __v généré par Mongoose
+    versionKey: false,
+
 });
 
 // Validation personnalisée pour s'assurer que le mot de passe est hashé

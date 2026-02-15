@@ -38,6 +38,9 @@ src/                        ← Dossier principal du code de l'API
   ├── app.js                    ← Configuration Express (middlewares, routes, erreurs)
   ├── server.js                 ← Lancement du serveur
   │
+  ├── db/                       ← Base de données
+  │   └── mongo.js                  ← Module de connexion MongoDB (issue‑20B)
+  │
   ├── models/                   ← Modèles Mongoose
   │   ├── user.js                   ← Modèle User (issue‑11)
   │   ├── catway.js                 ← Modèle Catway (issue‑18)
@@ -51,6 +54,14 @@ src/                        ← Dossier principal du code de l'API
   └── routes/                   ← Définition des routes Express
       ├── accueilRoutes.js          ← Route d’accueil (GET /)
       └── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
+
+scripts/
+  └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
+
+data/                           ← Données du projet
+  ├── users.json                   ← Données initiales des Utilisateurs
+  ├── catways.json                 ← Données initiales des Catways (données fournies)
+  └── reservations.json            ← Données initiales des Réservations (données fournies)
 
 config/                     ← Configuration globale (JWT, paramètres transversaux)
   ├── jwt.js                    ← Configuration JWT
@@ -90,7 +101,10 @@ docs-dev/                   ← Documentation interne versionnée
   ├── decisions-techniques.md  ← Journal des décisions techniques (ADR simplifié)
   │
   ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
+  │   └── import-donnees.md           ← Documentation import JSON (issue‑20B)
+  │
   ├── deploiement/             ← Procédures de déploiement, validation, scripts associés
+  │
   └── tests/                   ← Documentation des tests
       │
       ├── README_tests.md                      ← Vue d’ensemble des tests (Catégories et Niveaux)
@@ -780,9 +794,87 @@ Ces modifications garantissent que l’email est stocké tel que fourni par l’
 
 ---
 
-##### 2.2.3.2 Issue-20B - Imports JSON dans MongoDB
+##### 2.2.3.2 Issue‑20B — Import des données JSON & connexion MongoDB
 
-Cette section sera complétée lors de l'issue-20B.
+Cette issue complète la Phase 3 en introduisant :
+
+- un **script d’import des données JSON** dans MongoDB  
+- un **module centralisé de connexion MongoDB**  
+- une **documentation dédiée au processus d’import**  
+- une **commande CLI** pour exécuter l’import  
+- la mise en place de la base de données dans MongoDB Atlas
+
+---
+
+###### 2.2.3.2.1 Script d’import des données (`scripts/import-data.js`)**
+
+Un script dédié permet d’importer les données initiales du projet :
+
+- `data/users.json`  
+- `data/catways.json`  
+- `data/reservations.json`
+
+Fonctionnalités :
+
+- chargement des variables d’environnement  
+- connexion MongoDB via le module `src/db/mongo.js`  
+- suppression des collections existantes  
+- insertion des données JSON  
+- déconnexion propre  
+- logs structurés
+
+Ce script est utilisé pour initialiser ou réinitialiser la base de données du projet.
+
+---
+
+###### 2.2.3.2.2 Module de connexion MongoDB (`src/db/mongo.js`)
+
+Un module dédié centralise la gestion de la connexion MongoDB.
+
+Fonctionnalités :
+
+- `initClientDBConnection()` : connexion à MongoDB via Mongoose  
+- `disconnectClientDB()` : déconnexion propre  
+- gestion des erreurs  
+- chargement du nom de base via `DBNAME`  
+- utilisé par :
+  - `src/server.js` (API)
+  - `scripts/import-data.js` (import JSON)
+  - les tests d’intégration réels (issue‑22)
+
+Ce module garantit une architecture propre, maintenable et prête pour Alwaysdata.
+
+---
+
+###### 2.2.3.2.3 Documentation associée (`docs-dev/deploiement/import-donnees.md`)
+
+Une documentation dédiée décrit :
+
+- la création de la base dans MongoDB Atlas  
+- la structure des fichiers JSON  
+- l’utilisation du script d’import  
+- les prérequis (`MONGODB_URI`, `DBNAME`)  
+- les effets du script (réinitialisation complète des collections)
+
+---
+
+###### 2.2.3.2.4 Commande CLI
+
+Une commande NPM permet d’exécuter l’import :
+
+```json
+"scripts": {
+  "import:data": "node scripts/import-data.js"
+}
+```
+
+---
+
+###### 2.2.3.2.5 Notes importantes**
+
+- Le script **réinitialise entièrement la base de données** (suppression + réinsertion).  
+- La base MongoDB Atlas doit être créée au préalable avec une collection placeholder.  
+- Les collections réelles (`users`, `catways`, `reservations`) sont créées automatiquement par Mongoose.
 
 ---
 

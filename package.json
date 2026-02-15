@@ -31,7 +31,8 @@
     "ssh:connect": "bash ./scripts/ssh-connect.sh",
     "ssh:site": "bash ./scripts/ssh-site-path.sh",
     "check:local": "bash ./scripts/deploy-checklist-local.sh",
-    "check:site": "bash ./scripts/deploy-checklist-site.sh"
+    "check:site": "bash ./scripts/deploy-checklist-site.sh",
+    "import:data": "node scripts/import-data.js"
   },
   "repository": {
     "type": "git",

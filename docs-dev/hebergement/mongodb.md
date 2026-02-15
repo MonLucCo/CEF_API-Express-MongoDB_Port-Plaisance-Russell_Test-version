@@ -124,6 +124,148 @@ Vérifier dans Atlas → **Network Access** que l’IP actuelle (ou celle du VPN
 
 ---
 
+## 4. Tests d’intégration réels (issue‑22)
+
+Ces tests valident la résilience du serveur en conditions réelles, en simulant les erreurs MongoDB les plus courantes.  
+Ils complètent les tests E2E simulés de l’issue‑17.
+
+L'objectif est de vérifier que :
+
+- le serveur ne démarre pas si MongoDB échoue  
+- les erreurs sont normalisées  
+- l’arrêt du serveur est propre  
+- les logs sont cohérents et lisibles  
+
+---
+
+### 4.1 Test de contrôle (configuration OK)
+
+```bash
+npm run dev
+CTRL + C
+```
+
+Résultats attendus :
+
+- connexion MongoDB OK  
+- serveur démarré  
+- arrêt propre (SIGINT)  
+- déconnexion MongoDB  
+
+---
+
+### 4.2 Mauvaise URI
+
+Modifier `MONGODB_URI` dans `.env`.
+
+Résultat attendu :
+
+- serveur non démarré  
+- erreur normalisée : `MONGO_DNS_ERROR` ou `MONGO_CONNECTION_FAILED`
+
+---
+
+### 4.3 Mauvais mot de passe
+
+Modifier uniquement le mot de passe dans l’URI.
+
+Résultat attendu :
+
+- serveur non démarré  
+- erreur normalisée : `MONGO_AUTH_FAILED` ou `MONGO_CONNECTION_FAILED`
+
+---
+
+### 4.4 Mauvais utilisateur
+
+Modifier uniquement le nom d’utilisateur dans l’URI.
+
+Résultat attendu :
+
+- serveur non démarré  
+- erreur normalisée : `MONGO_AUTH_FAILED` ou `MONGO_AUTH_NOT_ALLOWED`
+
+---
+
+### 4.5 Base inexistante (DBNAME incorrect)
+
+MongoDB crée automatiquement la base.  
+Résultat attendu :
+
+- connexion établie  
+- nouvelle base visible dans Atlas  
+→ comportement normal de MongoDB
+
+---
+
+### 4.6 Timeout volontaire
+
+Modifier dans `mongo.js` :
+
+```js
+serverSelectionTimeoutMS: 50
+```
+
+Résultat attendu :
+
+- serveur non démarré  
+- erreur normalisée : `MONGO_TIMEOUT` ou `MONGO_IP_NOT_WHITELISTED`
+
+---
+
+### 4.7 IP non whitelistée
+
+Supprimer l’IP locale dans Atlas → Network Access.
+
+Résultat attendu :
+
+- serveur non démarré  
+- erreur normalisée : `MONGO_IP_NOT_WHITELISTED`
+
+---
+
+### 4.8 Cluster inaccessible (simulation)
+
+Méthodes possibles :
+
+- couper le Wi‑Fi  
+- supprimer toutes les IP autorisées  
+- pauser le cluster (si disponible)
+
+Résultat attendu :
+
+- serveur non démarré  
+- erreur normalisée : `MONGO_TIMEOUT` ou `MONGO_CONNECTION_FAILED`
+
+---
+
+### 4.9 Arrêt propre du serveur
+
+```bash
+npm run dev
+CTRL + C
+```
+
+Résultat attendu :
+
+- log SIGINT  
+- déconnexion MongoDB  
+- exit code 0  
+
+---
+
+### 4.10 Conclusion
+
+Les tests confirment que :
+
+- la gestion des erreurs MongoDB est fonctionnelle  
+- les erreurs sont normalisées  
+- le serveur est résilient  
+- l’arrêt est propre  
+- l’API est prête pour la Phase 4
+
+---
+
 ## Étapes suivantes
 
 - Tester les opérations CRUD

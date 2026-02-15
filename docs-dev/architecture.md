@@ -914,6 +914,51 @@ L’ensemble confirme l’intégration correcte du module `mongo.js` dans le ser
 
 ---
 
+### 2.2.5 — Issue‑22 : Gestion des erreurs MongoDB (résilience)
+
+Cette issue renforce la robustesse de l’API en introduisant une gestion complète des erreurs liées à MongoDB et au serveur Express.  
+Elle s’appuie sur le module `mongo.js` introduit dans les issues 20B et 21, et ajoute une couche de résilience indispensable pour la Phase 4.
+
+#### 🔧 Évolutions techniques
+
+- **Normalisation des erreurs MongoDB**  
+  Le module `mongo.js` analyse les messages d’erreur renvoyés par Mongoose/MongoDB et les convertit en codes internes cohérents :  
+  - `MONGO_DNS_ERROR`  
+  - `MONGO_CONNECTION_REFUSED`  
+  - `MONGO_TIMEOUT`  
+  - `MONGO_AUTH_FAILED`  
+  - `MONGO_AUTH_NOT_ALLOWED`  
+  - `MONGO_IP_NOT_WHITELISTED`  
+  - `MONGO_CONNECTION_FAILED`  
+  - `MONGO_URI_MISSING`
+
+- **Gestion des erreurs critiques dans `server.js`**  
+  Le serveur ne démarre plus si la connexion MongoDB échoue.  
+  Les erreurs serveur (port déjà utilisé, permission refusée) sont également capturées.
+
+- **Arrêt propre du serveur**  
+  Gestion des signaux système :  
+  - `SIGINT` (CTRL+C)  
+  - `SIGTERM` (Alwaysdata, Docker, OS)  
+  → Fermeture propre de la connexion MongoDB avant extinction du processus.
+
+- **Événements Mongoose**  
+  - `connected`  
+  - `disconnected`  
+  - `error`  
+  Ces événements facilitent le debug et la surveillance.
+
+#### 🔍 Résultats
+
+- Le serveur démarre uniquement si MongoDB est accessible.  
+- Les erreurs critiques sont normalisées et lisibles.  
+- Le serveur s’arrête proprement dans tous les scénarios.  
+- Le système est prêt pour les tests d’intégration réels (Atlas).
+
+Cette issue clôture la Phase 3 en garantissant une base technique stable et résiliente pour les phases suivantes.
+
+---
+
 ### 2.3 Phase 4 — Catways
 
 (sera complété avec les issues correspondantes)

@@ -1,36 +1,34 @@
 /**
+ * @file server.js
  * @description
  * Point d’entrée principal de l’API Port de Plaisance Russell.
+ *
+ * Versions :
+ * - v1.0.0 : Issue‑21 — Connexion MongoDB avant listen()
+ * - v1.1.0 : JSDoc enrichie
+ * - v2.0.0 : Issue‑22 — Résilience serveur & gestion des erreurs MongoDB
  *
  * Ce module :
  * - charge les variables d’environnement (.env)
  * - initialise l’application Express définie dans `app.js`
  * - applique un préfixe d’API configurable (API_PREFIX)
- * - établit la connexion MongoDB via `initClientDBConnection()` (issue‑21)
- * - démarre le serveur HTTP sur l’IP et le port configurés
- *
- * Rôles :
- * - Assurer que la base MongoDB est connectée AVANT le lancement du serveur
- * - Centraliser la configuration réseau (IP, PORT, PREFIX)
- * - Préparer la gestion des erreurs MongoDB (issue‑22)
- *
- * Variables d’environnement utilisées :
- * - IP : adresse d’écoute du serveur (défaut : 0.0.0.0)
- * - PORT : port d’écoute du serveur (défaut : 3000)
- * - API_PREFIX : préfixe des routes (défaut : "/")
+ * - établit la connexion MongoDB via `initClientDBConnection()`
+ * - gère les erreurs MongoDB (issue‑22)
+ * - gère les erreurs serveur (port déjà utilisé, permission refusée)
+ * - gère les signaux système (SIGINT, SIGTERM)
+ * - démarre le serveur HTTP uniquement si la base est connectée
  *
  * @requires dotenv
  * @requires express
  * @requires ./app
  * @requires ./db/mongo
- * @version 1.1.0
+ * @version 2.0.0
  */
-
 
 require('dotenv').config();
 const express = require('express');
 const app = require('./app');
-const { initClientDBConnection } = require('./db/mongo');
+const { initClientDBConnection, disconnectClientDBConnection } = require('./db/mongo');
 
 const IP = process.env.IP || '0.0.0.0';
 const PORT = process.env.PORT || 3000;
@@ -42,15 +40,58 @@ const expressApp = express();
 expressApp.use(PREFIX, app);
 
 /**
- * Démarre le serveur après connexion MongoDB
+ * Démarre le serveur après connexion MongoDB.  
+ * Gestion des erreurs critiques MongoDB et serveur. Arrêt propre sur signaux système.
+ *
+ * @async
+ * @function startServer
+ * 
+ * @version 1.1.0
  */
 async function startServer() {
-    // Connexion MongoDB AVANT le lancement du serveur
-    await initClientDBConnection();
+    try {
+        await initClientDBConnection();
+    } catch (err) {
+        console.error('❌ Erreur critique MongoDB :', err.message);
+        process.exit(1);
+    }
 
-    expressApp.listen(PORT, IP, () => {
-        console.log(`🚀 Serveur démarré sur http://${IP}:${PORT}${PREFIX}`);
-    });
+    try {
+        const server = expressApp.listen(PORT, IP, () => {
+            console.log(`🚀 Serveur démarré sur http://${IP}:${PORT}${PREFIX}`);
+        });
+
+        server.on('error', (err) => {
+            console.error('❌ Erreur serveur :', err.message);
+
+            if (err.code === 'EADDRINUSE') {
+                console.error(`❌ Le port ${PORT} est déjà utilisé.`);
+            }
+            if (err.code === 'EACCES') {
+                console.error(`❌ Permission refusée pour écouter sur le port ${PORT}.`);
+            }
+
+            process.exit(1);
+        });
+
+        // Arrêt propre (CTRL+C)
+        process.on('SIGINT', async () => {
+            console.log('🛑 Arrêt du serveur (SIGINT)…');
+            await disconnectClientDBConnection();
+            process.exit(0);
+        });
+
+        // Arrêt propre (Alwaysdata / Docker / OS)
+        process.on('SIGTERM', async () => {
+            console.log('🛑 Arrêt du serveur (SIGTERM)…');
+            await disconnectClientDBConnection();
+            process.exit(0);
+        });
+
+    } catch (err) {
+        console.error('❌ Erreur critique lors du démarrage du serveur :', err.message);
+        process.exit(1);
+    }
 }
 
 startServer();

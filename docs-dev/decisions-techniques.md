@@ -83,6 +83,38 @@ La base est prête pour la gestion d’erreurs avancée (issue‑22).
 
 ---
 
+## 2.3 Décision — Gestion des erreurs MongoDB & résilience serveur (issue‑22)
+
+Cette décision introduit une couche de résilience essentielle pour garantir la stabilité de l’API en conditions réelles.
+
+### 2.3.1 Motivations
+
+- éviter que le serveur démarre sans base de données fonctionnelle  
+- fournir des erreurs cohérentes et normalisées  
+- améliorer la lisibilité des logs  
+- préparer les tests d’intégration réels (Atlas)  
+- garantir un arrêt propre du serveur dans tous les scénarios
+
+### 2.3.2 Choix techniques
+
+- ajout d’une fonction `normalizeMongoError()` dans `mongo.js`  
+- classification des erreurs MongoDB (DNS, timeout, auth, whitelist…)  
+- propagation des erreurs normalisées vers `server.js`  
+- gestion des erreurs serveur (`EADDRINUSE`, `EACCES`)  
+- gestion des signaux système (`SIGINT`, `SIGTERM`)  
+- arrêt propre via `disconnectClientDBConnection()`  
+- logs structurés et explicites
+
+### 2.3.3 Résultats attendus
+
+- le serveur ne démarre plus si MongoDB est inaccessible  
+- les erreurs sont compréhensibles et homogènes  
+- la connexion MongoDB est toujours fermée proprement  
+- le système est résilient face aux erreurs réseau, DNS, auth, timeout  
+- la Phase 4 peut démarrer sur une base technique stable
+
+---
+
 ## 3. Helmet
 
 Sécurisation des headers HTTP.

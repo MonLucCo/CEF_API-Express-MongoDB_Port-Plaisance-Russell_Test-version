@@ -1,48 +1,55 @@
 /**
- * @file mongo.js
  * @description
  * Module centralisant la connexion et la déconnexion à MongoDB via Mongoose.
- * 
- * Ce module est introduit dans :
- * - Issue‑20B : Import des données JSON (Phase 3)
- * - Issue‑21  : Configuration MongoDB (Phase 3)
  *
- * Il fournit :
+ * Versions :
+ * - v1.0.0 : Issue‑20B — Import JSON
+ * - v1.1.0 : Issue‑21  — Configuration MongoDB
+ * - v2.0.0 : Issue‑22  — Gestion des erreurs MongoDB (résilience)
+ *
+ * Ce module fournit :
  * - une fonction d'initialisation de la connexion MongoDB (`initClientDBConnection`)
  * - une fonction de déconnexion propre (`disconnectClientDBConnection`)
- * - une configuration Mongoose stabilisée (options recommandées)
- * - un mode verbose activable via `.env` (DB_VERBOSE=true)
- * - des événements Mongoose utiles pour le debug et la future gestion d’erreurs (issue‑22)
+ * - une classification des erreurs MongoDB (DNS, timeout, auth, whitelist…)
+ * - une remontée d’erreurs explicite vers le serveur
+ * - des événements Mongoose utiles pour le debug
  *
  * @requires mongoose
- * @version 1.0.0
- * @see https://mongoosejs.com/docs/connections.html
- * @see https://www.mongodb.com/docs/drivers/node/current/fundamentals/connection/
+ * @version 2.0.0
  */
 
 const mongoose = require('mongoose');
 
 /**
- * Initialise la connexion MongoDB via Mongoose.
+ * Normalise les erreurs MongoDB pour les rendre exploitables par server.js.
  *
- * Cette fonction :
- * - lit les variables d’environnement MONGODB_URI, DBNAME et DB_VERBOSE
- * - applique les options recommandées pour Mongoose 7+ / 8+ / 9+
- * - établit la connexion à MongoDB Atlas
- * - active des événements Mongoose (connected, disconnected, error)
- * - affiche des informations supplémentaires si DB_VERBOSE=true
+ * @param {Error} error - Erreur brute renvoyée par Mongoose/MongoDB
+ * @returns {Error} Erreur normalisée avec un code interne
+ * 
+ * @version 1.0.0
+ */
+function normalizeMongoError(error) {
+    const msg = error.message || '';
+
+    if (msg.includes('ENOTFOUND')) return new Error('MONGO_DNS_ERROR');
+    if (msg.includes('ECONNREFUSED')) return new Error('MONGO_CONNECTION_REFUSED');
+    if (msg.includes('timed out')) return new Error('MONGO_TIMEOUT');
+    if (msg.includes('Authentication failed')) return new Error('MONGO_AUTH_FAILED');
+    if (msg.includes('not authorized')) return new Error('MONGO_AUTH_NOT_ALLOWED');
+    if (msg.includes('whitelist') || msg.includes('IP')) return new Error('MONGO_IP_NOT_WHITELISTED');
+
+    return new Error('MONGO_CONNECTION_FAILED');
+}
+
+/**
+ * Initialise la connexion MongoDB via Mongoose.
+ * Capture des erreurs pendant la connexion et les normalise pour le serveur.
  *
  * @async
  * @function initClientDBConnection
- * @throws {Error} Arrête le processus si MONGODB_URI est manquant ou si la connexion échoue.
- *
- * @example
- * // Dans src/server.js
- * const { initClientDBConnection } = require('./db/mongo');
- * await initClientDBConnection();
+ * @throws {Error} Erreur normalisée en cas d’échec de connexion.
  * 
- * @requires mongoose
- * @version 1.1.0
+ * @version 1.2.0
  */
 async function initClientDBConnection() {
     const uri = process.env.MONGODB_URI;
@@ -50,22 +57,9 @@ async function initClientDBConnection() {
     const verbose = process.env.DB_VERBOSE === 'true';
 
     if (!uri) {
-        console.error('❌ ERREUR : MONGODB_URI est manquant dans le fichier .env');
-        process.exit(1);
+        throw new Error('MONGO_URI_MISSING');
     }
 
-    if (dbName === 'db-test') {
-        console.warn('⚠️  DBNAME non défini dans .env → utilisation de "db-test"');
-    }
-
-    /**
-     * Options Mongoose recommandées :
-     * - dbName : sélection explicite de la base (évite la base "test")
-     * - autoIndex : création automatique des index (OK en dev)
-     * - maxPoolSize : limite du pool de connexions
-     * - serverSelectionTimeoutMS : timeout de sélection du serveur MongoDB
-     * - socketTimeoutMS : timeout réseau des opérations longues
-     */
     const options = {
         dbName,
         autoIndex: true,
@@ -80,11 +74,8 @@ async function initClientDBConnection() {
 
         console.log('✅ Connexion MongoDB établie');
 
-        if (verbose) {
-            console.log('📘 Options Mongoose :', options);
-        }
+        if (verbose) console.log('📘 Options Mongoose :', options);
 
-        // Événements Mongoose utiles pour le debug et l’issue‑22
         mongoose.connection.on('connected', () => {
             if (verbose) console.log('🔗 Mongoose : connected');
         });
@@ -94,29 +85,21 @@ async function initClientDBConnection() {
         });
 
         mongoose.connection.on('error', (err) => {
-            console.error('❌ Mongoose : erreur de connexion', err.message);
+            console.error('❌ Mongoose runtime error :', err.message);
         });
 
     } catch (error) {
-        console.error('❌ Erreur de connexion MongoDB :', error.message);
-        process.exit(1);
+        const normalized = normalizeMongoError(error);
+        throw normalized;
     }
 }
 
 /**
  * Déconnecte proprement Mongoose de MongoDB.
  *
- * Cette fonction est utilisée :
- * - dans les scripts (ex : import-data.js)
- * - dans les tests d’intégration réels (issue‑22)
- *
  * @async
  * @function disconnectClientDBConnection
- *
- * @example
- * await disconnectClientDBConnection();
  * 
- * @requires mongoose
  * @version 1.0.0
  */
 async function disconnectClientDBConnection() {

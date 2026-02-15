@@ -6,13 +6,15 @@ La version finale lors de la livraison du projet fera l’objet d’une actualis
 
 ---
 
-## Objectif
+## 1. Objectif
 
 Créer et configurer la base MongoDB utilisée par l’API REST du Port de Plaisance Russell.
 
 ---
 
-## Création du cluster
+## 2. Initialisation MongoDB - Création de l'environnement
+
+### 2.1 Création du cluster
 
 1. Accéder à MongoDB Atlas
 2. Créer un cluster (Shared ou Serverless selon les besoins)
@@ -20,7 +22,7 @@ Créer et configurer la base MongoDB utilisée par l’API REST du Port de Plais
 
 ---
 
-## Création de la base
+### 2.2 Création de la base
 
 Dans le cluster :
 
@@ -29,7 +31,7 @@ Dans le cluster :
 
 ---
 
-## Création de l’utilisateur
+### 2.3 Création de l’utilisateur
 
 Créer un utilisateur MongoDB avec :
 
@@ -39,7 +41,7 @@ Créer un utilisateur MongoDB avec :
 
 ---
 
-## URI de connexion
+### 2.4 URI de connexion
 
 L’URI est fournie par MongoDB Atlas :
 
@@ -54,7 +56,7 @@ Elle doit être stockée dans :
 
 ---
 
-## Sécurité
+### 2.5 Sécurité
 
 - ne jamais versionner les identifiants  
 - utiliser un utilisateur dédié  
@@ -64,7 +66,7 @@ Elle doit être stockée dans :
 
 ---
 
-## Tests de connexion
+### 2.6 Tests de connexion
 
 Un test minimal peut être réalisé via un script Node.js ou directement dans l’API :
 
@@ -76,10 +78,54 @@ mongoose.connect(process.env.MONGODB_URI)
 
 ---
 
+## 3. Intégration - Vérification de la connexion MongoDB (issue‑21)
+
+Cette section décrit les étapes permettant de valider la connexion MongoDB après l’intégration du module `mongo.js`.
+
+### 3.1 ✔ Vérification locale
+
+Lancer l’API :
+
+```bash
+npm run dev
+```
+
+Résultats attendus :
+
+```bash
+🔌 Connexion à MongoDB (port-plaisance-russell)…
+✅ Connexion MongoDB établie
+🚀 Serveur démarré sur http://0.0.0.0:3000/
+```
+
+Si `DB_VERBOSE=true`, les options Mongoose sont affichées.
+
+### 3.2 ✔ Vérification via Postman
+
+1. `POST /auth/register` → statut 201  
+2. `POST /auth/login` → token JWT valide  
+3. `DELETE /auth/delete/:id` → statut 200  
+
+### 3.3 ✔ Vérification dans MongoDB Atlas
+
+- l’utilisateur est créé dans la collection `users`
+- l’utilisateur est supprimé après le test `delete`
+- aucune collection parasite (`placeholder`) n’est présente
+
+### 3.4 ✔ Whitelist IP
+
+En cas d’erreur :
+
+```txt
+Could not connect to any servers in your MongoDB Atlas cluster
+```
+
+Vérifier dans Atlas → **Network Access** que l’IP actuelle (ou celle du VPN) est autorisée.
+
+---
+
 ## Étapes suivantes
 
-- Intégrer Mongoose dans l’API
-- Créer les modèles
 - Tester les opérations CRUD
 - Vérifier la connexion depuis Alwaysdata lors du premier déploiement
 

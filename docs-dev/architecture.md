@@ -878,6 +878,42 @@ Une commande NPM permet d’exécuter l’import :
 
 ---
 
+#### 2.2.4 — Issue‑21 : Configuration MongoDB
+
+Cette issue stabilise la configuration MongoDB de l’API et prépare la gestion des erreurs (issue‑22).  
+Elle introduit un module dédié à la connexion (`src/db/mongo.js`) et met à jour le serveur (`src/server.js`) pour garantir que la base est connectée avant le lancement de l’API.
+
+##### 2.2.4.1 Éléments introduits
+
+- Module `src/db/mongo.js` :
+  - connexion centralisée via `mongoose.connect()`
+  - options Mongoose recommandées (Mongoose 7+ / 8+ / 9+)
+  - gestion des événements : `connected`, `disconnected`, `error`
+  - mode verbose activable via `DB_VERBOSE=true`
+  - préparation de la gestion d’erreurs (issue‑22)
+
+- Mise à jour de `src/server.js` :
+  - introduction de la fonction `startServer()`
+  - connexion MongoDB **avant** `expressApp.listen()`
+  - JSDoc complète du point d’entrée API
+
+- Mise à jour de `.env.example` :
+  - `DBNAME="port-plaisance-russell"`
+  - `DB_VERBOSE=false`
+
+##### 2.2.4.2 Validation
+
+La validation a été réalisée via Postman (collection `tests/assets/collection-e2e-local.json`) et MongoDB Atlas :
+
+1. **Register** → création d’un utilisateur (statut 201)  
+2. **Login** → génération d’un token JWT valide  
+3. **Delete** → suppression de l’utilisateur (statut 200)  
+4. Vérification dans MongoDB Atlas : documents créés puis supprimés
+
+L’ensemble confirme l’intégration correcte du module `mongo.js` dans le serveur Express.
+
+---
+
 ### 2.3 Phase 4 — Catways
 
 (sera complété avec les issues correspondantes)

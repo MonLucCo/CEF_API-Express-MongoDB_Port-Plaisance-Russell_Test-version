@@ -53,6 +53,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── server.js                ← Lancement du serveur (écoute du port)
 │   │
 │   ├── models/        ← Modèles Mongoose        
+│   ├── db/            ← Gestion de la Base de données MongoAtlas        
 │   ├── controllers/   ← Contrôleurs Express (logique métier liée aux routes)
 │   ├── middlewares/   ← Middlewares Express (authentification, validation, sécurité…)        
 │   ├── services/      ← Logique métier réutilisable (accès DB, règles métier…)  
@@ -73,7 +74,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── mocks/                   ← Mocks/stubs pour isoler les dépendances
 │   └── modeles/                 ← Tests des modèles
 │
-├── data/              ← Fichiers catways.json et reservations.json
+├── data/              ← Fichiers users.json, catways.json et reservations.json
 │
 ├── docs/              ← Documentation JSDoc générée automatiquement
 │
@@ -86,7 +87,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── decisions-techniques.md  ← Historique des choix techniques majeurs
 │   │
 │   ├── hebergement/             ← Documentation Alwaysdata & MongoDB
-│   ├── deploiement/             ← Procédures de déploiement et validation
+│   ├── deploiement/             ← Procédures de déploiement, de validation et d'import JSON
 │   └── tests/                   ← Documentation détaillée des tests par catégorie et par niveau
 
 ├── scripts/           ← Scripts de déploiement et de vérification
@@ -132,6 +133,23 @@ L’API utilise :
 - `GET /catways/:id/reservations/:idReservation`  
 - `POST /catways/:id/reservations`  
 - `DELETE /catways/:id/reservations/:idReservation`  
+
+---
+
+## 📥 Import des données JSON
+
+Le projet inclut un script permettant d'importer les données intiales dans MongoDB :
+
+```bash
+npm run import:data
+```
+
+Les données importées concernent les Utilisateurs (`user.json`), les Catways (`catway.json`) et les réservations (`reservation.json`).
+
+👉 Détails complets :
+
+- [docs-dev/architecture.md](./docs-dev/architecture.md#2232-issue20b--import-des-données-json--connexion-mongodb)
+- [docs-dev/deploiement/import-donnees.md](./docs-dev/deploiement/import-donnees.md)
 
 ---
 

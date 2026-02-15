@@ -311,11 +311,19 @@ Le projet intègre une logique de **[développement continu (CI/CD)](./docs-dev/
   - version fixée localement via `.nvmrc` : 24
 - **NPM** : `9+`
 - **MongoDB Atlas**
+  - Variables d’environnement :
+    - MONGODB_URI : chaîne de connexion MongoDB Atlas
+    - DBNAME : nom de la base (ex : port-plaisance-russell, db-test)
+    - DB_VERBOSE : active les logs détaillés (true/false)
+  - Droits d'accès :
+    - Vérifier la whitelist IP dans MongoDB Atlas avant la connexion.
 - **Git**
 
 > La version Node utilisée sur le site est gérée par Alwaysdata et peut être légèrement supérieure à la version locale.
 > Le fichier `.nvmrc` est fixé à 24 pour garantir la cohérence entre les environnements.
 > Le script `check:site` permet de vérifier la version réelle utilisée par l’API via le header `X-API-SYSTEM`.
+> Le serveur ne démarre que si la connexion MongoDB est établie.
+> L'import des données JSON dans MongoDB nécessite d'établir une connexion avec la base de données.
 
 ---
 

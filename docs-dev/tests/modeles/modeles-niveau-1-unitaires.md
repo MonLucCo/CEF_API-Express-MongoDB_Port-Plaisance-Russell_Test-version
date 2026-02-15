@@ -20,6 +20,10 @@ Les tests unitaires vérifient uniquement :
 Aucune insertion (`save()`) n’est effectuée.  
 Aucun accès à MongoDB n’est nécessaire.
 
+> **Note :**
+>
+> La validation de la normalisation `lowercase` dépend du modèle. Pour le modèle `User`, la validation consiste à vérifier la _non-normalisation_.
+
 ---
 
 ## 🧰 Outils utilisés
@@ -52,7 +56,7 @@ Tests réalisés :
 - normalisation `trim` et `lowercase`
 
 Fichier associé :  
-`tests/modeles/catway.test.js`
+`tests/modeles/catway.unitaires.test.js`
 
 ---
 
@@ -66,7 +70,7 @@ Tests réalisés :
 - normalisation (`trim`)
 
 Fichier associé :  
-`tests/modeles/reservation.test.js`
+`tests/modeles/reservation.unitaires.test.js`
 
 ---
 
@@ -78,14 +82,14 @@ Tests prévus :
 - email invalide  
 - absence de champs requis  
 - validation structurelle du hash bcrypt  
-- normalisation (`trim`, `lowercase`)  
+- normalisation (`trim`)  
 
 Fichier associé :  
-`tests/modeles/user.test.js`
+`tests/modeles/user.unitaires.test.js`
 
 > Note :  
 > Le modèle User a déjà été testé indirectement dans les issues 15 à 17 (authentification).  
-> L’issue‑20 introduit des tests unitaires dédiés au modèle.
+> L’issue‑20 introduit des tests unitaires dédiés au modèle. La normalisation `lowercase` de l'email définie lors de l'issue-11 est retirée.
 
 ---
 
@@ -141,5 +145,15 @@ Ces éléments sont testés au **niveau 2** (intégration).
 **Résultats des tests (issue-19) :**
 
 ![alt text](../assets/img_issue-19_resultats-tests-niveau-1.png)
+
+### Issue-20 tests unitaires des modèles
+
+**Résultats des tests du modèle `User` version 1.2.0 (issue-20A) :**
+
+![alt text](../assets/img_issue-20A_resultats-tests-niveau-1_User.png)
+
+**Résultats des tests unitaires des modèles (issue-20A) :**
+
+![alt text](../assets/img_issue-20A_resultats-tests-niveau-1_Models.png)
 
 ---

@@ -11,13 +11,50 @@ La version finale lors de la livraison du projet fera l'objet d'une actualisatio
 
 Choix motivé par la stabilité et les améliorations de la version 5.
 
+---
+
 ## MongoDB Atlas
 
 Base de données cloud simple à configurer.
 
+### Décision — Module de connexion MongoDB & script d’import (issue‑20B)
+
+Pour garantir une architecture propre et centralisée, un module dédié à la connexion MongoDB a été introduit :
+
+- `src/db/mongo.js` : connexion + déconnexion + gestion des erreurs + accès variables d'environnement
+
+Un script d’import des données JSON a également été ajouté :
+
+- `scripts/import-data.js`
+- CLI : `npm run import:data`
+
+**Motivations :**
+
+- éviter la duplication de `mongoose.connect()` et les accès associés aux variables d'environnement
+- préparer le déploiement Alwaysdata
+- faciliter l’initialisation de la base MongoDB Atlas
+- garantir la cohérence des données du projet
+
+**Variables d'environnement :**
+
+- **MONGO_URI** : accès au cluster de MongoDB avec ses données de compte (username, password, cluster)
+- **DBNAME** : nom de la base de données
+
+**Fonctions et limites du script d'import :**
+
+- Limite : la base de données doit exister dans MongoDB avec une collection vide (nom de la collection : `placeholder`)
+- Fonctions :
+  - création (initialisation) ou réinitialisation des collections `users`, `catways` et `reservations`
+  - import des données json pour chaque collection
+  - suppression automatique de la collection `placeholder` si elle existe
+
+---
+
 ## Helmet
 
 Sécurisation des headers HTTP.
+
+---
 
 ## Organisation du code
 

@@ -53,6 +53,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── server.js                ← Lancement du serveur (écoute du port)
 │   │
 │   ├── models/        ← Modèles Mongoose        
+│   ├── db/            ← Gestion de la Base de données MongoAtlas        
 │   ├── controllers/   ← Contrôleurs Express (logique métier liée aux routes)
 │   ├── middlewares/   ← Middlewares Express (authentification, validation, sécurité…)        
 │   ├── services/      ← Logique métier réutilisable (accès DB, règles métier…)  
@@ -66,13 +67,14 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 ├── tests/             ← Tests Mocha, Chai, Sinon et Supertest
 │   ├── test-app.js              ← Serveur Express dédié aux tests E2E simulés
 │   │
-│   ├── controllers/             ← Tests unitaires (niveau‑1)
-│   ├── middlewares/             ← Tests unitaires (niveau‑1)
-│   ├── integration/             ← Tests d’intégration (niveau‑2)
-│   ├── e2e/                     ← Tests E2E (niveau‑3)
-│   └── mocks/                   ← Mocks/stubs pour isoler les dépendances
+│   ├── controllers/             ← Tests unitaires (auth-niveau‑1)
+│   ├── middlewares/             ← Tests unitaires (auth-niveau‑1)
+│   ├── integration/             ← Tests d’intégration (auth-niveau‑2)
+│   ├── e2e/                     ← Tests E2E (auth-niveau‑3)
+│   ├── mocks/                   ← Mocks/stubs pour isoler les dépendances
+│   └── modeles/                 ← Tests des modèles
 │
-├── data/              ← Fichiers catways.json et reservations.json
+├── data/              ← Fichiers users.json, catways.json et reservations.json
 │
 ├── docs/              ← Documentation JSDoc générée automatiquement
 │
@@ -85,8 +87,8 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── decisions-techniques.md  ← Historique des choix techniques majeurs
 │   │
 │   ├── hebergement/             ← Documentation Alwaysdata & MongoDB
-│   ├── deploiement/             ← Procédures de déploiement et validation
-│   └── tests/                   ← Documentation détaillée des tests par niveau
+│   ├── deploiement/             ← Procédures de déploiement, de validation et d'import JSON
+│   └── tests/                   ← Documentation détaillée des tests par catégorie et par niveau
 
 ├── scripts/           ← Scripts de déploiement et de vérification
 ├── logs/              ← Logs générés par les scripts (check:local, check:site…)
@@ -134,6 +136,23 @@ L’API utilise :
 
 ---
 
+## 📥 Import des données JSON
+
+Le projet inclut un script permettant d'importer les données intiales dans MongoDB :
+
+```bash
+npm run import:data
+```
+
+Les données importées concernent les Utilisateurs (`user.json`), les Catways (`catway.json`) et les réservations (`reservation.json`).
+
+👉 Détails complets :
+
+- [docs-dev/architecture.md](./docs-dev/architecture.md#2232-issue20b--import-des-données-json--connexion-mongodb)
+- [docs-dev/deploiement/import-donnees.md](./docs-dev/deploiement/import-donnees.md)
+
+---
+
 ## 🖥️ Front-end minimal
 
 - Page d’accueil  
@@ -146,7 +165,7 @@ L’API utilise :
 
 ---
 
-## 🧪 Tests unitaires
+## 🧪 Tests
 
 Tests réalisés avec :
 
@@ -167,9 +186,11 @@ Les tests couvrent les **9 fonctionnalités demandées** :
 8. Suppression utilisateur  
 9. Connexion utilisateur  
 
-Les tests couvrent les 9 fonctionnalités demandées.
-
 👉 Détails complets : [docs-dev/tests-strategy.md](./docs-dev/tests-strategy.md)
+
+> Les tests sont organisés par **catégorie** (authentification, modèles, fonctionnalités) et par **niveau** (unitaires, intégration, E2E).
+>
+> 👉 Détails complets : [docs-dev/tests/README_tests.md](./docs-dev/tests/README_tests.md)
 
 ---
 
@@ -290,11 +311,19 @@ Le projet intègre une logique de **[développement continu (CI/CD)](./docs-dev/
   - version fixée localement via `.nvmrc` : 24
 - **NPM** : `9+`
 - **MongoDB Atlas**
+  - Variables d’environnement :
+    - MONGODB_URI : chaîne de connexion MongoDB Atlas
+    - DBNAME : nom de la base (ex : port-plaisance-russell, db-test)
+    - DB_VERBOSE : active les logs détaillés (true/false)
+  - Droits d'accès :
+    - Vérifier la whitelist IP dans MongoDB Atlas avant la connexion.
 - **Git**
 
 > La version Node utilisée sur le site est gérée par Alwaysdata et peut être légèrement supérieure à la version locale.
 > Le fichier `.nvmrc` est fixé à 24 pour garantir la cohérence entre les environnements.
 > Le script `check:site` permet de vérifier la version réelle utilisée par l’API via le header `X-API-SYSTEM`.
+> Le serveur ne démarre que si la connexion MongoDB est établie.
+> L'import des données JSON dans MongoDB nécessite d'établir une connexion avec la base de données.
 
 ---
 
@@ -360,7 +389,7 @@ npm run test:app:watch   # avec nodemon (développement)
 
 👉 Collection Postman :  [docs-dev/tests/assets/collection-e2e-local.json](./docs-dev/tests/assets/collection-e2e-local.json)
 
-👉 Détails complets : [docs-dev/tests/03-niveau-3-e2e.md](./docs-dev/tests/03-niveau-3-e2e.md)
+👉 Détails complets de l'authentification : [docs-dev/tests/auth/auth-niveau-3-e2e.md](./docs-dev/tests/auth/auth-niveau-3-e2e.md)
 
 ---
 

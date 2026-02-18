@@ -963,6 +963,33 @@ Cette issue clôture la Phase 3 en garantissant une base technique stable et ré
 
 (sera complété avec les issues correspondantes)
 
+#### 2.3.1 Issue‑23 — Création structurelle des routes Catways
+
+Cette issue introduit le module de routes dédié aux Catways.  
+Il s’agit d’une étape **structurelle** préparatoire : aucune logique métier n’est encore implémentée.
+
+Un fichier `catwayRoutes.js` est créé dans `src/routes/` afin de déclarer l’ensemble des endpoints prévus pour la gestion des Catways :
+
+- `GET /catways`
+- `GET /catways/:id`
+- `POST /catways`
+- `PUT /catways/:id`
+- `PATCH /catways/:id`
+- `DELETE /catways/:id`
+
+À ce stade, les routes sont déclarées mais pointent vers un contrôleur encore inexistant (il sera créé dans l’issue‑24).  
+L’objectif de cette issue est de poser la structure Express et d’intégrer le module dans `app.js` via :
+
+```js
+const catwayRoutes = require('./routes/catwayRoutes');
+app.use('/catways', catwayRoutes);
+```
+
+Cette étape garantit la cohérence architecturale et prépare l’ensemble de la Phase 4 (issues 23 à 30) qui implémente la logique métier Catways.
+L’application reste fonctionnellement identique à la Phase 3, mais la structure Express est désormais prête pour accueillir la logique métier Catways.
+
+Aucun test n'est prévu dans cette étape. Une validation de la cohérence du code est réalisée en lançant en local le serveur (CLI `npm run dev`).
+
 ---
 
 ### 2.4 Phase 5 — Reservations

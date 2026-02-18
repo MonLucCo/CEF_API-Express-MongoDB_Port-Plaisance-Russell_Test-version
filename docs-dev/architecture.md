@@ -988,7 +988,32 @@ app.use('/catways', catwayRoutes);
 Cette étape garantit la cohérence architecturale et prépare l’ensemble de la Phase 4 (issues 23 à 30) qui implémente la logique métier Catways.
 L’application reste fonctionnellement identique à la Phase 3, mais la structure Express est désormais prête pour accueillir la logique métier Catways.
 
-Aucun test n'est prévu dans cette étape. Une validation de la cohérence du code est réalisée en lançant en local le serveur (CLI `npm run dev`).
+Aucun test automaisé n'est prévu dans cette étape. Une validation de la cohérence du code est réalisée en lançant en local le serveur (CLI `npm run dev`).
+
+---
+
+#### 2.3.2 Issue‑24 — Création du contrôleur Catways
+
+Cette issue introduit le fichier `catwayController.js` dans `src/controllers/`.  
+Il s’agit d’une étape structurelle : les six méthodes correspondant aux futures routes Catways sont créées, mais aucune logique métier n’est encore implémentée.
+
+Méthodes définies (placeholders) :
+
+- getAllCatways
+- getCatwayById
+- createCatway
+- updateCatway
+- patchCatway
+- deleteCatway
+
+Chaque méthode renvoie un statut HTTP **501 Not Implemented** (message : `<sujet> - Non implémenté (<issue>)`), conformément au découpage atomique de la Phase 4.
+
+Ce contrôleur sera progressivement complété dans les issues 25 à 30.
+
+Cette issue met également à jour le module `catwayRoutes.js` (version 0.1.0) afin de connecter les routes Catways au contrôleur Catways. Les six routes
+appellent désormais les méthodes placeholder du contrôleur, renvoyant un statut HTTP 501. Cette étape permet de valider le câblage Express avant l’implémentation progressive des fonctionnalités dans les issues 25 à 30.
+
+Aucun test automatisé n'est prévu dans cette étape. La vérification des routes est réalisée avec des requêtes Postman (serveur en exécution avec `npm run dev`).
 
 ---
 

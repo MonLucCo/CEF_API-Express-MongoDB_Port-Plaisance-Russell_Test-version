@@ -13,7 +13,7 @@
  *
  * @module controllers/catwayController
  * @requires module:models/catway
- * @version 0.2.0
+ * @version 0.3.0
  */
 
 const mongoose = require('mongoose');
@@ -39,36 +39,53 @@ exports.getAllCatways = async (req, res) => {
     }
 };
 
-
 /**
  * @function getCatwayById
  * @async
  * @route GET /catways/:id
- * @description Récupère un catway par son ID.
+ * @description Récupère un catway par identifiant hybride :
+ * 1. ObjectId MongoDB (prioritaire, utilise findById)
+ * 2. catwayNumber (identifiant métier, utilise findOne)
+ *
+ * Compatible avec :
+ * - commit‑1 (tests basés sur findById)
+ * - commit‑2 (tests basés sur findOne)
+ *
  * @returns {Object} 200 - Catway trouvé
- * @returns {Object} 400 - ID invalide
+ * @returns {Object} 400 - Identifiant invalide
  * @returns {Object} 404 - Catway introuvable
  * @returns {Object} 500 - Erreur interne du serveur
- * @see module:models/catway
- * @note Version initiale — identifiant MongoDB uniquement (issue‑26, étape 1)
- * @version 0.1.0
+ *
+ * @version 0.2.0
  */
 exports.getCatwayById = async (req, res) => {
     const { id } = req.params;
 
-    // Validation de l'ID : doit être un ObjectId valide de MongoDB
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'ID catway invalide' });
-    }
-
     try {
-        const catway = await Catway.findById(id);
+        // 1) Cas ObjectId valide → findById (logique principale : identifiant MongoDB standard)
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            const catway = await Catway.findById(id);
 
-        if (!catway) {
-            return res.status(404).json({ error: 'Catway introuvable' });
+            if (!catway) {
+                return res.status(404).json({ error: 'Catway introuvable' });
+            }
+
+            return res.status(200).json(catway);
         }
 
-        return res.status(200).json(catway);
+        // 2) Cas identifiant métier → findOne (logique hybride : identifiant métier catwayNumber)
+        if (/^\d+$/.test(id)) {
+            const catway = await Catway.findOne({ catwayNumber: Number(id) });
+
+            if (!catway) {
+                return res.status(404).json({ error: 'Catway introuvable' });
+            }
+
+            return res.status(200).json(catway);
+        }
+
+        // 3) Cas invalide
+        return res.status(400).json({ error: 'Identifiant catway invalide' });
 
     } catch (error) {
         console.error('Erreur lors de la récupération du catway :', error.message);

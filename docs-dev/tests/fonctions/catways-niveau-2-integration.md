@@ -71,6 +71,26 @@ Cette version ne prend pas encore en charge l’identifiant métier `catwayNumbe
 
 ---
 
+#### 4.2.2 Étape 2 — Logique hybride (_id + catwayNumber)
+
+Cette étape étend les tests d’intégration pour couvrir l’identifiant métier `catwayNumber`.
+
+##### 4.2.2.1 Scénarios testés
+
+- **404** si `catwayNumber` inexistant  
+- **200** si catway trouvé via `catwayNumber`  
+- **400** si identifiant invalide (ni ObjectId, ni nombre)
+
+##### 4.2.2.2 Notes
+
+- Les tests utilisent MongoMemoryServer  
+- Le modèle Catway est utilisé sans mock  
+- Le contrôleur hybride permet une compatibilité totale avec les tests du commit‑1
+
+> La logique hybride est testée en conditions réelles via `MongoMemoryServer`, garantissant la cohérence entre modèle, contrôleur et route.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/catways.routes.test.js`

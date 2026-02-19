@@ -177,7 +177,7 @@ GET /catways/:id
 
 Elle repose exclusivement sur l’identifiant interne MongoDB (`_id`).
 
-##### 🎯 Objectif
+##### 6.2.1.1 Objectif (identifiant MongoDB standard)
 
 Mettre en place une version minimale, stable et testée de la route, en utilisant **exclusivement l’identifiant interne MongoDB (`_id`)** :
 
@@ -186,7 +186,7 @@ Mettre en place une version minimale, stable et testée de la route, en utilisan
 - éviter toute complexité prématurée
 - préparer l'introduction de l'identifiant hybride dans l'étape suivante
 
-##### ✔ Choix techniques
+##### 6.2.1.2 Choix techniques (identifiant MongoDB standard)
 
 - validation de l’identifiant via `mongoose.Types.ObjectId.isValid()`  
 - recherche du document via `Catway.findById()`  
@@ -195,18 +195,51 @@ Mettre en place une version minimale, stable et testée de la route, en utilisan
   - **404** : catway introuvable  
   - **500** : erreur interne  
 
-##### ✔ Motivations
+##### 6.2.1.3 Motivations (identifiant MongoDB standard)
 
 - établir une base fonctionnelle simple avant l’introduction de la logique hybride (ObjectId + catwayNumber)  
 - garantir la stabilité des tests unitaires et d’intégration  
 - éviter toute complexité prématurée dans le contrôleur  
 - préparer l’évolution progressive de l’issue‑26 (étapes 2 et 3)
 
-##### ✔ Impacts
+##### 6.2.1.4 Impacts (identifiant MongoDB standard)
 
 - mise à jour du contrôleur `catwayController.js` (v0.2.0)  
 - ajout des tests niveau‑1 et niveau‑2  
 - aucune modification des middlewares à ce stade  
 - aucune logique métier supplémentaire  
+
+---
+
+#### 6.2.2 GET /catways/:id basé sur l’identifiant hybride (_id + catwayNumber) (issue-26 - étape 2)
+
+Cette étape introduit un mécanisme d’identification hybride pour les routes Catways, permettant d’utiliser :
+
+- l’identifiant interne MongoDB (`_id`)  
+- l’identifiant métier (`catwayNumber`)
+
+##### 6.2.2.1 Motivations (identifiant hybride : MongoDB standard et métier catwayNumber)
+
+- offrir une API plus intuitive pour les agents du port  
+- conserver la compatibilité avec les systèmes internes  
+- éviter la duplication de routes  
+- permettre une évolution progressive et testée  
+- maintenir la compatibilité avec les tests du commit‑1
+
+##### 6.2.2.2 Choix techniques (identifiant hybride : MongoDB standard et métier catwayNumber)
+
+- priorité stricte : **ObjectId > catwayNumber**  
+- `findById()` utilisé pour les ObjectId  
+- `findOne({ catwayNumber })` utilisé pour les identifiants métier  
+- gestion des erreurs homogène (400 / 404 / 500)
+
+##### 6.2.2.3 Impacts (identifiant hybride : MongoDB standard et métier catwayNumber)
+
+- mise à jour du contrôleur (v0.3.0)  
+- mise à jour des tests niveau‑1 et niveau‑2  
+- aucune modification des routes  
+- aucune modification des middlewares (introduits en étape 3)
+
+> Le choix d’utiliser `findById` pour les `ObjectId` et `findOne` pour les **identifiants métier** permet d’éviter toute duplication de logique et garantit une évolution progressive du contrôleur.
 
 ---

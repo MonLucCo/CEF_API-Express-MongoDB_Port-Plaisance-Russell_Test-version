@@ -1115,9 +1115,55 @@ Les étapes suivantes de l’issue‑26 introduiront :
 
 ---
 
-##### 2.3.4.2 Issue‑26 — Étape 2 : GET /catways/:id (hybride : ObjectId ou Number)
+##### 2.3.4.2 Issue‑26 — Étape 2 : GET /catways/:id (hybride : ObjectId ou catwayNumber)
 
-(rédaction à venir)
+Cette étape introduit la logique hybride permettant à l’URL :
+
+```txt
+GET /catways/:id
+```
+
+d’accepter deux types d’identifiants :
+
+1. **Identifiant interne MongoDB (`_id`)**  
+2. **Identifiant métier (`catwayNumber`)**
+
+###### 2.3.4.2.1 Objectif de l'identification hybride
+
+- rendre l’API plus naturelle pour les utilisateurs humains  
+- conserver la compatibilité avec les systèmes internes  
+- éviter la multiplication des routes (`/by-number`, `/by-id`)  
+- maintenir la rétro‑compatibilité avec les tests du commit‑1
+
+###### 2.3.4.2.2 Logique de résolution
+
+Le contrôleur applique une logique priorisée :
+
+1. **Si `id` est un ObjectId valide → recherche via `findById(id)`**  
+   - garantit la compatibilité avec le commit‑1  
+   - respecte l’identifiant interne MongoDB
+
+2. **Sinon si `id` est un nombre → recherche via `findOne({ catwayNumber })`**  
+   - introduit l’identifiant métier  
+   - permet une utilisation plus intuitive de l’API
+
+3. **Sinon → 400 (identifiant invalide)**
+
+###### 2.3.4.2.3 Tests
+
+- **niveau‑1** :  
+  - tests commit‑1 (ObjectId) conservés  
+  - tests commit‑2 (catwayNumber) ajoutés  
+- **niveau‑2** :  
+  - tests d’intégration pour ObjectId  
+  - tests d’intégration pour catwayNumber
+
+###### 2.3.4.2.4 Version du module
+
+- `catwayController.js` passe en **v0.3.0**  
+- `getCatwayById()` passe en **v0.2.0** (logique hybride)
+
+---
 
 ##### 2.3.4.3 Issue‑26 — Étape 3 : GET /catways/:id (architecture : contrôleur et middleware)
 

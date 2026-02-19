@@ -72,6 +72,30 @@ Ces stubs permettent d’isoler totalement la logique métier du contrôleur.
 
 ---
 
+#### 4.2.2 Étape 2 — Logique hybride (_id + catwayNumber)
+
+Cette étape introduit la prise en charge de l’identifiant métier `catwayNumber` dans la fonction :
+
+```txt
+GET /catways/:id
+```
+
+##### 4.2.2.1 Scénarios testés
+
+- **200** si catway trouvé via `catwayNumber`  
+- **404** si `catwayNumber` valide mais introuvable  
+- **400** si `id` n’est ni un ObjectId ni un nombre  
+
+##### 4.2.2.2 Notes
+
+- Les tests du commit‑1 (ObjectId uniquement) restent valides  
+- Les nouveaux tests utilisent `sinon.stub(Catway, 'findOne')`  
+- Le contrôleur reste rétro‑compatible grâce à la priorité ObjectId
+
+> Les tests hybrides utilisent `sinon.stub(Catway, 'findOne')` car la logique métier repose désormais sur `findOne` pour les identifiants métier.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/catwayController.test.js`
@@ -90,6 +114,10 @@ Ces stubs permettent d’isoler totalement la logique métier du contrôleur.
 
 ### 6.2 issue-26 : détail d'un catway
 
-**Résultats des tests (issue-26) :**
+**Résultats des tests (issue-26) - version initiale :**
 
-![alt text](../assets/img_issue-26_resultats-tests-niveau-1.png)
+![alt text](../assets/img_issue-26_resultats-tests-niveau-1_initial.png)
+
+**Résultats des tests (issue-26) - version hybride :**
+
+![alt text](../assets/img_issue-26_resultats-tests-niveau-1_hybride.png)

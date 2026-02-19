@@ -47,7 +47,9 @@ src/                        ← Dossier principal du code de l'API
   │   └── reservation.js            ← Modèle Reservation (issue‑19)
   │
   ├── controllers/              ← Contrôleurs Express (logique métier)
-  │   └── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
+  │   ├── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
+  │   └── catwayController.js       ← Contrôleur des Catways
+  │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
   │   └── authMiddleware.js         ← Middleware JWT (issue‑16), vérification du token et protection des routes
   ├── services/                 ← Logique métier réutilisable
@@ -74,13 +76,22 @@ tests/                      ← Tests Mocha/Chai/Supertest
   ├── test-app.js               ← Serveur Express dédié aux tests E2E simulés (issue‑17)
   │
   ├── controllers/              ← Tests unitaires (niveau‑1) des contrôleurs via Mocha + Chai + Sinon
+  │   ├── authController.test.js         ← Tests unitaires du contrôleur Authentification
+  │   └── catwayController.test.js       ← tests unitaires du contrôleur Catways
+  │
   ├── middlewares/              ← Tests unitaires (niveau‑1) des middlewares (issue‑16)
   ├── integration/              ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
+  │   ├── auth.routes.test.js            ← Tests d'intégration Authentification
+  │   └── catways.routes.test.js         ← tests d'intégration des routes Catways
+
+  │
   ├── e2e/                      ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
   ├── mocks/                    ← Mocks/stubs isolant les dépendances (ex : modèle User)
   │   ├── tests.mock.js             ← Helpers transverses (mockResponse, mockNext, afterEachRestore)
   │   ├── jwt.mock.js               ← Stubs JWT (verify, sign)
-  │   └── user.mock.js              ← Mocks/stubs du modèle User
+  │   ├── user.mock.js              ← Mocks/stubs du modèle User
+  │   └── catway.mock.js            ← Mocks/stubs du modèle Catway
+  │
   └── modeles/                  ← Tests des modèles (Catway, Reference, User) 
       ├── catway.unitaires.test.js          ← Tests unitaires (niveau-1) de Catway
       ├── catway.integration.test.js        ← Tests d'intégration (niveau-2) de Catway
@@ -115,10 +126,14 @@ docs-dev/                   ← Documentation interne versionnée
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
       │   ├── auth-niveau-2-integration.md          ← Tests de niveau 2 - tests d'intégration
       │   └── auth-niveau-3-e2e.md                  ← Tests de niveau 1 - tests E2E
-      └── modeles/                             ← Catégorie Modélisation
-          ├── modeles-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires
-          └── modeles-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
-
+      ├── modeles/                             ← Catégorie Modélisation
+      │   ├── modeles-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires
+      │   └── modeles-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
+      │
+      └── fonctions/                           ← Catégorie Fonctionnalités
+          ├── catways-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires
+          └── catways-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
+    
 ```
 
 Les dossiers `models/`, `controllers/`, `middlewares/`, `services/` et `routes/` sont créés dès l’initialisation pour refléter l’architecture prévue.  
@@ -155,7 +170,14 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 #### 1.3.3 Phase 4 — Catways
 
-(sera complété avec les issues lors de l'engagement de la phase)
+- Issue 23 : Routes Catways
+- Issue 24 : Contrôleur Catways
+- Issue 25 : fonction GET /catways (liste des catways)
+- Issue 26 : fonction GET /catways/:id (détail d'un catway)
+- Issue 27 : fonction POST /catways (création d'un catway)
+- Issue 28 : fonction PUT /catways/:id (modifier un catway)
+- Issue 29 : fonction PATCH /catway/:id (actualiser un catway)
+- Issue 30 : fonction DELETE /catway/:id (supprimer un catway)
 
 #### 1.3.4 Phase 5 — Reservations
 
@@ -914,7 +936,7 @@ L’ensemble confirme l’intégration correcte du module `mongo.js` dans le ser
 
 ---
 
-### 2.2.5 — Issue‑22 : Gestion des erreurs MongoDB (résilience)
+#### 2.2.5 — Issue‑22 : Gestion des erreurs MongoDB (résilience)
 
 Cette issue renforce la robustesse de l’API en introduisant une gestion complète des erreurs liées à MongoDB et au serveur Express.  
 Elle s’appuie sur le module `mongo.js` introduit dans les issues 20B et 21, et ajoute une couche de résilience indispensable pour la Phase 4.
@@ -1014,6 +1036,27 @@ Cette issue met également à jour le module `catwayRoutes.js` (version 0.1.0) a
 appellent désormais les méthodes placeholder du contrôleur, renvoyant un statut HTTP 501. Cette étape permet de valider le câblage Express avant l’implémentation progressive des fonctionnalités dans les issues 25 à 30.
 
 Aucun test automatisé n'est prévu dans cette étape. La vérification des routes est réalisée avec des requêtes Postman (serveur en exécution avec `npm run dev`).
+
+---
+
+#### 2.3.3 Issue‑25 — Implémentation GET /catways (liste des catways)
+
+Cette issue introduit la première fonctionnalité opérationnelle de la Phase 4 :  
+la récupération de la liste complète des catways via la route `GET /catways`.
+
+Éléments réalisés :
+
+- implémentation de la méthode `getAllCatways` dans `catwayController.js`
+- ajout d’un contrôle d’erreur interne (500)
+- ajout d’un test unitaire (niveau‑1) dans `tests/controllers/catwayController.test.js`
+- création du fichier `tests/mocks/catway.mock.js` pour stubber le modèle Catway
+- ajout d’un test d’intégration (niveau‑2) dans `tests/integration/catways.routes.test.js` utilisant MongoMemoryServer et Supertest
+- mise à jour de l’arborescence des tests dans `architecture.md`
+- création de la documentation des tests :
+  - de niveau-1 dans `docs-dev/tests/fonctions/catways-niveau-1-unitaires.md`
+  - de niveau-2 dans `docs-dev/tests/fonctions/catways-niveau-2-integration.md`
+
+Cette issue garantit que la route `/catways` est fonctionnelle, testée et stable avant l’implémentation des routes suivantes (issues 26 à 30).
 
 ---
 

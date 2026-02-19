@@ -1,21 +1,36 @@
 /**
- * @file catwayController.js
- * @description Contrôleur Catways — version initiale (placeholder).
+ * @description Contrôleur Catways — version partielle.
  * 
- * Cette version définit la structure des fonctions du contrôleur Catways,
- * sans implémentation métier. Les méthodes seront complétées dans les
- * issues 25 à 30.
+ * Cette version définit la structure des fonctions du contrôleur Catways.
+ * Seule la méthode `getAllCatways` est implémentée (issue‑25). Les autres
+ * méthodes restent des placeholders et seront complétées dans les issues
+ * 26 à 30.
  * 
  * @module controllers/catwayController
- * @version 0.0.1
+ * @requires module:models/catway
+ * @version 0.1.0
  */
 
+const Catway = require('../models/catway');
+
 /**
- * GET /catways
- * @description Récupère la liste des catways (non implémenté)
+ * @function getAllCatways
+ * @async
+ * @route GET /catways
+ * @description Récupère la liste complète des catways depuis la base MongoDB.
+ * @returns {Array<Object>} 200 - Liste des catways
+ * @returns {Object} 500 - Erreur interne du serveur
+ * @see module:models/catway
+ * @version 0.1.0
  */
-exports.getAllCatways = (req, res) => {
-    res.status(501).json({ message: 'Récupère la liste des catways - Non implémenté (issue‑25)' });
+exports.getAllCatways = async (req, res) => {
+    try {
+        const catways = await Catway.find();
+        return res.status(200).json(catways);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des catways :', error.message);
+        return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
 };
 
 /**

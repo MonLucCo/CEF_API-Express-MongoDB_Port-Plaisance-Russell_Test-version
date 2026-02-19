@@ -343,8 +343,17 @@ Garantir la stabilité du projet et éviter les régressions.
 
 ### 4.2 Emplacement des tests
 
-Tous les tests unitaires et d’intégration sont regroupés dans le dossier `tests/fonctions`.  
-Chaque fichier de test correspond à une fonctionnalité ou un groupe de routes.
+Les tests fonctionnels seront introduits en Phase 5 et 6.
+
+Pour la Phase 4 (Catways), les tests ne sont pas encore fonctionnels :  
+ils sont répartis dans les dossiers existants selon leur niveau :
+
+- **niveau‑1 (unitaires)** : tests unitaires du contrôleur catways  
+  → `tests/controllers/catwayController.test.js`
+- **niveau‑2 (intégration)** : tests d'intégration des routes Catways  
+  → `tests/integration/catways.routes.test.js`
+
+Les tests fonctionnels Catways (niveau‑3) seront ajoutés ultérieurement (Phase 6 - front minimal).
 
 ### 4.3 Tests fonctionnels à couvrir
 

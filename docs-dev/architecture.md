@@ -1060,6 +1060,71 @@ Cette issue garantit que la route `/catways` est fonctionnelle, testée et stabl
 
 ---
 
+#### 2.3.4 Issue‑26 — Implémentation GET /catways/:id (détail d'un catway)
+
+L'implémentation de cette fonction est réalisée en 3 étapes pour définir un identifiant et structurer le code avec un contrôler et un middleware :
+
+- **étape 1 :** version minimale de la route GET /catways/:id en considérant l'identifiant du modèle de Catway (`_id`)
+- **étape 2 :** version améliorée de l'identifiant de la route en considérant 2 possibilités d'identifiant soit :
+  - l'identifiant du modèle Catway (`_id`) : référence naturelle pour la base de données
+  - le numéro du catway (`catwayNumber`) : référence naturelle pour l'utilisateur.
+- **étape 3 :** amélioration de l'architecture du code pour séparer les responsabilités du contrôleur et de la validation métier (middleware).
+
+Chaque étape de l'issue-26 réalise les tests automatisés et vérifie les non-régressions.
+
+##### 2.3.4.1 Issue‑26 — Étape 1 : GET /catways/:id (ObjectId)
+
+Cette première étape implémente la version minimale de la route GET /catways/:id :
+
+- validation ObjectId
+- recherche via Catway.findById()
+- gestion des statuts 400 / 404 / 500
+- tests niveau‑1 et niveau‑2
+- aucune validation métier (middleware introduit en étape 3)
+- aucune logique hybride (introduite en étape 2)
+
+###### 2.3.4.1.1 Fonctionnalité
+
+La route permet de récupérer un catway à partir de son **identifiant interne MongoDB (`_id`)**.
+
+###### 2.3.4.1.2 Logique de traitement
+
+1. Vérification de la validité de l’identifiant via `mongoose.Types.ObjectId.isValid()`  
+2. Recherche du document via `Catway.findById()`  
+3. Gestion des statuts HTTP :
+   - **400** : identifiant invalide  
+   - **404** : catway introuvable  
+   - **500** : erreur interne  
+
+###### 2.3.4.1.3 Tests
+
+- **niveau‑1** : tests unitaires du contrôleur  
+- **niveau‑2** : tests d’intégration avec MongoMemoryServer  
+- aucun middleware introduit à ce stade  
+
+###### 2.3.4.1.4 Version du module
+
+- `catwayController.js` passe en **v0.2.0** avec l’ajout de `getCatwayById` (ObjectId uniquement)
+
+###### 2.3.4.1.5 Évolutions prévues (étapes 2 et 3)
+
+Les étapes suivantes de l’issue‑26 introduiront :
+
+- une logique hybride (`_id` + `catwayNumber`)  
+- des middlewares de validation métier  
+
+---
+
+##### 2.3.4.2 Issue‑26 — Étape 2 : GET /catways/:id (hybride : ObjectId ou Number)
+
+(rédaction à venir)
+
+##### 2.3.4.3 Issue‑26 — Étape 3 : GET /catways/:id (architecture : contrôleur et middleware)
+
+(rédaction à venir)
+
+---
+
 ### 2.4 Phase 5 — Reservations
 
 (sera complété avec les issues correspondantes)

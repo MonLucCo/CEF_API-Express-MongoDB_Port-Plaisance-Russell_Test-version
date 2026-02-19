@@ -3,6 +3,8 @@
 Les tests unitaires valident la logique métier du contrôleur Catways de manière isolée.  
 Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 
+---
+
 ## 1. Objectifs
 
 - Vérifier le comportement métier de `catwayController`
@@ -10,11 +12,15 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 - Garantir la robustesse des contrôleurs avant l’intégration
 - Empêcher les régressions lors des évolutions (issues 26 → 30)
 
+---
+
 ## 2. Outils
 
 - **Mocha** : moteur de tests  
 - **Chai** : assertions  
 - **Sinon** : stubs, spies, mocks
+
+---
 
 ## 3. Principes
 
@@ -25,18 +31,54 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 - Aucun accès à MongoDB
 - Chaque test est isolé
 
+---
+
 ## 4. Scénarios testés
 
 ### 4.1 `getAllCatways()` (issue‑25)
 
 - 200 + liste des catways si `Catway.find()` réussit  
-- 500 si `Catway.find()` lance une erreur  
+- 500 si `Catway.find()` lance une erreur
+
+---
+
+### 4.2 `getCatwayById()` (issue‑26)
+
+Cette issue‑26 introduit les tests unitaires de la route :
+
+```txt
+GET /catways/:id
+```
+
+#### 4.2.1 étape 1 - version initiale
+
+La version initiale repose **exclusivement** sur l’identifiant interne MongoDB (`_id`).  
+
+Cette version ne prend pas encore en charge l’identifiant métier `catwayNumber`.
+
+##### 4.2.1.1 Scénarios testés
+
+- **400** si l’identifiant n’est pas un ObjectId valide  
+- **404** si aucun catway ne correspond à l’identifiant  
+- **200** si un catway est trouvé  
+- **500** si `Catway.findById()` lance une erreur interne  
+
+##### 4.2.1.2 Mocks utilisés
+
+- `mockFindById()`  
+- `mockFindByIdError()`  
+
+Ces stubs permettent d’isoler totalement la logique métier du contrôleur.
+
+---
 
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/catwayController.test.js`
 - Mocks : `tests/mocks/catway.mock.js`
 - Contrôleur : `src/controllers/catwayController.js`
+
+---
 
 ## 6. Résultats
 
@@ -45,3 +87,9 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 **Résultats des tests (issue-25) :**
 
 ![alt text](../assets/img_issue-25_resultats-tests-niveau-1.png)
+
+### 6.2 issue-26 : détail d'un catway
+
+**Résultats des tests (issue-26) :**
+
+![alt text](../assets/img_issue-26_resultats-tests-niveau-1.png)

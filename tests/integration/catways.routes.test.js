@@ -63,4 +63,34 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
     });
 
+    // -----------------------------
+    // GET /catways/:id
+    // -----------------------------
+    describe('GET /catways/:id', () => {
+
+        it('retourne 400 si ID invalide', async () => {
+            const res = await request(app).get('/catways/123');
+            expect(res.status).to.equal(400);
+        });
+
+        it('retourne 404 si catway introuvable', async () => {
+            const fakeId = new mongoose.Types.ObjectId();
+            const res = await request(app).get(`/catways/${fakeId}`);
+            expect(res.status).to.equal(404);
+        });
+
+        it('retourne 200 si catway trouvé', async () => {
+            const catway = await Catway.create({
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            });
+
+            const res = await request(app).get(`/catways/${catway._id}`);
+
+            expect(res.status).to.equal(200);
+            expect(res.body).to.have.property('catwayNumber', 1);
+        });
+    });
+
 });

@@ -1,16 +1,22 @@
 /**
- * @description Contrôleur Catways — version partielle.
- * 
- * Cette version définit la structure des fonctions du contrôleur Catways.
- * Seule la méthode `getAllCatways` est implémentée (issue‑25). Les autres
- * méthodes restent des placeholders et seront complétées dans les issues
- * 26 à 30.
- * 
+ * @description Contrôleur Catways — logique métier des routes Catways.
+ *
+ * Ce module regroupe l’ensemble des opérations CRUD liées aux catways.
+ * Les méthodes sont implémentées progressivement dans les issues 25 à 30.
+ *
+ * Méthodes actuellement implémentées :
+ * - getAllCatways (issue‑25) : retourne la liste complète des catways
+ * - getCatwayById (issue‑26) : retourne un catway selon son identifiant
+ *
+ * Les autres méthodes (createCatway, updateCatway, patchCatway, deleteCatway)
+ * sont présentes sous forme de placeholders et seront complétées dans les issues suivantes.
+ *
  * @module controllers/catwayController
  * @requires module:models/catway
- * @version 0.1.0
+ * @version 0.2.0
  */
 
+const mongoose = require('mongoose');
 const Catway = require('../models/catway');
 
 /**
@@ -33,12 +39,41 @@ exports.getAllCatways = async (req, res) => {
     }
 };
 
+
 /**
- * GET /catways/:id
- * @description Récupère un catway par ID (non implémenté)
+ * @function getCatwayById
+ * @async
+ * @route GET /catways/:id
+ * @description Récupère un catway par son ID.
+ * @returns {Object} 200 - Catway trouvé
+ * @returns {Object} 400 - ID invalide
+ * @returns {Object} 404 - Catway introuvable
+ * @returns {Object} 500 - Erreur interne du serveur
+ * @see module:models/catway
+ * @note Version initiale — identifiant MongoDB uniquement (issue‑26, étape 1)
+ * @version 0.1.0
  */
-exports.getCatwayById = (req, res) => {
-    res.status(501).json({ message: 'Récupère un catway par ID - Non implémenté (issue‑26)' });
+exports.getCatwayById = async (req, res) => {
+    const { id } = req.params;
+
+    // Validation de l'ID : doit être un ObjectId valide de MongoDB
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'ID catway invalide' });
+    }
+
+    try {
+        const catway = await Catway.findById(id);
+
+        if (!catway) {
+            return res.status(404).json({ error: 'Catway introuvable' });
+        }
+
+        return res.status(200).json(catway);
+
+    } catch (error) {
+        console.error('Erreur lors de la récupération du catway :', error.message);
+        return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
 };
 
 /**

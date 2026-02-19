@@ -157,3 +157,56 @@ Décision : ajouter une configuration nodemon locale (`config/dev/nodemon.json`)
 - Les timestamps sont activés pour assurer la traçabilité.
 
 ---
+
+### 6.2 Identifiant `/:id` des URLs
+
+Afin d’offrir une API plus naturelle pour les utilisateurs humains tout en conservant la robustesse de MongoDB, l’API adopte un mécanisme d’identification hybride pour les routes Catways.  
+
+L'identifiant de l'URL de l'API est construit à partir de l'identifiant MongoDB (`Catway._id`), ainsi qu'à partir de l'identifiant métier des Catways (`Catway.catwayNumber`).  
+
+La mise en place de cet identifiant est progressive et se réalise dans l'issue-26 par étape.
+Cette démarche permettra à l'API de disposer d'une identification hybride avec une logique priorisée (identifiant MongoDB, puis identifiant métier).
+
+#### 6.2.1 GET /catways/:id basé uniquement sur l’identifiant MongoDB (issue‑26, étape 1)
+
+Cette première étape de l’issue‑26 introduit la récupération d’un catway via l’URL :
+
+```txt
+GET /catways/:id
+```
+
+Elle repose exclusivement sur l’identifiant interne MongoDB (`_id`).
+
+##### 🎯 Objectif
+
+Mettre en place une version minimale, stable et testée de la route, en utilisant **exclusivement l’identifiant interne MongoDB (`_id`)** :
+
+- fournir une base fonctionnelle simple
+- valider le contrôleur, les routes et les tests
+- éviter toute complexité prématurée
+- préparer l'introduction de l'identifiant hybride dans l'étape suivante
+
+##### ✔ Choix techniques
+
+- validation de l’identifiant via `mongoose.Types.ObjectId.isValid()`  
+- recherche du document via `Catway.findById()`  
+- gestion des statuts HTTP :
+  - **400** : identifiant invalide  
+  - **404** : catway introuvable  
+  - **500** : erreur interne  
+
+##### ✔ Motivations
+
+- établir une base fonctionnelle simple avant l’introduction de la logique hybride (ObjectId + catwayNumber)  
+- garantir la stabilité des tests unitaires et d’intégration  
+- éviter toute complexité prématurée dans le contrôleur  
+- préparer l’évolution progressive de l’issue‑26 (étapes 2 et 3)
+
+##### ✔ Impacts
+
+- mise à jour du contrôleur `catwayController.js` (v0.2.0)  
+- ajout des tests niveau‑1 et niveau‑2  
+- aucune modification des middlewares à ce stade  
+- aucune logique métier supplémentaire  
+
+---

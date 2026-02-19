@@ -17,7 +17,25 @@ function mockFindAllError(error = new Error('DB error')) {
     return sinon.stub(Catway, 'find').throws(error);
 }
 
+/**
+ * Stub de Catway.findById() retournant un résultat simulé.
+ * @param {Object} result - Catway simulé
+ */
+function mockFindById(result) {
+    return sinon.stub(Catway, 'findById').resolves(result);
+}
+
+/**
+ * Stub de Catway.findById() lançant une erreur simulée.
+ * @param {Error} [error] - Erreur simulée
+ */
+function mockFindByIdError(error = new Error('DB error')) {
+    return sinon.stub(Catway, 'findById').throws(error);
+}
+
 module.exports = {
     mockFindAll,
-    mockFindAllError
+    mockFindAllError,
+    mockFindById,
+    mockFindByIdError
 };

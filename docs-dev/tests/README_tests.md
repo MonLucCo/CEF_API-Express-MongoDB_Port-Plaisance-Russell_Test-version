@@ -43,14 +43,17 @@ Dossier :
 
 Tests portant sur :
 
-- les routes Catways
-- les routes Reservations
+- les routes Catways (Phase 4)
+- les routes Reservations (Phase 5)
 - les workflows complets (CRUD)
 
 Dossier :  
 `docs-dev/tests/fonctions/`
 
-> Cette catégorie sera alimentée progressivement lors des phases 4 et 5.
+Documents disponibles :
+
+- [catways-niveau-1-unitaires.md](./fonctions/catways-niveau-1-unitaires.md)
+- [catways-niveau-2-integration.md](./fonctions/catways-niveau-2-integration.md)
 
 ---
 
@@ -110,7 +113,9 @@ docs-dev/tests/
 │   └── modeles-niveau-3-e2e.md
 │
 └── fonctions/                   ← Catégorie Fonctionnalités
-    └── (à compléter lors des phases 4 et 5)
+    ├── catways-niveau-1-unitaires.md
+    ├── catways-niveau-2-integration.md
+    └── (à compléter lors de la phase 5)
 ```
 
 ---

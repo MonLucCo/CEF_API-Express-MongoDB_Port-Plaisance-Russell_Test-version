@@ -1,14 +1,27 @@
 /**
- * @description Contrôleur Catways — version partielle.
+ * @description Contrôleur Catways — logique métier des routes Catways.
+ *
+ * Ce module regroupe l’ensemble des opérations CRUD liées aux catways.
+ * Les méthodes sont implémentées progressivement dans les issues 25 à 30.
  * 
- * Cette version définit la structure des fonctions du contrôleur Catways.
- * Seule la méthode `getAllCatways` est implémentée (issue‑25). Les autres
- * méthodes restent des placeholders et seront complétées dans les issues
- * 26 à 30.
- * 
+ * Les middlewares de validation et de résolution d’identifiant introduits dans l’issue‑26
+ * sont utilisés par les méthodes nécessitant un identifiant de catway.
+ * Ils assurent la validation syntaxique de l’identifiant `/:id`, la résolution de l’identifiant hybride
+ * (ObjectId MongoDB ou catwayNumber) et l’attachement du catway trouvé à `req.catway`.
+ * Ainsi, les méthodes du contrôleur peuvent se concentrer sur la logique métier sans se soucier de la 
+ * validation ou de la résolution d’identifiant.
+ * @see module:middlewares/catwayMiddleware
+ *
+ * Méthodes actuellement implémentées :
+ * - getAllCatways (issue‑25) : retourne la liste complète des catways
+ * - getCatwayById (issue‑26) : retourne un catway selon son identifiant
+ *
+ * Les autres méthodes (createCatway, updateCatway, patchCatway, deleteCatway)
+ * sont présentes sous forme de placeholders et seront complétées dans les issues suivantes.
+ *
  * @module controllers/catwayController
  * @requires module:models/catway
- * @version 0.1.0
+ * @version 0.4.0
  */
 
 const Catway = require('../models/catway');
@@ -18,8 +31,11 @@ const Catway = require('../models/catway');
  * @async
  * @route GET /catways
  * @description Récupère la liste complète des catways depuis la base MongoDB.
+ * 
  * @returns {Array<Object>} 200 - Liste des catways
  * @returns {Object} 500 - Erreur interne du serveur
+ * 
+ * @requires module:models/catway
  * @see module:models/catway
  * @version 0.1.0
  */
@@ -34,12 +50,29 @@ exports.getAllCatways = async (req, res) => {
 };
 
 /**
- * GET /catways/:id
- * @description Récupère un catway par ID (non implémenté)
+ * @function getCatwayById
+ * @route GET /catways/:id
+ * @description
+ * Retourne le catway déjà résolu par les middlewares `validateCatwayId` et `resolveCatwayIdentifier`.
+ *
+ * À ce stade, l’identifiant a été validé et le catway a été attaché à `req.catway` par les middlewares.
+ *
+ * Le contrôleur se contente donc de renvoyer la ressource.
+ *
+ * @returns {Object} 200 - Catway trouvé
+ *
+ * @see module:middlewares/catwayMiddleware.validateCatwayId
+ * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
+ *
+ * @example
+ * router.get('/:id', validateCatwayId, resolveCatwayIdentifier, getCatwayById);
+ *
+ * @version 0.4.0
  */
 exports.getCatwayById = (req, res) => {
-    res.status(501).json({ message: 'Récupère un catway par ID - Non implémenté (issue‑26)' });
+    return res.status(200).json(req.catway);
 };
+
 
 /**
  * POST /catways

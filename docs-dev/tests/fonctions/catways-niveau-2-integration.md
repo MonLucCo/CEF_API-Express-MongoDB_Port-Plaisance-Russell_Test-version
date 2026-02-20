@@ -2,6 +2,8 @@
 
 Les tests d’intégration valident le fonctionnement réel des routes Catways, en interaction avec Express, Mongoose et MongoDB.
 
+---
+
 ## 1. Objectifs
 
 - Vérifier le comportement réel de la route `GET /catways`
@@ -9,11 +11,15 @@ Les tests d’intégration valident le fonctionnement réel des routes Catways, 
 - Détecter les erreurs de câblage ou de configuration
 - Garantir la cohérence entre contrôleur, modèle et route
 
+---
+
 ## 2. Outils
 
 - **Supertest** : requêtes HTTP simulées  
 - **MongoMemoryServer** : base MongoDB en mémoire  
 - **Mocha / Chai** : assertions
+
+---
 
 ## 3. Principes
 
@@ -23,6 +29,8 @@ Les tests d’intégration valident le fonctionnement réel des routes Catways, 
 - Aucun mock → vrai test d’intégration
 - Nettoyage de la base avant chaque test
 
+---
+
 ## 4. Scénarios testés
 
 ### 4.1 `GET /catways` (issue‑25)
@@ -31,11 +39,93 @@ Les tests d’intégration valident le fonctionnement réel des routes Catways, 
 - 200 + liste des catways si des documents existent  
 - Vérification des champs (`catwayNumber`, `type`, `catwayState`)  
 
+---
+
+### 4.2 `GET /catways/:id` (issue‑26)
+
+Cette issue-26 introduit les tests d’intégration de la route :
+
+```txt
+GET /catways/:id
+```
+
+#### 4.2.1 étape 1 - version initiale
+
+La version initiale utilise **uniquement** l’identifiant MongoDB (`_id`).  
+
+Cette version ne prend pas encore en charge l’identifiant métier `catwayNumber`.
+
+##### 4.2.1.1 Scénarios testés
+
+- **400** si l’identifiant n’est pas un ObjectId valide  
+- **404** si aucun catway ne correspond à l’identifiant  
+- **200** si un catway valide est trouvé en base mémoire  
+- Vérification du contenu retourné (`catwayNumber`, `type`, `catwayState`)  
+
+##### 4.2.1.2 Principes
+
+- utilisation réelle du modèle `Catway`  
+- base MongoDB en mémoire via `MongoMemoryServer`  
+- aucune logique hybride à ce stade  
+- aucune validation métier via middleware (introduite en étape 3)  
+
+---
+
+#### 4.2.2 Étape 2 — Logique hybride (_id + catwayNumber)
+
+Cette étape étend les tests d’intégration pour couvrir l’identifiant métier `catwayNumber`.
+
+##### 4.2.2.1 Scénarios testés
+
+- **404** si `catwayNumber` inexistant  
+- **200** si catway trouvé via `catwayNumber`  
+- **400** si identifiant invalide (ni ObjectId, ni nombre)
+
+##### 4.2.2.2 Notes
+
+- Les tests utilisent MongoMemoryServer  
+- Le modèle Catway est utilisé sans mock  
+- Le contrôleur hybride permet une compatibilité totale avec les tests du commit‑1
+
+> La logique hybride est testée en conditions réelles via `MongoMemoryServer`, garantissant la cohérence entre modèle, contrôleur et route.
+
+---
+
+---
+
+#### 4.2.3  Étape 3 — Middlewares Catways
+
+Cette étape étend les tests d’intégration pour valider le comportement réel des middlewares Catways dans la route :
+
+```txt
+GET /catways/:id
+```
+
+##### 4.2.3.1 Scénarios testés
+
+- **400** si identifiant invalide (middleware `validateCatwayId`)  
+- **404** si ObjectId inexistant  
+- **404** si catwayNumber inexistant  
+- **200** si catway trouvé via ObjectId  
+- **200** si catway trouvé via catwayNumber  
+
+##### 4.2.3.2 Notes
+
+- Les middlewares sont testés en conditions réelles via MongoMemoryServer.  
+- Le contrôleur ne fait plus aucune validation ni recherche.  
+- Le pipeline complet est validé :  
+  `validateCatwayId → resolveCatwayIdentifier → getCatwayById`.  
+- Les tests du commit‑1 et du commit‑2 restent valides (non‑régression).
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/catways.routes.test.js`
 - Modèle : `src/models/catway.js`
 - Routes : `src/routes/catwayRoutes.js`
+
+---
 
 ## 6. Résultats
 
@@ -44,3 +134,9 @@ Les tests d’intégration valident le fonctionnement réel des routes Catways, 
 **Résultats des tests (issue-25) :**
 
 ![alt text](../assets/img_issue-25_resultats-tests-niveau-2.png)
+
+**Résultats des tests (issue-25) :**
+
+![alt text](../assets/img_issue-26_resultats-tests-niveau-2.png)
+
+---

@@ -1,8 +1,25 @@
 const { expect } = require('chai');
-const { mockResponse, afterEachRestore } = require('../mocks/tests.mock');
-const { mockFindAll, mockFindAllError } = require('../mocks/catway.mock');
-const { getAllCatways } = require('../../src/controllers/catwayController');
+const sinon = require('sinon');
+const mongoose = require('mongoose');
 
+const { mockResponse, afterEachRestore } = require('../mocks/tests.mock');
+const {
+    mockFindAll,
+    mockFindAllError,
+    mockFindById,
+    mockFindByIdError,
+} = require('../mocks/catway.mock');
+
+const Catway = require('../../src/models/catway');
+
+const {
+    getAllCatways,
+    getCatwayById,
+} = require('../../src/controllers/catwayController');
+
+// ----------------------------- 
+// GET ALL CATWAYS
+// -----------------------------
 describe('Controller Catways — getAllCatways (niveau‑1)', () => {
 
     afterEachRestore();
@@ -36,4 +53,21 @@ describe('Controller Catways — getAllCatways (niveau‑1)', () => {
         expect(res.status.calledWith(500)).to.be.true;
         expect(res.json.calledWithMatch({ error: 'Erreur interne du serveur' })).to.be.true;
     });
+});
+
+// -----------------------------
+// GET CATWAY BY ID
+// -----------------------------
+describe('Controller Catways — getCatwayById (niveau‑1)', () => {
+
+    it('retourne 200 si catway trouvé et attaché par les middlewares', () => {
+        const req = { catway: { catwayNumber: 7 } };
+        const res = mockResponse();
+
+        getCatwayById(req, res);
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWith({ catwayNumber: 7 })).to.be.true;
+    });
+
 });

@@ -52,10 +52,14 @@ src/                        ← Dossier principal du code de l'API
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
   │   └── authMiddleware.js         ← Middleware JWT (issue‑16), vérification du token et protection des routes
+  │   └── catwayMiddleware.js       ← Middleware Catway (issue‑26), vérification de l'identifiant
+  │
   ├── services/                 ← Logique métier réutilisable
+  │
   └── routes/                   ← Définition des routes Express
       ├── accueilRoutes.js          ← Route d’accueil (GET /)
-      └── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
+      ├── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
+      └── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
 
 scripts/
   └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
@@ -79,11 +83,13 @@ tests/                      ← Tests Mocha/Chai/Supertest
   │   ├── authController.test.js         ← Tests unitaires du contrôleur Authentification
   │   └── catwayController.test.js       ← tests unitaires du contrôleur Catways
   │
-  ├── middlewares/              ← Tests unitaires (niveau‑1) des middlewares (issue‑16)
+  ├── middlewares/              ← Tests unitaires (niveau‑1) des middlewares
+  │   ├── authMiddleware.test.js         ← Tests unitaires du middleware Authentification (issue‑16)
+  │   └── catwayMiddleware.test.js       ← tests unitaires du middleware Catways (issue-26)
+  │
   ├── integration/              ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
   │   ├── auth.routes.test.js            ← Tests d'intégration Authentification
   │   └── catways.routes.test.js         ← tests d'intégration des routes Catways
-
   │
   ├── e2e/                      ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
   ├── mocks/                    ← Mocks/stubs isolant les dépendances (ex : modèle User)
@@ -1057,6 +1063,144 @@ la récupération de la liste complète des catways via la route `GET /catways`.
   - de niveau-2 dans `docs-dev/tests/fonctions/catways-niveau-2-integration.md`
 
 Cette issue garantit que la route `/catways` est fonctionnelle, testée et stable avant l’implémentation des routes suivantes (issues 26 à 30).
+
+---
+
+#### 2.3.4 Issue‑26 — Implémentation GET /catways/:id (détail d'un catway)
+
+L'implémentation de cette fonction est réalisée en 3 étapes pour définir un identifiant et structurer le code avec un contrôler et un middleware :
+
+- **étape 1 :** version minimale de la route GET /catways/:id en considérant l'identifiant du modèle de Catway (`_id`)
+- **étape 2 :** version améliorée de l'identifiant de la route en considérant 2 possibilités d'identifiant soit :
+  - l'identifiant du modèle Catway (`_id`) : référence naturelle pour la base de données
+  - le numéro du catway (`catwayNumber`) : référence naturelle pour l'utilisateur.
+- **étape 3 :** amélioration de l'architecture du code pour séparer les responsabilités du contrôleur et de la validation métier (middleware).
+
+Chaque étape de l'issue-26 réalise les tests automatisés et vérifie les non-régressions.
+
+##### 2.3.4.1 Issue‑26 — Étape 1 : GET /catways/:id (ObjectId)
+
+Cette première étape implémente la version minimale de la route GET /catways/:id :
+
+- validation ObjectId
+- recherche via Catway.findById()
+- gestion des statuts 400 / 404 / 500
+- tests niveau‑1 et niveau‑2
+- aucune validation métier (middleware introduit en étape 3)
+- aucune logique hybride (introduite en étape 2)
+
+###### 2.3.4.1.1 Fonctionnalité
+
+La route permet de récupérer un catway à partir de son **identifiant interne MongoDB (`_id`)**.
+
+###### 2.3.4.1.2 Logique de traitement
+
+1. Vérification de la validité de l’identifiant via `mongoose.Types.ObjectId.isValid()`  
+2. Recherche du document via `Catway.findById()`  
+3. Gestion des statuts HTTP :
+   - **400** : identifiant invalide  
+   - **404** : catway introuvable  
+   - **500** : erreur interne  
+
+###### 2.3.4.1.3 Tests
+
+- **niveau‑1** : tests unitaires du contrôleur  
+- **niveau‑2** : tests d’intégration avec MongoMemoryServer  
+- aucun middleware introduit à ce stade  
+
+###### 2.3.4.1.4 Version du module
+
+- `catwayController.js` passe en **v0.2.0** avec l’ajout de `getCatwayById` (ObjectId uniquement)
+
+###### 2.3.4.1.5 Évolutions prévues (étapes 2 et 3)
+
+Les étapes suivantes de l’issue‑26 introduiront :
+
+- une logique hybride (`_id` + `catwayNumber`)  
+- des middlewares de validation métier  
+
+---
+
+##### 2.3.4.2 Issue‑26 — Étape 2 : GET /catways/:id (hybride : ObjectId ou catwayNumber)
+
+Cette étape introduit la logique hybride permettant à l’URL :
+
+```txt
+GET /catways/:id
+```
+
+d’accepter deux types d’identifiants :
+
+1. **Identifiant interne MongoDB (`_id`)**  
+2. **Identifiant métier (`catwayNumber`)**
+
+###### 2.3.4.2.1 Objectif de l'identification hybride
+
+- rendre l’API plus naturelle pour les utilisateurs humains  
+- conserver la compatibilité avec les systèmes internes  
+- éviter la multiplication des routes (`/by-number`, `/by-id`)  
+- maintenir la rétro‑compatibilité avec les tests du commit‑1
+
+###### 2.3.4.2.2 Logique de résolution
+
+Le contrôleur applique une logique priorisée :
+
+1. **Si `id` est un ObjectId valide → recherche via `findById(id)`**  
+   - garantit la compatibilité avec le commit‑1  
+   - respecte l’identifiant interne MongoDB
+
+2. **Sinon si `id` est un nombre → recherche via `findOne({ catwayNumber })`**  
+   - introduit l’identifiant métier  
+   - permet une utilisation plus intuitive de l’API
+
+3. **Sinon → 400 (identifiant invalide)**
+
+###### 2.3.4.2.3 Tests
+
+- **niveau‑1** :  
+  - tests commit‑1 (ObjectId) conservés  
+  - tests commit‑2 (catwayNumber) ajoutés  
+- **niveau‑2** :  
+  - tests d’intégration pour ObjectId  
+  - tests d’intégration pour catwayNumber
+
+###### 2.3.4.2.4 Version du module
+
+- `catwayController.js` passe en **v0.3.0**  
+- `getCatwayById()` passe en **v0.2.0** (logique hybride)
+
+---
+
+##### 2.3.4.3 Issue‑26 — Étape 3 : GET /catways/:id (architecture : contrôleur et middleware)
+
+Cette étape introduit deux middlewares dédiés à la validation et à la résolution de l’identifiant Catway dans les routes :
+
+- **`validateCatwayId`** : vérifie que l’identifiant `/:id` est soit un ObjectId MongoDB valide, soit un identifiant métier `catwayNumber` (nombre entier positif).
+- **`resolveCatwayIdentifier`** : résout l’identifiant hybride et attache le catway trouvé à `req.catway`.
+
+### 🎯 Objectifs
+
+- Centraliser la validation de l’identifiant Catway.  
+- Éviter la duplication de logique dans les contrôleurs.  
+- Préparer les futures opérations CRUD (issues 27 → 30).  
+- Simplifier la logique métier du contrôleur `getCatwayById`.  
+- Renforcer la robustesse de l’API.
+
+### 🧠 Fonctionnement
+
+1. `validateCatwayId` vérifie la syntaxe de l’identifiant.  
+2. `resolveCatwayIdentifier` effectue la recherche :
+   - ObjectId → `findById`
+   - catwayNumber → `findOne({ catwayNumber })`
+3. Le catway trouvé est attaché à `req.catway`.  
+4. Le contrôleur se contente de renvoyer la ressource.
+
+### 📌 Impacts
+
+- Mise à jour du contrôleur `catwayController.js` (v0.4.0).  
+- Mise à jour des routes Catways pour intégrer les middlewares.  
+- Ajout des tests unitaires et d’intégration.  
+- Préparation des issues 27 → 30.
 
 ---
 

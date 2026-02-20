@@ -157,3 +157,137 @@ Décision : ajouter une configuration nodemon locale (`config/dev/nodemon.json`)
 - Les timestamps sont activés pour assurer la traçabilité.
 
 ---
+
+### 6.2 Identifiant `/:id` des URLs
+
+Afin d’offrir une API plus naturelle pour les utilisateurs humains tout en conservant la robustesse de MongoDB, l’API adopte un mécanisme d’identification hybride pour les routes Catways.  
+
+L'identifiant de l'URL de l'API est construit à partir de l'identifiant MongoDB (`Catway._id`), ainsi qu'à partir de l'identifiant métier des Catways (`Catway.catwayNumber`).  
+
+La mise en place de cet identifiant est progressive et se réalise dans l'issue-26 par étape.
+Cette démarche permettra à l'API de disposer d'une identification hybride avec une logique priorisée (identifiant MongoDB, puis identifiant métier).
+
+#### 6.2.1 GET /catways/:id basé uniquement sur l’identifiant MongoDB (issue‑26, étape 1)
+
+Cette première étape de l’issue‑26 introduit la récupération d’un catway via l’URL :
+
+```txt
+GET /catways/:id
+```
+
+Elle repose exclusivement sur l’identifiant interne MongoDB (`_id`).
+
+##### 6.2.1.1 Objectif (identifiant MongoDB standard)
+
+Mettre en place une version minimale, stable et testée de la route, en utilisant **exclusivement l’identifiant interne MongoDB (`_id`)** :
+
+- fournir une base fonctionnelle simple
+- valider le contrôleur, les routes et les tests
+- éviter toute complexité prématurée
+- préparer l'introduction de l'identifiant hybride dans l'étape suivante
+
+##### 6.2.1.2 Choix techniques (identifiant MongoDB standard)
+
+- validation de l’identifiant via `mongoose.Types.ObjectId.isValid()`  
+- recherche du document via `Catway.findById()`  
+- gestion des statuts HTTP :
+  - **400** : identifiant invalide  
+  - **404** : catway introuvable  
+  - **500** : erreur interne  
+
+##### 6.2.1.3 Motivations (identifiant MongoDB standard)
+
+- établir une base fonctionnelle simple avant l’introduction de la logique hybride (ObjectId + catwayNumber)  
+- garantir la stabilité des tests unitaires et d’intégration  
+- éviter toute complexité prématurée dans le contrôleur  
+- préparer l’évolution progressive de l’issue‑26 (étapes 2 et 3)
+
+##### 6.2.1.4 Impacts (identifiant MongoDB standard)
+
+- mise à jour du contrôleur `catwayController.js` (v0.2.0)  
+- ajout des tests niveau‑1 et niveau‑2  
+- aucune modification des middlewares à ce stade  
+- aucune logique métier supplémentaire  
+
+---
+
+#### 6.2.2 GET /catways/:id basé sur l’identifiant hybride (_id + catwayNumber) (issue-26 - étape 2)
+
+Cette étape introduit un mécanisme d’identification hybride pour les routes Catways, permettant d’utiliser :
+
+- l’identifiant interne MongoDB (`_id`)  
+- l’identifiant métier (`catwayNumber`)
+
+##### 6.2.2.1 Motivations (identifiant hybride : MongoDB standard et métier catwayNumber)
+
+- offrir une API plus intuitive pour les agents du port  
+- conserver la compatibilité avec les systèmes internes  
+- éviter la duplication de routes  
+- permettre une évolution progressive et testée  
+- maintenir la compatibilité avec les tests du commit‑1
+
+##### 6.2.2.2 Choix techniques (identifiant hybride : MongoDB standard et métier catwayNumber)
+
+- priorité stricte : **ObjectId > catwayNumber**  
+- `findById()` utilisé pour les ObjectId  
+- `findOne({ catwayNumber })` utilisé pour les identifiants métier  
+- gestion des erreurs homogène (400 / 404 / 500)
+
+##### 6.2.2.3 Impacts (identifiant hybride : MongoDB standard et métier catwayNumber)
+
+- mise à jour du contrôleur (v0.3.0)  
+- mise à jour des tests niveau‑1 et niveau‑2  
+- aucune modification des routes  
+- aucune modification des middlewares (introduits en étape 3)
+
+> Le choix d’utiliser `findById` pour les `ObjectId` et `findOne` pour les **identifiants métier** permet d’éviter toute duplication de logique et garantit une évolution progressive du contrôleur.
+
+---
+
+#### 6.2.3 Décision — Middlewares Catways (issue‑26, étape 3)
+
+##### 6.2.3.1 Motivations (architecture middlewares-controller)
+
+L’introduction de l’identifiant hybride (_id + catwayNumber_) dans l’étape 2 a mis en évidence la nécessité de :
+
+- centraliser la validation de l’identifiant `/:id`  
+- éviter la duplication de logique dans les contrôleurs  
+- préparer les futures opérations CRUD (issues 27 → 30)  
+- simplifier la logique métier du contrôleur  
+- renforcer la robustesse et la testabilité de l’API  
+
+##### 6.2.3.2 Choix techniques (architecture middlewares-controller)
+
+Deux middlewares dédiés sont introduits :
+
+###### 6.2.3.2.1 `validateCatwayId`
+
+- Vérifie que l’identifiant est soit un ObjectId valide, soit un nombre entier positif.  
+- Retourne **400** si l’identifiant est invalide.  
+- Ne réalise aucune opération en base.
+
+###### 6.2.3.2.2 `resolveCatwayIdentifier`
+
+- Résout l’identifiant hybride :  
+  - ObjectId → `findById`  
+  - catwayNumber → `findOne({ catwayNumber })`  
+- Retourne **404** si aucun catway n’est trouvé.  
+- Attache le catway trouvé à `req.catway`.  
+- Retourne **500** en cas d’erreur interne.
+
+##### 6.2.3.3 Impacts (architecture middlewares-controller)
+
+- Le contrôleur `getCatwayById` devient minimaliste (v0.4.0).  
+- Les middlewares sont testés isolément (niveau‑1).  
+- Les routes Catways sont mises à jour pour intégrer les middlewares.  
+- Les tests d’intégration (niveau‑2) valident désormais le pipeline complet :  
+  `validateCatwayId → resolveCatwayIdentifier → getCatwayById`.
+
+##### 6.2.3.4 Résultat (architecture middlewares-controller)
+
+- Architecture plus claire et modulaire.  
+- Contrôleurs allégés et centrés sur la logique métier.  
+- Tests plus simples et plus robustes.  
+- Préparation optimale pour les issues 27 → 30.
+
+---

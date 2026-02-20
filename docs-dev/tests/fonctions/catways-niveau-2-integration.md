@@ -91,6 +91,34 @@ Cette étape étend les tests d’intégration pour couvrir l’identifiant mét
 
 ---
 
+---
+
+#### 4.2.3  Étape 3 — Middlewares Catways
+
+Cette étape étend les tests d’intégration pour valider le comportement réel des middlewares Catways dans la route :
+
+```txt
+GET /catways/:id
+```
+
+##### 4.2.3.1 Scénarios testés
+
+- **400** si identifiant invalide (middleware `validateCatwayId`)  
+- **404** si ObjectId inexistant  
+- **404** si catwayNumber inexistant  
+- **200** si catway trouvé via ObjectId  
+- **200** si catway trouvé via catwayNumber  
+
+##### 4.2.3.2 Notes
+
+- Les middlewares sont testés en conditions réelles via MongoMemoryServer.  
+- Le contrôleur ne fait plus aucune validation ni recherche.  
+- Le pipeline complet est validé :  
+  `validateCatwayId → resolveCatwayIdentifier → getCatwayById`.  
+- Les tests du commit‑1 et du commit‑2 restent valides (non‑régression).
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/catways.routes.test.js`
@@ -106,3 +134,9 @@ Cette étape étend les tests d’intégration pour couvrir l’identifiant mét
 **Résultats des tests (issue-25) :**
 
 ![alt text](../assets/img_issue-25_resultats-tests-niveau-2.png)
+
+**Résultats des tests (issue-25) :**
+
+![alt text](../assets/img_issue-26_resultats-tests-niveau-2.png)
+
+---

@@ -52,10 +52,14 @@ src/                        ← Dossier principal du code de l'API
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
   │   └── authMiddleware.js         ← Middleware JWT (issue‑16), vérification du token et protection des routes
+  │   └── catwayMiddleware.js       ← Middleware Catway (issue‑26), vérification de l'identifiant
+  │
   ├── services/                 ← Logique métier réutilisable
+  │
   └── routes/                   ← Définition des routes Express
       ├── accueilRoutes.js          ← Route d’accueil (GET /)
-      └── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
+      ├── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
+      └── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
 
 scripts/
   └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
@@ -79,11 +83,13 @@ tests/                      ← Tests Mocha/Chai/Supertest
   │   ├── authController.test.js         ← Tests unitaires du contrôleur Authentification
   │   └── catwayController.test.js       ← tests unitaires du contrôleur Catways
   │
-  ├── middlewares/              ← Tests unitaires (niveau‑1) des middlewares (issue‑16)
+  ├── middlewares/              ← Tests unitaires (niveau‑1) des middlewares
+  │   ├── authMiddleware.test.js         ← Tests unitaires du middleware Authentification (issue‑16)
+  │   └── catwayMiddleware.test.js       ← tests unitaires du middleware Catways (issue-26)
+  │
   ├── integration/              ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
   │   ├── auth.routes.test.js            ← Tests d'intégration Authentification
   │   └── catways.routes.test.js         ← tests d'intégration des routes Catways
-
   │
   ├── e2e/                      ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
   ├── mocks/                    ← Mocks/stubs isolant les dépendances (ex : modèle User)
@@ -1167,7 +1173,34 @@ Le contrôleur applique une logique priorisée :
 
 ##### 2.3.4.3 Issue‑26 — Étape 3 : GET /catways/:id (architecture : contrôleur et middleware)
 
-(rédaction à venir)
+Cette étape introduit deux middlewares dédiés à la validation et à la résolution de l’identifiant Catway dans les routes :
+
+- **`validateCatwayId`** : vérifie que l’identifiant `/:id` est soit un ObjectId MongoDB valide, soit un identifiant métier `catwayNumber` (nombre entier positif).
+- **`resolveCatwayIdentifier`** : résout l’identifiant hybride et attache le catway trouvé à `req.catway`.
+
+### 🎯 Objectifs
+
+- Centraliser la validation de l’identifiant Catway.  
+- Éviter la duplication de logique dans les contrôleurs.  
+- Préparer les futures opérations CRUD (issues 27 → 30).  
+- Simplifier la logique métier du contrôleur `getCatwayById`.  
+- Renforcer la robustesse de l’API.
+
+### 🧠 Fonctionnement
+
+1. `validateCatwayId` vérifie la syntaxe de l’identifiant.  
+2. `resolveCatwayIdentifier` effectue la recherche :
+   - ObjectId → `findById`
+   - catwayNumber → `findOne({ catwayNumber })`
+3. Le catway trouvé est attaché à `req.catway`.  
+4. Le contrôleur se contente de renvoyer la ressource.
+
+### 📌 Impacts
+
+- Mise à jour du contrôleur `catwayController.js` (v0.4.0).  
+- Mise à jour des routes Catways pour intégrer les middlewares.  
+- Ajout des tests unitaires et d’intégration.  
+- Préparation des issues 27 → 30.
 
 ---
 

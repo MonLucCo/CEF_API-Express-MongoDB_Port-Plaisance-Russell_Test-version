@@ -3,6 +3,14 @@
  *
  * Ce module regroupe l’ensemble des opérations CRUD liées aux catways.
  * Les méthodes sont implémentées progressivement dans les issues 25 à 30.
+ * 
+ * Les middlewares de validation et de résolution d’identifiant introduits dans l’issue‑26
+ * sont utilisés par les méthodes nécessitant un identifiant de catway.
+ * Ils assurent la validation syntaxique de l’identifiant `/:id`, la résolution de l’identifiant hybride
+ * (ObjectId MongoDB ou catwayNumber) et l’attachement du catway trouvé à `req.catway`.
+ * Ainsi, les méthodes du contrôleur peuvent se concentrer sur la logique métier sans se soucier de la 
+ * validation ou de la résolution d’identifiant.
+ * @see module:middlewares/catwayMiddleware
  *
  * Méthodes actuellement implémentées :
  * - getAllCatways (issue‑25) : retourne la liste complète des catways
@@ -13,10 +21,9 @@
  *
  * @module controllers/catwayController
  * @requires module:models/catway
- * @version 0.3.0
+ * @version 0.4.0
  */
 
-const mongoose = require('mongoose');
 const Catway = require('../models/catway');
 
 /**
@@ -24,8 +31,11 @@ const Catway = require('../models/catway');
  * @async
  * @route GET /catways
  * @description Récupère la liste complète des catways depuis la base MongoDB.
+ * 
  * @returns {Array<Object>} 200 - Liste des catways
  * @returns {Object} 500 - Erreur interne du serveur
+ * 
+ * @requires module:models/catway
  * @see module:models/catway
  * @version 0.1.0
  */
@@ -41,57 +51,28 @@ exports.getAllCatways = async (req, res) => {
 
 /**
  * @function getCatwayById
- * @async
  * @route GET /catways/:id
- * @description Récupère un catway par identifiant hybride :
- * 1. ObjectId MongoDB (prioritaire, utilise findById)
- * 2. catwayNumber (identifiant métier, utilise findOne)
+ * @description
+ * Retourne le catway déjà résolu par les middlewares `validateCatwayId` et `resolveCatwayIdentifier`.
  *
- * Compatible avec :
- * - commit‑1 (tests basés sur findById)
- * - commit‑2 (tests basés sur findOne)
+ * À ce stade, l’identifiant a été validé et le catway a été attaché à `req.catway` par les middlewares.
+ *
+ * Le contrôleur se contente donc de renvoyer la ressource.
  *
  * @returns {Object} 200 - Catway trouvé
- * @returns {Object} 400 - Identifiant invalide
- * @returns {Object} 404 - Catway introuvable
- * @returns {Object} 500 - Erreur interne du serveur
  *
- * @version 0.2.0
+ * @see module:middlewares/catwayMiddleware.validateCatwayId
+ * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
+ *
+ * @example
+ * router.get('/:id', validateCatwayId, resolveCatwayIdentifier, getCatwayById);
+ *
+ * @version 0.4.0
  */
-exports.getCatwayById = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        // 1) Cas ObjectId valide → findById (logique principale : identifiant MongoDB standard)
-        if (mongoose.Types.ObjectId.isValid(id)) {
-            const catway = await Catway.findById(id);
-
-            if (!catway) {
-                return res.status(404).json({ error: 'Catway introuvable' });
-            }
-
-            return res.status(200).json(catway);
-        }
-
-        // 2) Cas identifiant métier → findOne (logique hybride : identifiant métier catwayNumber)
-        if (/^\d+$/.test(id)) {
-            const catway = await Catway.findOne({ catwayNumber: Number(id) });
-
-            if (!catway) {
-                return res.status(404).json({ error: 'Catway introuvable' });
-            }
-
-            return res.status(200).json(catway);
-        }
-
-        // 3) Cas invalide
-        return res.status(400).json({ error: 'Identifiant catway invalide' });
-
-    } catch (error) {
-        console.error('Erreur lors de la récupération du catway :', error.message);
-        return res.status(500).json({ error: 'Erreur interne du serveur' });
-    }
+exports.getCatwayById = (req, res) => {
+    return res.status(200).json(req.catway);
 };
+
 
 /**
  * POST /catways

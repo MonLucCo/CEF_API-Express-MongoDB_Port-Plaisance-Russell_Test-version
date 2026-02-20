@@ -60,99 +60,14 @@ describe('Controller Catways — getAllCatways (niveau‑1)', () => {
 // -----------------------------
 describe('Controller Catways — getCatwayById (niveau‑1)', () => {
 
-    afterEachRestore();
-
-    it('retourne 400 si ID invalide', async () => {
-        const req = { params: { id: 'ab123' } };
+    it('retourne 200 si catway trouvé et attaché par les middlewares', () => {
+        const req = { catway: { catwayNumber: 7 } };
         const res = mockResponse();
 
-        await getCatwayById(req, res);
-
-        expect(res.status.calledWith(400)).to.be.true;
-        expect(res.json.calledWithMatch({ error: 'Identifiant catway invalide' })).to.be.true;
-    });
-
-    it('retourne 404 si catway introuvable', async () => {
-        const validId = new mongoose.Types.ObjectId();
-        mockFindById(null);
-
-        const req = { params: { id: validId.toString() } };
-        const res = mockResponse();
-
-        await getCatwayById(req, res);
-
-        expect(res.status.calledWith(404)).to.be.true;
-        expect(res.json.calledWithMatch({ error: 'Catway introuvable' })).to.be.true;
-    });
-
-    it('retourne 200 si catway trouvé', async () => {
-        const validId = new mongoose.Types.ObjectId();
-        const fakeCatway = { _id: validId, catwayNumber: 1 };
-
-        mockFindById(fakeCatway);
-
-        const req = { params: { id: validId.toString() } };
-        const res = mockResponse();
-
-        await getCatwayById(req, res);
+        getCatwayById(req, res);
 
         expect(res.status.calledWith(200)).to.be.true;
-        expect(res.json.calledWith(fakeCatway)).to.be.true;
-    });
-
-    it('retourne 500 en cas d’erreur interne', async () => {
-        const validId = new mongoose.Types.ObjectId();
-        mockFindByIdError(new Error('Erreur Mongo'));
-
-        const req = { params: { id: validId.toString() } };
-        const res = mockResponse();
-
-        await getCatwayById(req, res);
-
-        expect(res.status.calledWith(500)).to.be.true;
-        expect(res.json.calledWithMatch({ error: 'Erreur interne du serveur' })).to.be.true;
-    });
-
-    // --------------------------------------
-    // Tests supplémentaires pour la logique hybride (issue‑26, étape 2)
-    // --------------------------------------
-    it('retourne 200 si catway trouvé via catwayNumber', async () => {
-        const fakeCatway = { catwayNumber: 12, type: 'short' };
-
-        // On stub findOne car la logique hybride utilise findOne()
-        const stub = sinon.stub(Catway, 'findOne').resolves(fakeCatway);
-
-        const req = { params: { id: '12' } };
-        const res = mockResponse();
-
-        await getCatwayById(req, res);
-
-        expect(res.status.calledWith(200)).to.be.true;
-        expect(res.json.calledWith(fakeCatway)).to.be.true;
-
-        stub.restore();
-    });
-
-    it('retourne 404 si catwayNumber valide mais introuvable', async () => {
-        const stub = sinon.stub(Catway, 'findOne').resolves(null);
-
-        const req = { params: { id: '99' } };
-        const res = mockResponse();
-
-        await getCatwayById(req, res);
-
-        expect(res.status.calledWith(404)).to.be.true;
-
-        stub.restore();
-    });
-
-    it('retourne 400 si id n’est ni un ObjectId ni un nombre', async () => {
-        const req = { params: { id: 'abc123xyz' } };
-        const res = mockResponse();
-
-        await getCatwayById(req, res);
-
-        expect(res.status.calledWith(400)).to.be.true;
+        expect(res.json.calledWith({ catwayNumber: 7 })).to.be.true;
     });
 
 });

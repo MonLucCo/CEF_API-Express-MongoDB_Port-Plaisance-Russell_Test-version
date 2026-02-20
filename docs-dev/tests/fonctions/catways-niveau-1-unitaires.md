@@ -96,6 +96,57 @@ GET /catways/:id
 
 ---
 
+#### 4.2.3 Étape 3 — Middlewares Catways
+
+L’étape 3 introduit les tests unitaires des middlewares Catways, qui remplacent la logique de validation et de résolution précédemment présente dans le contrôleur.
+
+##### 4.2.3.1 `validateCatwayId`
+
+Ce middleware vérifie la validité syntaxique de l’identifiant `/:id`.
+
+###### 4.2.3.1.1 Scénarios testés
+
+- **400** si identifiant invalide (ni ObjectId, ni nombre)  
+- **next()** si ObjectId valide  
+- **next()** si catwayNumber valide  
+
+###### 4.2.3.1.2 Notes
+
+- Aucun accès à MongoDB  
+- Aucun stub nécessaire  
+- Test purement fonctionnel
+
+---
+
+##### 4.2.3.2 `resolveCatwayIdentifier`
+
+Ce middleware résout l’identifiant hybride et attache le catway trouvé à `req.catway`.
+
+###### 4.2.3.2.1 Scénarios testés
+
+- **200** + attachement `req.catway` si ObjectId valide  
+- **200** + attachement `req.catway` si catwayNumber valide  
+- **404** si catway introuvable  
+- **500** si erreur interne (stub Mongoose)  
+- Vérification que `findOne` n’est pas appelé si ObjectId valide (priorité respectée)
+
+###### 4.2.3.2.2 Notes
+
+- Les dépendances Mongoose (`findById`, `findOne`) sont stubées via Sinon  
+- Le middleware est testé isolément, sans Express réel  
+- Le contrôleur ne contient plus aucune logique de validation ou de recherche
+
+---
+
+##### 4.2.3.3 Mise à jour des tests du contrôleur
+
+Le contrôleur `getCatwayById` étant désormais minimaliste, les tests associés sont simplifiés :
+
+- **200** si `req.catway` est présent  
+- Aucun test de validation ou de recherche (gérés par les middlewares)
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/catwayController.test.js`
@@ -121,3 +172,7 @@ GET /catways/:id
 **Résultats des tests (issue-26) - version hybride :**
 
 ![alt text](../assets/img_issue-26_resultats-tests-niveau-1_hybride.png)
+
+**Résultats des tests (issue-26) - version middlewares :**
+
+![alt text](../assets/img_issue-26_resultats-tests-niveau-1_middlewares.png)

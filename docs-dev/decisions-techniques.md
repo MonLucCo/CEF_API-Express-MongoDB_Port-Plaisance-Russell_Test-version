@@ -243,3 +243,51 @@ Cette étape introduit un mécanisme d’identification hybride pour les routes 
 > Le choix d’utiliser `findById` pour les `ObjectId` et `findOne` pour les **identifiants métier** permet d’éviter toute duplication de logique et garantit une évolution progressive du contrôleur.
 
 ---
+
+#### 6.2.3 Décision — Middlewares Catways (issue‑26, étape 3)
+
+##### 6.2.3.1 Motivations (architecture middlewares-controller)
+
+L’introduction de l’identifiant hybride (_id + catwayNumber_) dans l’étape 2 a mis en évidence la nécessité de :
+
+- centraliser la validation de l’identifiant `/:id`  
+- éviter la duplication de logique dans les contrôleurs  
+- préparer les futures opérations CRUD (issues 27 → 30)  
+- simplifier la logique métier du contrôleur  
+- renforcer la robustesse et la testabilité de l’API  
+
+##### 6.2.3.2 Choix techniques (architecture middlewares-controller)
+
+Deux middlewares dédiés sont introduits :
+
+###### 6.2.3.2.1 `validateCatwayId`
+
+- Vérifie que l’identifiant est soit un ObjectId valide, soit un nombre entier positif.  
+- Retourne **400** si l’identifiant est invalide.  
+- Ne réalise aucune opération en base.
+
+###### 6.2.3.2.2 `resolveCatwayIdentifier`
+
+- Résout l’identifiant hybride :  
+  - ObjectId → `findById`  
+  - catwayNumber → `findOne({ catwayNumber })`  
+- Retourne **404** si aucun catway n’est trouvé.  
+- Attache le catway trouvé à `req.catway`.  
+- Retourne **500** en cas d’erreur interne.
+
+##### 6.2.3.3 Impacts (architecture middlewares-controller)
+
+- Le contrôleur `getCatwayById` devient minimaliste (v0.4.0).  
+- Les middlewares sont testés isolément (niveau‑1).  
+- Les routes Catways sont mises à jour pour intégrer les middlewares.  
+- Les tests d’intégration (niveau‑2) valident désormais le pipeline complet :  
+  `validateCatwayId → resolveCatwayIdentifier → getCatwayById`.
+
+##### 6.2.3.4 Résultat (architecture middlewares-controller)
+
+- Architecture plus claire et modulaire.  
+- Contrôleurs allégés et centrés sur la logique métier.  
+- Tests plus simples et plus robustes.  
+- Préparation optimale pour les issues 27 → 30.
+
+---

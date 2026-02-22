@@ -51,8 +51,9 @@ src/                        ← Dossier principal du code de l'API
   │   └── catwayController.js       ← Contrôleur des Catways
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
-  │   └── authMiddleware.js         ← Middleware JWT (issue‑16), vérification du token et protection des routes
-  │   └── catwayMiddleware.js       ← Middleware Catway (issue‑26), vérification de l'identifiant
+  │   ├── authMiddleware.js              ← Middleware JWT (issue‑16), vérification du token et protection des routes
+  │   ├── catwayMiddleware.js            ← Middleware Catway (issue‑26), vérification de l'identifiant
+  │   └── catwayPayloadMiddleware.js     ← Middleware Payload du Catway (issue‑27), vérification du payload (complet, partiel)
   │
   ├── services/                 ← Logique métier réutilisable
   │
@@ -989,8 +990,6 @@ Cette issue clôture la Phase 3 en garantissant une base technique stable et ré
 
 ### 2.3 Phase 4 — Catways
 
-(sera complété avec les issues correspondantes)
-
 #### 2.3.1 Issue‑23 — Création structurelle des routes Catways
 
 Cette issue introduit le module de routes dédié aux Catways.  
@@ -1178,7 +1177,7 @@ Cette étape introduit deux middlewares dédiés à la validation et à la réso
 - **`validateCatwayId`** : vérifie que l’identifiant `/:id` est soit un ObjectId MongoDB valide, soit un identifiant métier `catwayNumber` (nombre entier positif).
 - **`resolveCatwayIdentifier`** : résout l’identifiant hybride et attache le catway trouvé à `req.catway`.
 
-### 🎯 Objectifs
+###### 2.3.4.3.1 Objectifs
 
 - Centraliser la validation de l’identifiant Catway.  
 - Éviter la duplication de logique dans les contrôleurs.  
@@ -1186,7 +1185,7 @@ Cette étape introduit deux middlewares dédiés à la validation et à la réso
 - Simplifier la logique métier du contrôleur `getCatwayById`.  
 - Renforcer la robustesse de l’API.
 
-### 🧠 Fonctionnement
+###### 2.3.4.3.2 Fonctionnement
 
 1. `validateCatwayId` vérifie la syntaxe de l’identifiant.  
 2. `resolveCatwayIdentifier` effectue la recherche :
@@ -1195,12 +1194,99 @@ Cette étape introduit deux middlewares dédiés à la validation et à la réso
 3. Le catway trouvé est attaché à `req.catway`.  
 4. Le contrôleur se contente de renvoyer la ressource.
 
-### 📌 Impacts
+###### 2.3.4.3.3 Impacts
 
 - Mise à jour du contrôleur `catwayController.js` (v0.4.0).  
 - Mise à jour des routes Catways pour intégrer les middlewares.  
 - Ajout des tests unitaires et d’intégration.  
 - Préparation des issues 27 → 30.
+
+---
+
+#### 2.3.5 Issue‑27 — POST /catways (création d’un catway)
+
+##### 2.3.5.1 Objectif
+
+Cette issue introduit la création d’un catway via l’endpoint :
+
+```txt
+POST /catways
+```
+
+Elle s’appuie sur l’architecture middleware‑controller mise en place dans l’issue‑26 et introduit un nouveau middleware métier dédié à la validation du payload.
+
+---
+
+##### 2.3.5.2 Architecture (middleware → controller)
+
+La route POST utilise désormais un pipeline clair et modulaire :
+
+```txt
+validateCatwayPayload → createCatway
+```
+
+- **validateCatwayPayload** (nouveau middleware, issue‑27)  
+  Valide les données métiers nécessaires à la création d’un catway :
+  - `catwayNumber` : entier positif  
+  - `type` : `short` ou `long`  
+  - `catwayState` : chaîne non vide  
+
+- **createCatway** (contrôleur v0.5.0)  
+  - crée le catway  
+  - gère les erreurs MongoDB (`E11000` → 409)  
+  - renvoie 201 en cas de succès  
+
+Cette séparation permet au contrôleur de rester minimaliste et centré sur la logique métier.
+
+---
+
+##### 2.3.5.3 Middlewares introduits
+
+###### 2.3.5.3.1 validateCatwayPayload (issue‑27)
+
+- utilisé pour **POST** et **PUT**  
+- garantit la validité du payload complet  
+- renvoie **400** en cas de données invalides  
+
+###### 2.3.5.3.2 validateCatwayPartialPayload (placeholder issue‑29)
+
+- introduit dès l’issue‑27 pour préparer **PATCH**  
+- sera implémenté dans l’issue‑29  
+- permet de valider uniquement les champs présents dans le payload  
+
+---
+
+##### 2.3.5.4 Contrôleur Catways (v0.5.0)
+
+Le contrôleur est mis à jour pour intégrer la création d’un catway :
+
+- `createCatway` : création d’un catway validé  
+- gestion des erreurs :
+  - **409** si `catwayNumber` existe déjà  
+  - **500** en cas d’erreur interne  
+
+Les méthodes PUT, PATCH et DELETE restent des placeholders documentés.
+
+---
+
+##### 2.3.5.5 Routes Catways (v0.4.0)
+
+La route POST est ajoutée :
+
+```txt
+POST /catways
+→ validateCatwayPayload
+→ createCatway
+```
+
+Les routes PUT, PATCH et DELETE sont préparées avec les middlewares adéquats mais restent non implémentées.
+
+---
+
+##### 2.3.5.6 Tests (à venir dans commit‑2 et commit‑3)
+
+- **Niveau‑1** : tests unitaires du middleware et du contrôleur  
+- **Niveau‑2** : tests d’intégration de la route POST  
 
 ---
 

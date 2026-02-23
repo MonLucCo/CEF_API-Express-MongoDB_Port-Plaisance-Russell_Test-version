@@ -1311,6 +1311,49 @@ Ce test garantit que le placeholder est **transparent**, comme attendu dans une 
 
 ---
 
+###### 2.3.5.6.2 Tests d'intégration de la route de création d'un Catway
+
+L’issue‑27 introduit la création d’un catway via :
+
+```txt
+POST /catways
+```
+
+Cette route est la première de la catégorie Catways à :
+
+- écrire réellement en base MongoDB,  
+- utiliser un middleware métier (`validateCatwayPayload`),  
+- déclencher une logique métier explicite en cas d’erreur interne (gestion du code MongoDB, exceptions, etc.).
+
+Même si la branche **500** est déjà testée en niveau‑1 dans le contrôleur (`createCatway`), un test supplémentaire est nécessaire en **niveau‑2**.
+
+**Raison technique :**
+
+- Le test niveau‑1 **valide uniquement la fonction** isolée :
+  - sans Express  
+  - sans middleware  
+  - sans modèle réel  
+  - sans MongoDB  
+  - sans pipeline HTTP  
+
+- Le test niveau‑2 valide le **système complet** :
+
+  ```txt
+  validateCatwayPayload → createCatway → Mongoose → MongoDB → Express → réponse HTTP
+  ```
+
+  - Il garantit que :
+    - l’erreur interne remonte correctement à Express,  
+    - aucun middleware ne l’intercepte ou ne la transforme,  
+    - la réponse observable par le client est bien un **500 JSON**,  
+    - le pipeline complet est cohérent et robuste.
+
+**Conclusion :**
+
+Le test 500 en niveau‑2 n’est pas un doublon, c’est une **validation système** indispensable, car il vérifie le comportement réellement observable par le client final.
+
+---
+
 ### 2.4 Phase 5 — Reservations
 
 (sera complété avec les issues correspondantes)

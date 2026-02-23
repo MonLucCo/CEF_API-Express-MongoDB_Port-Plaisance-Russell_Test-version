@@ -235,20 +235,20 @@ Le contrôleur `createCatway` est désormais minimaliste grâce au middleware `v
 
 ### 6.2 issue-26 : détail d'un catway
 
-**Résultats des tests (issue-26) - version initiale :**
+**Résultats des tests (issue-26 - version initiale) et non régression :**
 
 ![alt text](../assets/img_issue-26_resultats-tests-niveau-1_initial.png)
 
-**Résultats des tests (issue-26) - version hybride :**
+**Résultats des tests (issue-26 - version hybride) et non régression :**
 
 ![alt text](../assets/img_issue-26_resultats-tests-niveau-1_hybride.png)
 
-**Résultats des tests (issue-26) - version middlewares :**
+**Résultats des tests (issue-26 - version middlewares) et non régression :**
 
 ![alt text](../assets/img_issue-26_resultats-tests-niveau-1_middlewares.png)
 
 ### 6.3 issue-27 : création d'un catway
 
-**Résultats des tests (issue-27) - tests unitaires :**
+**Résultats des tests (issue-27) et non régression :**
 
 ![alt text](../assets/img_issue-27_resultats-tests-niveau-1.png)

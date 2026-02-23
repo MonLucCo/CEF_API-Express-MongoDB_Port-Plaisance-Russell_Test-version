@@ -91,8 +91,6 @@ Cette étape étend les tests d’intégration pour couvrir l’identifiant mét
 
 ---
 
----
-
 #### 4.2.3  Étape 3 — Middlewares Catways
 
 Cette étape étend les tests d’intégration pour valider le comportement réel des middlewares Catways dans la route :
@@ -119,6 +117,59 @@ GET /catways/:id
 
 ---
 
+### 4.3 `POST /catways` (issue‑27)
+
+L’issue‑27 introduit la route :
+
+```txt
+POST /catways
+```
+
+Elle utilise le pipeline complet :
+
+```txt
+validateCatwayPayload → createCatway → MongoDB
+```
+
+Les tests d’intégration valident le comportement réel de la route, en interaction avec Express, Mongoose et MongoMemoryServer.
+
+---
+
+#### 4.3.1 Scénarios testés
+
+- **400** si le payload est invalide  
+  (validation métier via `validateCatwayPayload`)  
+- **201** si le catway est créé  
+  (écriture réelle en base mémoire)  
+- **409** si `catwayNumber` existe déjà  
+  (erreur MongoDB `E11000`)  
+- **500** si une erreur interne survient  
+  (simulation via stub `Catway.create` → validation du pipeline complet)
+
+---
+
+#### 4.3.2 Pourquoi un test 500 en niveau‑2 ?
+
+Même si la branche 500 est déjà testée en niveau‑1 dans le contrôleur, un test supplémentaire est nécessaire en niveau‑2 pour valider :
+
+- la propagation correcte de l’erreur à travers Express,  
+- la cohérence du pipeline middleware → contrôleur → modèle → MongoDB,  
+- la réponse observable par le client final,  
+- l’absence d’interception ou de transformation de l’erreur par un middleware.
+
+Ce test garantit que l’API renvoie bien un **500 JSON** dans un scénario réel, ce qui ne peut pas être validé par les tests unitaires seuls.
+
+---
+
+#### 4.3.3 Notes
+
+- Aucun mock n’est utilisé, sauf pour simuler l’erreur interne (stub ponctuel).  
+- Le modèle Catway est utilisé tel quel.  
+- La base MongoDB en mémoire assure un environnement reproductible.  
+- Le test 500 valide un comportement **observable**, pas seulement une branche interne du contrôleur.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/catways.routes.test.js`
@@ -135,8 +186,16 @@ GET /catways/:id
 
 ![alt text](../assets/img_issue-25_resultats-tests-niveau-2.png)
 
-**Résultats des tests (issue-25) :**
+### 6.2 issue-26 : route du détail d'un Catway
+
+**Résultats des tests (issue-26) et non régression :**
 
 ![alt text](../assets/img_issue-26_resultats-tests-niveau-2.png)
+
+### 6.3 issue-27 : route de création d'un Catway
+
+**Résultats des tests (issue-27) et non régression :**
+
+![alt text](../assets/img_issue-27_resultats-tests-niveau-2.png)
 
 ---

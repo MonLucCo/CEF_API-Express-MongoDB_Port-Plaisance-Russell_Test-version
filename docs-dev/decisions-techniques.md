@@ -291,3 +291,51 @@ Deux middlewares dédiés sont introduits :
 - Préparation optimale pour les issues 27 → 30.
 
 ---
+
+### 6.3 Validation métier du payload Catways (issue‑27)
+
+#### 6.3.1 Motivations
+
+L’introduction de la création d’un catway (POST /catways) nécessite une validation stricte des données métiers.  
+Afin d’éviter la duplication de logique dans les contrôleurs et de préparer les futures opérations PUT et PATCH, la validation est centralisée dans un middleware dédié.
+
+---
+
+#### 6.3.2 Choix techniques
+
+Deux middlewares sont introduits :
+
+##### 6.3.2.1 validateCatwayPayload
+
+- utilisé pour **POST** et **PUT**  
+- valide les champs requis :
+  - `catwayNumber` : entier positif  
+  - `type` : enum `short` / `long`  
+  - `catwayState` : string non vide  
+- renvoie **400** en cas de données invalides  
+
+##### 6.3.2.2 validateCatwayPartialPayload
+
+- placeholder pour PATCH (issue‑29)  
+- validera uniquement les champs présents dans le payload  
+- permet une architecture évolutive et cohérente  
+
+---
+
+### 6.3.3 Impacts
+
+- Le contrôleur `createCatway` devient minimaliste (v0.5.0).  
+- La logique métier est centralisée dans les middlewares.  
+- Les routes PUT et PATCH sont préparées pour les issues suivantes.  
+- L’architecture middleware → controller reste cohérente avec l’issue‑26.  
+
+---
+
+### 6.3.4 Résultat
+
+- Architecture plus modulaire et testable  
+- Contrôleurs allégés  
+- Préparation optimale pour les issues 28 (PUT) et 29 (PATCH)  
+- Cohérence renforcée dans la gestion des erreurs et des validations  
+
+---

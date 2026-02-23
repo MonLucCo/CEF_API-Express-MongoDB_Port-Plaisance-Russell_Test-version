@@ -8,6 +8,7 @@
  */
 
 const { expect } = require('chai');
+const sinon = require('sinon'); // Seulement pour le test d’erreur interne dans POST /catways
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
@@ -108,6 +109,78 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             expect(res.status).to.equal(200);
             expect(res.body).to.have.property('catwayNumber', 7);
+        });
+
+    });
+
+
+    // -----------------------------
+    // POST /catways
+    // -----------------------------
+    describe('POST /catways', () => {
+
+        it('retourne 400 si payload invalide', async () => {
+            const res = await request(app)
+                .post('/catways')
+                .send({});
+
+            expect(res.status).to.equal(400);
+            expect(res.body).to.have.property('error');
+        });
+
+        it('retourne 201 si catway créé', async () => {
+            const payload = {
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            };
+
+            const res = await request(app)
+                .post('/catways')
+                .send(payload);
+
+            expect(res.status).to.equal(201);
+            expect(res.body).to.have.property('catwayNumber', 1);
+
+            const inDb = await Catway.findOne({ catwayNumber: 1 });
+            expect(inDb).to.not.be.null;
+        });
+
+        it('retourne 409 si catwayNumber existe déjà', async () => {
+            await Catway.create({
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            });
+
+            const res = await request(app)
+                .post('/catways')
+                .send({
+                    catwayNumber: 1,
+                    type: 'short',
+                    catwayState: 'bon état'
+                });
+
+            expect(res.status).to.equal(409);
+            expect(res.body).to.have.property('error');
+        });
+
+        it('retourne 500 si erreur interne Mongo survient', async () => {
+            // On force une erreur interne en stubant Catway.create
+            const stub = sinon.stub(Catway, 'create').throws(new Error('Erreur interne'));
+
+            const res = await request(app)
+                .post('/catways')
+                .send({
+                    catwayNumber: 2,
+                    type: 'short',
+                    catwayState: 'bon état'
+                });
+
+            expect(res.status).to.equal(500);
+            expect(res.body).to.have.property('error');
+
+            stub.restore();
         });
 
     });

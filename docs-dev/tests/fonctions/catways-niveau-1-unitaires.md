@@ -147,6 +147,76 @@ Le contrôleur `getCatwayById` étant désormais minimaliste, les tests associé
 
 ---
 
+### 4.3 Création d'un Catway - Payload Catways (Issue‑27)
+
+L’issue‑27 introduit la création d’un catway via :
+
+```txt
+POST /catways
+```
+
+Elle ajoute deux middlewares métier et met à jour le contrôleur Catways.
+
+---
+
+#### 4.3.1 `validateCatwayPayload`
+
+Ce middleware valide les données métiers nécessaires à la création ou à la mise à jour complète d’un catway.
+
+##### 4.3.1.1 Scénarios testés
+
+- **400** si un champ requis est manquant (`catwayNumber`, `type`, `catwayState`)  
+- **400** si `catwayNumber` n’est pas un entier positif  
+- **400** si `type` n’est pas `short` ou `long`  
+- **400** si `catwayState` est vide ou invalide  
+- **next()** si le payload est valide  
+
+##### 4.3.1.2 Notes
+
+- aucun accès à MongoDB  
+- test purement fonctionnel  
+- isolation totale du middleware  
+
+---
+
+#### 4.3.2 `validateCatwayPartialPayload` (placeholder)
+
+Ce middleware est introduit dans l’issue‑27 mais sera implémenté dans l’issue‑29.
+
+Même s’il ne contient aucune logique, **il doit être testé**.
+
+##### 4.3.2.1 Scénario testé
+
+- `next()` doit être appelé une fois  
+- aucune réponse HTTP ne doit être envoyée  
+- aucun contrôle métier n’est effectué  
+
+##### 4.3.2.2 Motivations
+
+- garantir la continuité du pipeline middleware → contrôleur  
+- éviter les régressions lors de l’implémentation future  
+- maintenir la cohérence des tests de niveau‑1  
+
+---
+
+#### 4.3.3 `createCatway`
+
+Le contrôleur `createCatway` est désormais minimaliste grâce au middleware `validateCatwayPayload`.
+
+##### 4.3.3.1 Scénarios testés
+
+- **201** si le catway est créé (stub `Catway.create`)  
+- **409** si `catwayNumber` existe déjà (`E11000`)  
+- **500** si une erreur interne survient  
+
+##### 4.3.3.2 Notes
+
+- le contrôleur ne valide plus le payload  
+- les tests utilisent `afterEachRestore()` pour nettoyer les stubs  
+- isolation totale du contrôleur  
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/catwayController.test.js`
@@ -176,3 +246,9 @@ Le contrôleur `getCatwayById` étant désormais minimaliste, les tests associé
 **Résultats des tests (issue-26) - version middlewares :**
 
 ![alt text](../assets/img_issue-26_resultats-tests-niveau-1_middlewares.png)
+
+### 6.3 issue-27 : création d'un catway
+
+**Résultats des tests (issue-27) - tests unitaires :**
+
+![alt text](../assets/img_issue-27_resultats-tests-niveau-1.png)

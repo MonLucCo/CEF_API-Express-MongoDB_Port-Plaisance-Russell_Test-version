@@ -1283,10 +1283,31 @@ Les routes PUT, PATCH et DELETE sont préparées avec les middlewares adéquats 
 
 ---
 
-##### 2.3.5.6 Tests (à venir dans commit‑2 et commit‑3)
+##### 2.3.5.6 Tests de l'issue-27
 
 - **Niveau‑1** : tests unitaires du middleware et du contrôleur  
 - **Niveau‑2** : tests d’intégration de la route POST  
+
+###### 2.3.5.6.1 Tests unitaires du middleware et du contrôleur
+
+L’issue‑27 introduit un nouveau middleware métier : `validateCatwayPayload`, utilisé pour les routes POST et PUT.  
+Elle introduit également un **placeholder** : `validateCatwayPartialPayload`, destiné à être implémenté dans l’issue‑29 (PATCH).
+
+Même si ce middleware ne contient pas encore de logique, **il doit être testé dès l’issue‑27** :
+
+- **Motivations :**
+  - garantir que le middleware **n’interrompt pas la chaîne de middlewares**  
+  - valider que `next()` est bien appelé dans tous les cas  
+  - préparer les tests de l’issue‑29 sans modifier les tests existants  
+  - assurer la stabilité du pipeline middleware → contrôleur  
+  - éviter toute régression lors de l’introduction de la logique partielle dans l’issue‑29  
+
+- **Scénario testé :**
+  - `next()` doit être appelé exactement une fois  
+  - aucune réponse HTTP ne doit être envoyée  
+  - aucun accès à la base ou au contrôleur  
+
+Ce test garantit que le placeholder est **transparent**, comme attendu dans une architecture middleware‑controller progressive.
 
 ---
 

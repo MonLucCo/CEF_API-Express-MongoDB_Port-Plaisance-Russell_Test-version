@@ -242,6 +242,42 @@ L’issue‑28 introduit les tests unitaires du contrôleur `updateCatway`, resp
 
 ---
 
+### 4.5 Mise à jour (partielle) d'un Catway - patchCatway (issue‑29)
+
+L’issue‑29 introduit les tests unitaires du middleware validateCatwayPartialPayload et du contrôleur patchCatway.
+
+#### 4.5.1 validateCatwayPartialPayload
+
+Scénarios testés :
+
+- 400 si aucun champ n’est fourni
+- 400 si catwayNumber est invalide
+- 400 si type est invalide
+- 400 si catwayState est vide
+- next() si payload partiel valide
+
+Notes :
+
+- Le middleware ne modifie pas req.catway.
+- Aucun accès à la base.
+- Tests isolés via mocks.
+
+#### 4.5.2 patchCatway
+
+Scénarios testés :
+
+- 200 si mise à jour partielle réussie
+- 409 si duplication catwayNumber (E11000)
+- 500 si erreur interne (save())
+
+Notes :
+
+- req.catway est simulé.
+- save() est stubé via Sinon.
+- Le contrôleur ne valide pas les données (délégué au middleware).
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/catwayController.test.js`
@@ -283,3 +319,9 @@ L’issue‑28 introduit les tests unitaires du contrôleur `updateCatway`, resp
 **Résultats des tests (issue-28) et non régression :**
 
 ![alt text](../assets/img_issue-28_resultats-tests-niveau-1.png)
+
+### 6.5 issue-29 : mise à jour (partielle) d'un catway
+
+**Résultats des tests (issue-29) et non régression :**
+
+![alt text](../assets/img_issue-29_resultats-tests-niveau-1.png)

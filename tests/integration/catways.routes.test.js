@@ -113,7 +113,6 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
     });
 
-
     // -----------------------------
     // POST /catways
     // -----------------------------
@@ -179,6 +178,109 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             expect(res.status).to.equal(500);
             expect(res.body).to.have.property('error');
+
+            stub.restore();
+        });
+
+    });
+
+    // -----------------------------
+    // PUT /catways/:id
+    // -----------------------------
+    describe('PUT /catways/:id', () => {
+
+        it('retourne 400 si payload invalide', async () => {
+            const catway = await Catway.create({
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            });
+
+            const res = await request(app)
+                .put(`/catways/${catway._id}`)
+                .send({}); // payload invalide
+
+            expect(res.status).to.equal(400);
+        });
+
+        it('retourne 404 si catway introuvable', async () => {
+            const fakeId = new mongoose.Types.ObjectId();
+
+            const res = await request(app)
+                .put(`/catways/${fakeId}`)
+                .send({
+                    catwayNumber: 99,
+                    type: 'long',
+                    catwayState: 'neuf'
+                });
+
+            expect(res.status).to.equal(404);
+        });
+
+        it('retourne 200 si mise à jour réussie', async () => {
+            const catway = await Catway.create({
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            });
+
+            const res = await request(app)
+                .put(`/catways/${catway._id}`)
+                .send({
+                    catwayNumber: 99,
+                    type: 'long',
+                    catwayState: 'neuf'
+                });
+
+            expect(res.status).to.equal(200);
+            expect(res.body.catwayNumber).to.equal(99);
+
+            const updated = await Catway.findById(catway._id);
+            expect(updated.catwayNumber).to.equal(99);
+        });
+
+        it('retourne 409 si catwayNumber existe déjà', async () => {
+            await Catway.create({
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            });
+
+            const catway2 = await Catway.create({
+                catwayNumber: 2,
+                type: 'long',
+                catwayState: 'neuf'
+            });
+
+            const res = await request(app)
+                .put(`/catways/${catway2._id}`)
+                .send({
+                    catwayNumber: 1, // duplication
+                    type: 'long',
+                    catwayState: 'neuf'
+                });
+
+            expect(res.status).to.equal(409);
+        });
+
+        it('retourne 500 si erreur interne survient', async () => {
+            const catway = await Catway.create({
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            });
+
+            const stub = sinon.stub(Catway.prototype, 'save').throws(new Error('Erreur interne'));
+
+            const res = await request(app)
+                .put(`/catways/${catway._id}`)
+                .send({
+                    catwayNumber: 99,
+                    type: 'long',
+                    catwayState: 'neuf'
+                });
+
+            expect(res.status).to.equal(500);
 
             stub.restore();
         });

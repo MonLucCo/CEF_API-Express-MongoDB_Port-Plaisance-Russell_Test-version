@@ -170,6 +170,45 @@ Ce test garantit que l’API renvoie bien un **500 JSON** dans un scénario rée
 
 ---
 
+### 4.4 `PUT /catways/:id` (issue‑28)
+
+L’issue‑28 introduit les tests d’intégration de la mise à jour complète d’un catway via :
+
+```txt
+    PUT /catways/:id
+```
+
+Ces tests valident le pipeline complet :
+
+```txt
+    validateCatwayId → resolveCatwayIdentifier → validateCatwayPayload → updateCatway → MongoDB
+```
+
+#### 4.4.1 Scénarios testés
+
+- **400** si le payload est invalide  
+  Validation assurée par `validateCatwayPayload`.
+
+- **404** si le catway n’existe pas  
+  Gestion assurée par `resolveCatwayIdentifier`.
+
+- **200** si la mise à jour réussit  
+  Le document est modifié en base mémoire et retourné au client.
+
+- **409** si `catwayNumber` existe déjà  
+  Erreur MongoDB `E11000` reproduite en conditions réelles.
+
+- **500** si une erreur interne survient  
+  Simulation via stub ponctuel sur `catway.save`, permettant de valider la propagation réelle de l’erreur dans Express.
+
+#### 4.4.2 Notes
+
+- Un enregistrement est créé en base mémoire avant la mise à jour (précondition logique).
+- Aucun mock n’est utilisé, sauf pour simuler l’erreur interne.
+- Les tests garantissent la non‑régression des issues 25, 26 et 27.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/catways.routes.test.js`
@@ -197,5 +236,11 @@ Ce test garantit que l’API renvoie bien un **500 JSON** dans un scénario rée
 **Résultats des tests (issue-27) et non régression :**
 
 ![alt text](../assets/img_issue-27_resultats-tests-niveau-2.png)
+
+### 6.4 issue-28 : route de mise à jour (complète) d'un Catway
+
+**Résultats des tests (issue-28) et non régression :**
+
+![alt text](../assets/img_issue-28_resultats-tests-niveau-2.png)
 
 ---

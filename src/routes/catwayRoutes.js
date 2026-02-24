@@ -10,12 +10,12 @@
  * - GET /catways               → liste des catways
  * - GET /catways/:id           → détail d’un catway (identifiant hybride)
  * - POST /catways              → création d’un catway
+ * - PUT /catways/:id            → mise à jour complète d’un catway
  *
- * Les opérations POST, PUT, PATCH et DELETE seront implémentées dans les issues 27 → 30.
+ * Les opérations PATCH et DELETE seront implémentées dans les issues 29 → 30.
  * Elles sont présentes sous forme de placeholders pour faciliter l’intégration future.
  * 
- * @todo Implémentation prévue dans les issues 27 → 30
- * - PUT /catways/:id            → mise à jour complète d’un catway
+ * @todo Implémentation prévue dans les issues 29 → 30
  * - PATCH /catways/:id          → mise à jour partielle d’un catway
  * - DELETE /catways/:id         → suppression d’un catway
  *
@@ -24,7 +24,7 @@
  * @requires module:controllers/catwayController
  * @requires module:middlewares/catwayMiddleware
  * @requires module:middlewares/catwayPayloadMiddleware
- * @version 0.4.0
+ * @version 0.4.1
  */
 
 const express = require('express');
@@ -130,8 +130,6 @@ router.post('/', validateCatwayPayload, createCatway);
  * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
  * @see module:middlewares/catwayPayloadMiddleware.validateCatwayPayload
  * @see module:controllers/catwayController.updateCatway
- * 
- * @todo Implémentation de la logique métier dans le contrôleur `updateCatway` (issue‑28)
  */
 router.put('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPayload, updateCatway);
 

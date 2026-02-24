@@ -7,8 +7,9 @@
  * Les middlewares :
  * - de validation et de résolution d’identifiant (issue‑26) sont utilisés par les méthodes nécessitant un identifiant de catway.
  * - de validation de payload (issue‑27) est utilisé par les méthodes de création et de mise à jour.
- * Ainsi, les méthodes du contrôleur peuvent se concentrer sur la logique métier sans se soucier de la 
- * validation ou de la résolution d’identifiant, ainsi que la validité des données métiers (payload).
+ * 
+ * Ainsi, les méthodes du contrôleur peuvent se concentrer sur la logique métier sans se soucier de la validation ou de la résolution 
+ * d’identifiant, ainsi que la validité des données métiers (payload).
  * @see module:middlewares/catwayMiddleware
  * @see module:middlewares/catwayPayloadMiddleware
  *
@@ -18,12 +19,11 @@
  * - createCatway (issue‑27) : crée un nouveau catway à partir d’un payload validé
  * - updateCatway (issue‑28) : met à jour complètement un catway à partir d’un payload validé et d’un identifiant validé
  * - patchCatway (issue‑29) : met à jour partiellement un catway à partir d’un payload validé et d’un identifiant validé
- *
- * La méthode deleteCatway est présente sous forme de placeholders et sera complétée dans l'es 'issue suivante.
+ * - deleteCatway (issue‑30) : supprime un catway selon son identifiant
  *
  * @module controllers/catwayController
  * @requires module:models/catway
- * @version 0.7.0
+ * @version 0.8.0
  */
 
 const Catway = require('../models/catway');
@@ -197,16 +197,28 @@ exports.patchCatway = async (req, res) => {
 /**
  * DELETE /catways/:id
  * @description Supprime un catway (non implémenté)
- * Placeholder qui suppose que l’identifiant est valide et que le catway existe.
  * Le contrôleur se concentre donc sur la logique métier de suppression.
  * Le middleware de validation d’identifiant assure que l’identifiant est valide et que le catway existe avant d’atteindre le contrôleur.
  * Le middleware de résolution d’identifiant assure que le catway est attaché à `req.catway` pour que le contrôleur puisse le supprimer.
  * 
+ * @returns {Object} 204 - Catway supprimé
+ * @throws {Object} 500 - Erreur interne du serveur
+ * 
  * @example
  * router.delete('/:id', validateCatwayId, resolveCatwayIdentifier, deleteCatway);
  * 
- * @version 0.0.1
+ * @version 0.1.0
  */
-exports.deleteCatway = (req, res) => {
-    res.status(501).json({ message: 'Supprime un catway - Non implémenté (issue‑30)' });
+exports.deleteCatway = async (req, res) => {
+    try {
+        const catway = req.catway;
+
+        await catway.deleteOne();
+
+        return res.status(204).send();
+
+    } catch (error) {
+        console.error('Erreur delete catway :', error.message);
+        return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
 };

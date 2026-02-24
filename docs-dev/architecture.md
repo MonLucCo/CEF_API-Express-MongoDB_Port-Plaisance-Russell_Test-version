@@ -1429,6 +1429,50 @@ Cette issue complète la fonctionnalité CRUD des Catways en ajoutant la mise à
 
 ---
 
+#### 2.3.8 Issue‑30 — DELETE /catways/:id (Suppression d’un Catway)
+
+Cette issue introduit la suppression d’un catway via :
+
+```txt
+    DELETE /catways/:id
+```
+
+Le pipeline reste identique aux issues précédentes :
+
+```txt
+    validateCatwayId → resolveCatwayIdentifier → deleteCatway
+```
+
+Aucun nouveau middleware n’est ajouté. Les middlewares existants assurent :
+
+- validateCatwayId : validation de l’identifiant (ObjectId ou nombre)
+- resolveCatwayIdentifier : résolution du catway en base et attachement à req.catway
+
+Le contrôleur deleteCatway réalise la suppression définitive du document.
+
+##### 2.3.8.1 Règles principales
+
+- Suppression via deleteOne() sur req.catway
+- Retourne 204 No Content en cas de succès
+- Ne retourne aucun corps JSON
+- Gestion des erreurs internes → 500
+
+##### 2.3.8.2 Tests associés
+
+- Niveau‑1 :
+  - 204 suppression réussie
+  - 500 erreur interne simulée
+
+- Niveau‑2 :
+  - 400 ID invalide
+  - 404 catway introuvable
+  - 204 suppression réussie (vérification en base mémoire)
+  - 500 erreur interne simulée
+
+Cette issue clôture le CRUD complet des Catways.
+
+---
+
 ### 2.4 Phase 5 — Reservations
 
 (sera complété avec les issues correspondantes)

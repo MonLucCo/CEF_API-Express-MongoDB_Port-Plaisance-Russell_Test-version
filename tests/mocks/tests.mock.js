@@ -7,7 +7,8 @@ const sinon = require('sinon');
 function mockResponse() {
     return {
         status: sinon.stub().returnsThis(),
-        json: sinon.stub().returnsThis()
+        json: sinon.stub().returnsThis(),
+        send: sinon.stub().returnsThis()
     };
 }
 

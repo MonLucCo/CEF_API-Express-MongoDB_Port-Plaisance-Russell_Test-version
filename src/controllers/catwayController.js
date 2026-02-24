@@ -16,13 +16,13 @@
  * - getAllCatways (issue‑25) : retourne la liste complète des catways
  * - getCatwayById (issue‑26) : retourne un catway selon son identifiant
  * - createCatway (issue‑27) : crée un nouveau catway à partir d’un payload validé
+ * - updateCatway (issue‑28) : met à jour complètement un catway à partir d’un payload validé et d’un identifiant validé
  *
- * Les autres méthodes (updateCatway, patchCatway, deleteCatway)
- * sont présentes sous forme de placeholders et seront complétées dans les issues suivantes.
+ * Les autres méthodes (patchCatway, deleteCatway) sont présentes sous forme de placeholders et seront complétées dans les issues suivantes.
  *
  * @module controllers/catwayController
  * @requires module:models/catway
- * @version 0.5.0
+ * @version 0.6.0
  */
 
 const Catway = require('../models/catway');
@@ -80,8 +80,7 @@ exports.getCatwayById = (req, res) => {
  * @route POST /catways
  * @description Crée un nouveau catway dans la base MongoDB.
  *
- * Ce contrôleur suppose que le payload a été validé par le middleware
- * `validateCatwayPayload`.
+ * Ce contrôleur suppose que le payload a été validé par le middleware `validateCatwayPayload`.
  *
  * @returns {Object} 201 - Catway créé
  * @throws {Object} 409 - catwayNumber déjà existant
@@ -110,20 +109,45 @@ exports.createCatway = async (req, res) => {
 
 /**
  * PUT /catways/:id
- * @description Met à jour un catway (non implémenté)
- * Placeholder qui suppose que l’identifiant est valide, que le catway existe et que le payload est valide.
+ * @description Met à jour un catway (mise à jour complète)
  * Le contrôleur se concentre donc sur la logique métier de mise à jour complète.
  * Le middleware de validation de payload assure que les données métiers sont valides avant d’atteindre le contrôleur.
  * Le middleware de validation d’identifiant assure que l’identifiant est valide et que le catway existe avant d’atteindre le contrôleur.
  * Le middleware de résolution d’identifiant assure que le catway est attaché à `req.catway` pour que le contrôleur puisse le mettre à jour.
- * 
+ *
+ * @returns {Object} 200 - Catway mis à jour complètement
+ * @throws {Object} 400 - Identifiant ou données invalides
+ * @throws {Object} 404 - Catway introuvable
+ * @throws {Object} 409 - Catway déjà existant
+ * @throws {Object} 500 - Erreur interne du serveur
+ *  
  * @example
  * router.put('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPayload, updateCatway);
  * 
- * @version 0.0.1
+ * @version 0.1.0
  */
-exports.updateCatway = (req, res) => {
-    res.status(501).json({ message: 'Mise à jour d’un catway - Non implémenté (issue‑28)' });
+exports.updateCatway = async (req, res) => {
+    try {
+        const catway = req.catway;
+        const { catwayNumber, type, catwayState } = req.body;
+
+        catway.catwayNumber = catwayNumber;
+        catway.type = type;
+        catway.catwayState = catwayState;
+
+        const updated = await catway.save();
+
+        return res.status(200).json(updated);
+
+    } catch (error) {
+        console.error('Erreur update catway :', error.message);
+
+        if (error.code === 11000) {
+            return res.status(409).json({ error: 'catwayNumber déjà existant' });
+        }
+
+        return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
 };
 
 /**

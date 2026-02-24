@@ -322,7 +322,7 @@ Deux middlewares sont introduits :
 
 ---
 
-### 6.3.3 Impacts
+#### 6.3.3 Impacts
 
 - Le contrôleur `createCatway` devient minimaliste (v0.5.0).  
 - La logique métier est centralisée dans les middlewares.  
@@ -331,11 +331,38 @@ Deux middlewares sont introduits :
 
 ---
 
-### 6.3.4 Résultat
+#### 6.3.4 Résultat
 
 - Architecture plus modulaire et testable  
 - Contrôleurs allégés  
 - Préparation optimale pour les issues 28 (PUT) et 29 (PATCH)  
 - Cohérence renforcée dans la gestion des erreurs et des validations  
+
+---
+
+### 6.4 Mise à jour complète Catways (issue‑28)
+
+La mise à jour complète d’un catway (`PUT /catways/:id`) suit les principes établis dans les issues précédentes :
+
+- La validation des données reste dans les middlewares (`validateCatwayPayload`).
+- La résolution de l’identifiant reste dans `resolveCatwayIdentifier`.
+- Le contrôleur `updateCatway` ne contient que la logique métier minimale :
+  - remplacement des champs
+  - sauvegarde en base
+  - gestion des erreurs MongoDB (`E11000`)
+  - gestion des erreurs internes (500)
+
+Cette séparation garantit :
+
+- une architecture cohérente et prévisible,
+- une testabilité maximale (unitaires + intégration),
+- une absence de duplication de logique entre contrôleur et middlewares.
+
+Le test 500 est volontairement répété en niveau‑1 et niveau‑2 :
+
+- niveau‑1 : validation de la branche métier interne (`save()`),
+- niveau‑2 : validation du comportement observable dans le pipeline Express complet.
+
+Aucune modification structurelle des routes n’est introduite. Seule la JSDoc de `catwayRoutes.js` est mise à jour (version 0.4.1).
 
 ---

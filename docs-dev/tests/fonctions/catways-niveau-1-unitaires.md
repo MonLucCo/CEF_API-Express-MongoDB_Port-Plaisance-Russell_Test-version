@@ -217,6 +217,31 @@ Le contrôleur `createCatway` est désormais minimaliste grâce au middleware `v
 
 ---
 
+### 4.4 Mise à jour (complète) d'un Catway - updateCatway (issue‑28)
+
+L’issue‑28 introduit les tests unitaires du contrôleur `updateCatway`, responsable de la mise à jour complète d’un catway.
+
+#### 4.4.1 Scénarios testés
+
+- **200** si la mise à jour réussit  
+  Le contrôleur applique les modifications et renvoie l’objet mis à jour.
+
+- **409** si `catwayNumber` existe déjà (`E11000`)  
+  Le contrôleur renvoie un conflit métier cohérent avec la création (issue‑27).
+
+- **500** si une erreur interne survient  
+  Ce test est distinct de celui de `resolveCatwayIdentifier` (issue‑26) car il concerne une
+  autre source d’erreur : l’échec de `save()`.
+
+#### 4.4.2 Notes
+
+- `req.catway` est simulé (aucun middleware exécuté).
+- `catway.save()` est stubé via Sinon.
+- Aucun accès à MongoDB.
+- Tests isolés et cohérents avec la stratégie de tests de la Phase 4.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/catwayController.test.js`
@@ -252,3 +277,9 @@ Le contrôleur `createCatway` est désormais minimaliste grâce au middleware `v
 **Résultats des tests (issue-27) et non régression :**
 
 ![alt text](../assets/img_issue-27_resultats-tests-niveau-1.png)
+
+### 6.4 issue-28 : mise à jour (complète) d'un catway
+
+**Résultats des tests (issue-28) et non régression :**
+
+![alt text](../assets/img_issue-28_resultats-tests-niveau-1.png)

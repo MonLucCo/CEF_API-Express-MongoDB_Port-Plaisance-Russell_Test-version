@@ -209,6 +209,45 @@ Ces tests valident le pipeline complet :
 
 ---
 
+### 4.5 PATCH /catways/:id (issue‑29)
+
+L’issue‑29 introduit les tests d’intégration de la mise à jour partielle d’un catway via :
+
+```txt
+    PATCH /catways/:id
+```
+
+Ces tests valident le pipeline complet :
+
+```txt
+    validateCatwayId → resolveCatwayIdentifier → validateCatwayPartialPayload → patchCatway → MongoDB
+```
+
+#### 4.5.1 Scénarios testés
+
+- 400 si payload invalide
+  (validateCatwayPartialPayload)
+
+- 404 si catway introuvable
+  (resolveCatwayIdentifier)
+
+- 200 si mise à jour partielle réussie
+  Le document est modifié en base mémoire.
+
+- 409 si catwayNumber existe déjà
+  Reproduction réelle de l’erreur MongoDB E11000.
+
+- 500 si erreur interne survient
+  Simulation via stub ponctuel sur save().
+
+#### 4.5.2 Notes
+
+- Un enregistrement est créé en base mémoire avant la mise à jour.
+- Aucun mock n’est utilisé, sauf pour simuler l’erreur interne.
+- Les tests confirment la non‑régression des issues 26, 27 et 28.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/catways.routes.test.js`
@@ -242,5 +281,11 @@ Ces tests valident le pipeline complet :
 **Résultats des tests (issue-28) et non régression :**
 
 ![alt text](../assets/img_issue-28_resultats-tests-niveau-2.png)
+
+### 6.5 issue-29 : route de mise à jour (partielle) d'un Catway
+
+**Résultats des tests (issue-29) et non régression :**
+
+![alt text](../assets/img_issue-29_resultats-tests-niveau-2.png)
 
 ---

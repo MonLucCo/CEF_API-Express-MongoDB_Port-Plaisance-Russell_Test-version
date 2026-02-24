@@ -10,13 +10,13 @@
  * - GET /catways               → liste des catways
  * - GET /catways/:id           → détail d’un catway (identifiant hybride)
  * - POST /catways              → création d’un catway
- * - PUT /catways/:id            → mise à jour complète d’un catway
+ * - PUT /catways/:id           → mise à jour complète d’un catway
+ * - PATCH /catways/:id         → mise à jour partielle d’un catway
  *
  * Les opérations PATCH et DELETE seront implémentées dans les issues 29 → 30.
  * Elles sont présentes sous forme de placeholders pour faciliter l’intégration future.
  * 
- * @todo Implémentation prévue dans les issues 29 → 30
- * - PATCH /catways/:id          → mise à jour partielle d’un catway
+ * @todo Implémentation prévue dans l'issue 30
  * - DELETE /catways/:id         → suppression d’un catway
  *
  * @module routes/catwayRoutes
@@ -24,7 +24,7 @@
  * @requires module:controllers/catwayController
  * @requires module:middlewares/catwayMiddleware
  * @requires module:middlewares/catwayPayloadMiddleware
- * @version 0.4.1
+ * @version 0.4.2
  */
 
 const express = require('express');
@@ -124,6 +124,7 @@ router.post('/', validateCatwayPayload, createCatway);
  * @returns {Object} 200 - Catway mis à jour
  * @throws {Object} 400 - Identifiant ou données invalides
  * @throws {Object} 404 - Catway introuvable
+ * @throws {Object} 409 - catwayNumber déjà existant
  * @throws {Object} 500 - Erreur interne du serveur
  * 
  * @see module:middlewares/catwayMiddleware.validateCatwayId
@@ -137,7 +138,12 @@ router.put('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPayl
  * PATCH /catways/:id
  * @summary Met à jour partiellement un catway.
  * @description
- * Cette route utilise les middlewares de validation d’identifiant et de résolution, ainsi qu’un middleware dédié à la validation partielle du payload.
+ * Cette route utilise les middlewares suivants :
+ *
+ * - `validateCatwayId` : vérifie la validité syntaxique de l’identifiant
+ * - `resolveCatwayIdentifier` : résout l’identifiant hybride et attache le catway à `req.catway`
+ * - `validateCatwayPartialPayload` : valide le payload de mise à jour partielle
+ * 
  * Le contrôleur `patchCatway` suppose que l’identifiant est valide, que le catway existe et que le payload est valide.
  * Il se concentre donc sur la logique métier de mise à jour partielle.
  * Le middleware de validation de payload assure que les données métiers sont valides avant d’atteindre le contrôleur.
@@ -145,14 +151,13 @@ router.put('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPayl
  * @returns {Object} 200 - Catway mis à jour
  * @throws {Object} 400 - Identifiant ou données invalides
  * @throws {Object} 404 - Catway introuvable
+ * @throws {Object} 409 - catwayNumber déjà existant
  * @throws {Object} 500 - Erreur interne du serveur
  * 
  * @see module:middlewares/catwayMiddleware.validateCatwayId
  * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
  * @see module:middlewares/catwayPayloadMiddleware.validateCatwayPartialPayload
  * @see module:controllers/catwayController.patchCatway
- * 
- * @todo Implémentation de la logique métier dans le contrôleur `patchCatway` (issue‑29)
  */
 router.patch('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPartialPayload, patchCatway);
 

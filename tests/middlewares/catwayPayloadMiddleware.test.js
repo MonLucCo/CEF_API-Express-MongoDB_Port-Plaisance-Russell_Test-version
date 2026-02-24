@@ -64,10 +64,51 @@ describe('Middleware Catways — validateCatwayPayload (niveau‑1)', () => {
 
 });
 
-describe('Middleware Catways — validateCatwayPartialPayload (niveau‑1)', () => {
+describe('Middleware Catways – validateCatwayPartialPayload (niveau‑1)', () => {
 
-    it('laisse toujours passer (placeholder)', () => {
+    it('retourne 400 si aucun champ n’est fourni', () => {
         const req = { body: {} };
+        const res = mockResponse();
+        const next = mockNext();
+
+        validateCatwayPartialPayload(req, res, next);
+
+        expect(res.status.calledWith(400)).to.be.true;
+        expect(next.notCalled).to.be.true;
+    });
+
+    it('retourne 400 si catwayNumber est invalide', () => {
+        const req = { body: { catwayNumber: -5 } };
+        const res = mockResponse();
+        const next = mockNext();
+
+        validateCatwayPartialPayload(req, res, next);
+
+        expect(res.status.calledWith(400)).to.be.true;
+    });
+
+    it('retourne 400 si type est invalide', () => {
+        const req = { body: { type: 'medium' } };
+        const res = mockResponse();
+        const next = mockNext();
+
+        validateCatwayPartialPayload(req, res, next);
+
+        expect(res.status.calledWith(400)).to.be.true;
+    });
+
+    it('retourne 400 si catwayState est vide', () => {
+        const req = { body: { catwayState: '' } };
+        const res = mockResponse();
+        const next = mockNext();
+
+        validateCatwayPartialPayload(req, res, next);
+
+        expect(res.status.calledWith(400)).to.be.true;
+    });
+
+    it('laisse passer un payload partiel valide', () => {
+        const req = { body: { type: 'short' } };
         const res = mockResponse();
         const next = mockNext();
 

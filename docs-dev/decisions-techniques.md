@@ -366,3 +366,29 @@ Le test 500 est volontairement répété en niveau‑1 et niveau‑2 :
 Aucune modification structurelle des routes n’est introduite. Seule la JSDoc de `catwayRoutes.js` est mise à jour (version 0.4.1).
 
 ---
+
+### 6.5 Mise à jour partielle Catways (issue‑29)
+
+La mise à jour partielle d’un catway suit les principes établis dans les issues précédentes :
+
+- La validation reste dans les middlewares.
+- Le middleware validateCatwayPartialPayload devient une implémentation réelle :
+  - au moins un champ doit être fourni,
+  - chaque champ présent doit être valide,
+  - aucune logique métier n’est dupliquée dans le contrôleur.
+
+- Le contrôleur patchCatway applique uniquement la logique métier minimale :
+  - mise à jour des champs présents,
+  - sauvegarde en base,
+  - gestion des erreurs MongoDB (E11000 → 409),
+  - gestion des erreurs internes (500).
+
+Le test 500 est volontairement présent en niveau‑1 et niveau‑2 :
+
+- niveau‑1 : validation de la branche interne (save()),
+- niveau‑2 : validation de la propagation réelle dans Express.
+
+Aucune modification structurelle des routes. Mise à jour documentaire légère dans catwayRoutes.js (v0.4.2).
+Le module catwayPayloadMiddleware passe en version 0.2.0 (nouvelle capacité fonctionnelle).
+
+---

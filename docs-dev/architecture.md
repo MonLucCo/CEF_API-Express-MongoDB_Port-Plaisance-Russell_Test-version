@@ -1387,6 +1387,48 @@ Cette issue ne modifie pas l’architecture, mais complète la fonctionnalité C
 
 ---
 
+#### 2.3.7 Issue‑29 — PATCH /catways/:id (Mise à jour partielle d’un Catway)
+
+Cette issue introduit la mise à jour partielle d’un catway via :
+
+```txt
+    PATCH /catways/:id
+```
+
+Elle repose sur le pipeline complet :
+
+```txt
+    validateCatwayId → resolveCatwayIdentifier → validateCatwayPartialPayload → patchCatway
+```
+
+Aucun nouveau middleware n’est créé, mais `validateCatwayPartialPayload` passe d’un placeholder (issue‑27) à une implémentation complète.
+
+##### 2.3.7.1 Règles principales
+
+- Le payload peut contenir un ou plusieurs champs parmi :
+  catwayNumber, type, catwayState.
+- Chaque champ présent doit être valide.
+- Au moins un champ doit être fourni.
+- Le contrôleur ne modifie que les champs présents dans req.body.
+- Le champ catwayNumber doit rester unique (gestion E11000).
+- Le contrôleur ne réalise aucune validation : celle‑ci est assurée par les middlewares.
+
+##### 2.3.7.2 Tests associés
+
+- Niveau‑1 :
+  - validateCatwayPartialPayload : 400 + next()
+  - patchCatway : 200, 409, 500
+- Niveau‑2 :
+  - 400 payload invalide
+  - 404 catway introuvable
+  - 200 mise à jour partielle réussie
+  - 409 duplication catwayNumber
+  - 500 erreur interne simulée
+
+Cette issue complète la fonctionnalité CRUD des Catways en ajoutant la mise à jour partielle.
+
+---
+
 ### 2.4 Phase 5 — Reservations
 
 (sera complété avec les issues correspondantes)

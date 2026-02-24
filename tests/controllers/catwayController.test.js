@@ -5,8 +5,6 @@ const { mockResponse, afterEachRestore } = require('../mocks/tests.mock');
 const {
     mockFindAll,
     mockFindAllError,
-    mockFindById,
-    mockFindByIdError,
 } = require('../mocks/catway.mock');
 
 const Catway = require('../../src/models/catway');
@@ -16,6 +14,7 @@ const {
     getCatwayById,
     createCatway,
     updateCatway,
+    patchCatway,
 } = require('../../src/controllers/catwayController');
 
 // ----------------------------- 
@@ -178,6 +177,68 @@ describe('Controller Catways — updateCatway (niveau‑1)', () => {
         const res = mockResponse();
 
         await updateCatway(req, res);
+
+        expect(res.status.calledWith(500)).to.be.true;
+        expect(res.json.calledWithMatch({ error: 'Erreur interne du serveur' })).to.be.true;
+    });
+
+});
+
+// -----------------------------
+// PATCH CATWAY BY ID
+// -----------------------------
+describe('Controller Catways – patchCatway (niveau‑1)', () => {
+
+    afterEach(() => sinon.restore());
+
+    it('retourne 200 si la mise à jour partielle réussit', async () => {
+        const fakeCatway = {
+            catwayNumber: 1,
+            type: 'short',
+            catwayState: 'bon état',
+            save: sinon.stub().resolves({
+                catwayNumber: 1,
+                type: 'long',
+                catwayState: 'bon état'
+            })
+        };
+
+        const req = {
+            catway: fakeCatway,
+            body: { type: 'long' }
+        };
+
+        const res = mockResponse();
+
+        await patchCatway(req, res);
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWithMatch({ type: 'long' })).to.be.true;
+    });
+
+    it('retourne 409 si catwayNumber existe déjà (E11000)', async () => {
+        const fakeCatway = {
+            save: sinon.stub().throws({ code: 11000 })
+        };
+
+        const req = { catway: fakeCatway, body: { catwayNumber: 2 } };
+        const res = mockResponse();
+
+        await patchCatway(req, res);
+
+        expect(res.status.calledWith(409)).to.be.true;
+        expect(res.json.calledWithMatch({ error: 'catwayNumber déjà existant' })).to.be.true;
+    });
+
+    it('retourne 500 si une erreur interne survient', async () => {
+        const fakeCatway = {
+            save: sinon.stub().throws(new Error('Erreur interne'))
+        };
+
+        const req = { catway: fakeCatway, body: { type: 'long' } };
+        const res = mockResponse();
+
+        await patchCatway(req, res);
 
         expect(res.status.calledWith(500)).to.be.true;
         expect(res.json.calledWithMatch({ error: 'Erreur interne du serveur' })).to.be.true;

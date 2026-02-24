@@ -15,6 +15,7 @@ const {
     createCatway,
     updateCatway,
     patchCatway,
+    deleteCatway
 } = require('../../src/controllers/catwayController');
 
 // ----------------------------- 
@@ -189,7 +190,7 @@ describe('Controller Catways — updateCatway (niveau‑1)', () => {
 // -----------------------------
 describe('Controller Catways – patchCatway (niveau‑1)', () => {
 
-    afterEach(() => sinon.restore());
+    afterEachRestore();
 
     it('retourne 200 si la mise à jour partielle réussit', async () => {
         const fakeCatway = {
@@ -246,3 +247,40 @@ describe('Controller Catways – patchCatway (niveau‑1)', () => {
 
 });
 
+// -----------------------------
+// DELETE CATWAY BY ID
+// -----------------------------
+describe('Controller Catways – deleteCatway (niveau‑1)', () => {
+
+    afterEachRestore();
+
+    it('retourne 204 si la suppression réussit', async () => {
+        const fakeCatway = {
+            deleteOne: sinon.stub().resolves()
+        };
+
+        const req = { catway: fakeCatway };
+        const res = mockResponse();
+
+        await deleteCatway(req, res);
+
+        expect(fakeCatway.deleteOne.calledOnce).to.be.true;
+        expect(res.status.calledWith(204)).to.be.true;
+        expect(res.send.calledOnce).to.be.true;
+    });
+
+    it('retourne 500 si une erreur interne survient', async () => {
+        const fakeCatway = {
+            deleteOne: sinon.stub().throws(new Error('Erreur interne'))
+        };
+
+        const req = { catway: fakeCatway };
+        const res = mockResponse();
+
+        await deleteCatway(req, res);
+
+        expect(res.status.calledWith(500)).to.be.true;
+        expect(res.json.calledWithMatch({ error: 'Erreur interne du serveur' })).to.be.true;
+    });
+
+});

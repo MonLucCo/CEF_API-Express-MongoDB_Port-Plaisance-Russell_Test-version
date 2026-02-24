@@ -248,6 +248,43 @@ Ces tests valident le pipeline complet :
 
 ---
 
+### 4.6 DELETE /catways/:id (issue‑30)
+
+L’issue‑30 introduit les tests d’intégration de la suppression d’un catway via :
+
+```txt
+    DELETE /catways/:id
+```
+
+Ces tests valident le pipeline complet :
+
+```txt
+    validateCatwayId → resolveCatwayIdentifier → deleteCatway → MongoDB
+```
+
+#### 4.6.1 Scénarios testés
+
+- 400 si ID invalide
+  (validateCatwayId)
+
+- 404 si catway introuvable
+  (resolveCatwayIdentifier)
+
+- 204 si suppression réussie
+  - le document est supprimé en base mémoire
+  - findById() retourne null
+
+- 500 si erreur interne survient
+  - simulation via stub ponctuel sur deleteOne()
+
+#### 4.6.2 Notes
+
+- Un catway est créé en base mémoire avant la suppression.
+- Aucun mock n’est utilisé, sauf pour simuler l’erreur interne.
+- Les tests confirment la non‑régression des issues 26 à 29.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/catways.routes.test.js`

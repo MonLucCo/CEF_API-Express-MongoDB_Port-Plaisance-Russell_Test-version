@@ -392,3 +392,27 @@ Aucune modification structurelle des routes. Mise à jour documentaire légère 
 Le module catwayPayloadMiddleware passe en version 0.2.0 (nouvelle capacité fonctionnelle).
 
 ---
+
+### 6.6 Suppression Catways (issue‑30)
+
+La suppression d’un catway suit les principes établis dans les issues précédentes :
+
+- La validation et la résolution de l’identifiant sont entièrement déléguées aux middlewares.
+- Le contrôleur deleteCatway reste minimal :
+  - suppression via deleteOne()
+  - statut 204 sans corps de réponse
+  - gestion des erreurs internes (500)
+
+Le choix du statut 204 est cohérent avec les conventions REST :
+
+- la ressource n’existe plus après l’opération,
+- aucun contenu n’est renvoyé.
+
+Les tests couvrent :
+
+- la branche interne (niveau‑1),
+- le pipeline complet Express + MongoMemoryServer (niveau‑2).
+
+Aucune modification structurelle des routes. Mise à jour documentaire légère de catwayRoutes.js (v0.4.3).
+
+---

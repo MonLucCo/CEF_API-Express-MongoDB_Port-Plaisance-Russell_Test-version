@@ -12,11 +12,6 @@
  * - POST /catways              → création d’un catway
  * - PUT /catways/:id           → mise à jour complète d’un catway
  * - PATCH /catways/:id         → mise à jour partielle d’un catway
- *
- * Les opérations PATCH et DELETE seront implémentées dans les issues 29 → 30.
- * Elles sont présentes sous forme de placeholders pour faciliter l’intégration future.
- * 
- * @todo Implémentation prévue dans l'issue 30
  * - DELETE /catways/:id         → suppression d’un catway
  *
  * @module routes/catwayRoutes
@@ -24,7 +19,7 @@
  * @requires module:controllers/catwayController
  * @requires module:middlewares/catwayMiddleware
  * @requires module:middlewares/catwayPayloadMiddleware
- * @version 0.4.2
+ * @version 0.4.3
  */
 
 const express = require('express');
@@ -52,8 +47,7 @@ const {
 /**
  * GET /catways
  * @summary Récupère la liste complète des catways.
- * @description
- * Retourne tous les catways présents en base MongoDB.
+ * @description Retourne tous les catways présents en base MongoDB.
  *
  * Aucun middleware n’est nécessaire pour cette route.
  *
@@ -67,8 +61,7 @@ router.get('/', getAllCatways);
 /**
  * GET /catways/:id
  * @summary Récupère un catway selon un identifiant hybride.
- * @description
- * Cette route utilise deux middlewares :
+ * @description Cette route utilise deux middlewares :
  *
  * - `validateCatwayId` : vérifie la validité syntaxique de l’identifiant
  * - `resolveCatwayIdentifier` : résout l’identifiant hybride et attache le catway à `req.catway`
@@ -91,8 +84,7 @@ router.get('/:id', validateCatwayId, resolveCatwayIdentifier, getCatwayById);
 /**
  * POST /catways
  * @summary Crée un nouveau catway.
- * @description
- * Cette route utilise le middleware `validateCatwayPayload` pour valider le payload de création.
+ * @description Cette route utilise le middleware `validateCatwayPayload` pour valider le payload de création.
  *
  * Le contrôleur `createCatway` suppose que le payload est valide et se concentre sur la logique métier de création.
  * Le middleware assure que les champs requis sont présents et valides avant d’atteindre le contrôleur.
@@ -110,8 +102,7 @@ router.post('/', validateCatwayPayload, createCatway);
 /**
  * PUT /catways/:id
  * @summary Met à jour complètement un catway.
- * @description
- * Cette route utilise les middlewares suivants :
+ * @description Cette route utilise les middlewares suivants :
  *
  * - `validateCatwayId` : vérifie la validité syntaxique de l’identifiant
  * - `resolveCatwayIdentifier` : résout l’identifiant hybride et attache le catway à `req.catway`
@@ -165,8 +156,7 @@ router.patch('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPa
 /**
  * DELETE /catways/:id
  * @summary Supprime un catway.
- * @description
- * Cette route utilise les middlewares suivants :
+ * @description Cette route utilise les middlewares suivants :
  *
  * - `validateCatwayId` : vérifie la validité syntaxique de l’identifiant
  * - `resolveCatwayIdentifier` : résout l’identifiant hybride et attache le catway à `req.catway`
@@ -176,7 +166,7 @@ router.patch('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPa
  * Le middleware de validation d’identifiant assure que l’identifiant est valide et que le catway existe avant d’atteindre le contrôleur.
  * Le middleware de résolution d’identifiant assure que le catway est attaché à `req.catway` pour que le contrôleur puisse le supprimer.
  * 
- * @returns {Object} 200 - Catway supprimé
+ * @returns {Object} 204 - Catway supprimé
  * @returns {Object} 400 - Identifiant invalide
  * @returns {Object} 404 - Catway introuvable
  * @returns {Object} 500 - Erreur interne du serveur
@@ -184,8 +174,6 @@ router.patch('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPa
  * @see module:middlewares/catwayMiddleware.validateCatwayId
  * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
  * @see module:controllers/catwayController.deleteCatway
- * 
- * @todo Implémentation de la logique métier dans le contrôleur `deleteCatway` (issue‑30)
  */
 router.delete('/:id', validateCatwayId, resolveCatwayIdentifier, deleteCatway);
 

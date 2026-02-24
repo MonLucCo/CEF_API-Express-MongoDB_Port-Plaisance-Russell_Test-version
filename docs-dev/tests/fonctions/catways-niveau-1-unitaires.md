@@ -278,6 +278,29 @@ Notes :
 
 ---
 
+### 4.6 Suppression d'un Catway - deleteCatway (issue‑30)
+
+L’issue‑30 introduit les tests unitaires du contrôleur deleteCatway.
+
+#### 4.5.1 Scénarios testés
+
+- 204 si suppression réussie
+  - deleteOne() résout correctement
+  - res.status(204).send() est appelé
+
+- 500 si erreur interne
+  - deleteOne() lance une exception
+  - le contrôleur renvoie un JSON d’erreur
+
+#### 4.5.2 Notes
+
+- req.catway est simulé via un objet contenant deleteOne().
+- deleteOne() est stubé via Sinon.
+- Le mockResponse() inclut désormais `send()`, nécessaire pour DELETE.
+- Le contrôleur ne valide rien : les middlewares garantissent l’existence du catway.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/catwayController.test.js`
@@ -325,3 +348,9 @@ Notes :
 **Résultats des tests (issue-29) et non régression :**
 
 ![alt text](../assets/img_issue-29_resultats-tests-niveau-1.png)
+
+### 6.6 issue-30 : suppression d'un catway
+
+**Résultats des tests (issue-30) et non régression :**
+
+![alt text](../assets/img_issue-30_resultats-tests-niveau-1.png)

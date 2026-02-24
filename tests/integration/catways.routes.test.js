@@ -374,4 +374,65 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
     });
 
+    // -----------------------------
+    // DELETE /catways/:id
+    // -----------------------------
+    describe('DELETE /catways/:id', () => {
+
+        it('retourne 400 si ID invalide', async () => {
+            const res = await request(app)
+                .delete('/catways/abc123') // ni ObjectId, ni nombre
+                .send();
+
+            expect(res.status).to.equal(400);
+        });
+
+        it('retourne 404 si catway introuvable', async () => {
+            const fakeId = new mongoose.Types.ObjectId();
+
+            const res = await request(app)
+                .delete(`/catways/${fakeId}`)
+                .send();
+
+            expect(res.status).to.equal(404);
+        });
+
+        it('retourne 204 si suppression réussie', async () => {
+            const catway = await Catway.create({
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            });
+
+            const res = await request(app)
+                .delete(`/catways/${catway._id}`)
+                .send();
+
+            expect(res.status).to.equal(204);
+
+            const exists = await Catway.findById(catway._id);
+            expect(exists).to.be.null;
+        });
+
+        it('retourne 500 si erreur interne survient', async () => {
+            const catway = await Catway.create({
+                catwayNumber: 1,
+                type: 'short',
+                catwayState: 'bon état'
+            });
+
+            const stub = sinon.stub(Catway.prototype, 'deleteOne')
+                .throws(new Error('Erreur interne'));
+
+            const res = await request(app)
+                .delete(`/catways/${catway._id}`)
+                .send();
+
+            expect(res.status).to.equal(500);
+
+            stub.restore();
+        });
+
+    });
+
 });

@@ -67,6 +67,9 @@ La stratégie de tests repose sur trois niveaux complémentaires, introduits pro
       - `npm run test:app:watch` → exécution avec nodemon (config dev), utile pour le développement
     - Cet environnement est strictement local et n’est pas utilisé pour les tests E2E réels (issue‑22).
   - **Tests réels (issue-22)**
+    - Les tests Postman (serveur local + MongoDB Atlas) servent de validation finale pour les fonctionnalités critiques des données (Phase 3).
+  - **Tests réels (Phase-4 - Clôture)**
+    - Les tests Postman (serveur local + MongoDB Atlas) servent de validation finale pour les fonctionnalités critiques du CRUD Catways (Phase 4).
 
 ---
 

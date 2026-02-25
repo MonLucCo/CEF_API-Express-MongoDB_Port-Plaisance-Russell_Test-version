@@ -43,14 +43,17 @@ Dossier :
 
 Tests portant sur :
 
-- les routes Catways
-- les routes Reservations
+- les routes Catways (Phase 4)
+- les routes Reservations (Phase 5)
 - les workflows complets (CRUD)
 
 Dossier :  
 `docs-dev/tests/fonctions/`
 
-> Cette catégorie sera alimentée progressivement lors des phases 4 et 5.
+Documents disponibles :
+
+- [catways-niveau-1-unitaires.md](./fonctions/catways-niveau-1-unitaires.md)
+- [catways-niveau-2-integration.md](./fonctions/catways-niveau-2-integration.md)
 
 ---
 
@@ -59,7 +62,7 @@ Dossier :
 Chaque catégorie est testée selon **trois niveaux**, conformément à la stratégie globale définie dans  
 `docs-dev/tests-strategy.md`.
 
-### 🟦 Niveau 1 — Tests unitaires
+### 2.1 Niveau 1 — Tests unitaires
 
 Objectif : tester la logique interne de manière isolée.
 
@@ -67,7 +70,9 @@ Objectif : tester la logique interne de manière isolée.
 - Utilisation de stubs (authentification)  
 - Tests rapides et indépendants
 
-### 🟩 Niveau 2 — Tests d’intégration
+---
+
+### 2.2 Niveau 2 — Tests d’intégration
 
 Objectif : tester l’interaction réelle entre Express, Mongoose et MongoDB.
 
@@ -76,7 +81,9 @@ Objectif : tester l’interaction réelle entre Express, Mongoose et MongoDB.
 - Tests des modèles avec `save()`, `find()`, `delete()`  
 - Vérification des erreurs MongoDB (`E11000`, `CastError`)
 
-### 🟥 Niveau 3 — Tests E2E
+---
+
+### 2.3 Niveau 3 — Tests E2E
 
 Objectif : tester l’API complète du point de vue d’un client externe.
 
@@ -85,7 +92,60 @@ Deux environnements :
 - **E2E simulé** (local, MongoMemoryServer, Postman)
 - **E2E réel** (Alwaysdata + MongoDB Atlas)
 
-> Les tests de niveau-3 seront ajoutés lors de l'issue-22.
+#### 2.3.1 E2E simulé
+
+##### 2.3.1.1 Insertion de données
+
+Les tests manuels de niveau-3 de l'insertion de données sont ajoutés lors de l'issue-22, la fin de la phase 3 du projet.
+
+Cette campagne de tests manuels a été réalisée via Postman, en utilisant :
+
+- le serveur Express local (`npm run dev`)
+- la base MongoDB Atlas réelle
+- la collection Postman locale (`docs-dev/tests/assets/collection-e2e-local.json`)
+
+Les scénarios suivants ont été validés :
+
+- POST /auth/register : création d'un utilisateur (identifiant ID)
+- POST /auth/login : connexion d'un utilisateur (jeton JWT)
+- DELETE /auth/delete/:id : suppression définitive d'un utilisateur (ID et JWT)
+
+Résultat : conformité totale avec les statuts attendus et cohérence avec les tests automatisés.
+
+---
+
+##### 2.3.1.2 CRUD Catways
+
+Les tests manuels de niveau-3 du CRUD Catways sont ajoutés lors de la fin de la phase 4 du projet.  
+
+Cette campagne de tests manuels a été réalisée via Postman, en utilisant :
+
+- le serveur Express local (`npm run dev`)
+- la base MongoDB Atlas réelle
+- la collection Postman locale (`docs-dev/tests/assets/collection-e2e-local.json`)
+
+Les scénarios suivants ont été validés :
+
+- GET /catways : liste vide puis liste peuplée
+- GET /catways/:id : ObjectId et catwayNumber
+- POST /catways : création + gestion des duplications
+- PUT /catways/:id : mise à jour complète
+- PATCH /catways/:id : mise à jour partielle
+- DELETE /catways/:id : suppression définitive
+
+Résultat : conformité totale avec les statuts attendus et cohérence avec les tests automatisés.
+
+---
+
+##### 2.3.1.3 CRUD Reservations
+
+Les tests manuels de niveau-3 du CRUD Reservations seront ajoutés lors de la fin de la phase 5 du projet.
+
+---
+
+#### 2.3.2 E2E réel
+
+Les tests de niveau-3 des fonctions de l'API seront ajoutés lors des phases 6 et 7 du projet.
 
 ---
 
@@ -110,7 +170,9 @@ docs-dev/tests/
 │   └── modeles-niveau-3-e2e.md
 │
 └── fonctions/                   ← Catégorie Fonctionnalités
-    └── (à compléter lors des phases 4 et 5)
+    ├── catways-niveau-1-unitaires.md
+    ├── catways-niveau-2-integration.md
+    └── (à compléter lors de la phase 5)
 ```
 
 ---

@@ -6,11 +6,10 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 3](https://img.shields.io/badge/Phase%203-Mod%C3%A8les%20et%20donn%C3%A9es-green) ![Version v0.3](https://img.shields.io/badge/Version-v0.3-blue)
+![Milestone Phase 4](https://img.shields.io/badge/Phase%204-Catways-green) ![Version v0.4](https://img.shields.io/badge/Version-v0.4-blue)
  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
 ![Statut du dépôt](https://img.shields.io/badge/statut-en%20développement-blue)
 
-  
 > 🔗 [Accès aux phases](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/milestones/)
 > 🔗 [Accès aux issues](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/issues/)
 
@@ -122,12 +121,12 @@ L’API utilise :
 
 ### ⚓ Ressource : Catways
 
-- `GET /catways`  
-- `GET /catways/:id`  
-- `POST /catways`  
-- `PUT /catways/:id`  
-- `PATCH /catways/:id`  
-- `DELETE /catways/:id`  
+- [x] `GET /catways`  
+- [x] `GET /catways/:id`  
+- [x] `POST /catways`  
+- [x] `PUT /catways/:id`  
+- [x] `PATCH /catways/:id`  
+- [x] `DELETE /catways/:id`  
 
 ### 🛥️ Ressource : Reservations
 
@@ -175,6 +174,8 @@ Tests réalisés avec :
 - **Chai**
 - **Sinon**
 - **Supertest**
+- **MongoMemoryServer**
+- **Postman**
 
 Les tests couvrent les **9 fonctionnalités demandées** :
 
@@ -413,7 +414,7 @@ npm run test:app:watch   # avec nodemon (développement)
 - [x] Phase 1 — Préparation du projet  
 - [x] Phase 2 — Authentification  
 - [x] Phase 3 — Modèles & données  
-- [ ] Phase 4 — Catways  
+- [x] Phase 4 — Catways  
 - [ ] Phase 5 — Reservations  
 - [ ] Phase 6 — Front-end  
 - [ ] Phase 7 — Tests  

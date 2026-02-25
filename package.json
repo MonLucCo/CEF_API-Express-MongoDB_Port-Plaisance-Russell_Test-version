@@ -10,6 +10,7 @@
   "scripts": {
     "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:unit": "mocha tests/controllers/**/*.test.js tests/middlewares/**/*.test.js --exit",
+    "test:controllers": "mocha tests/controllers/**/*.test.js --exit",
     "test:integration": "mocha tests/integration/**/*.test.js --exit",
     "test:e2e": "echo \"Tests E2E non automatisés : utiliser Postman avec l’API locale (test-app.js) ou l’API déployée. Voir docs-dev/tests/03-niveau-3-e2e.md.\" && exit 0",
     "test:app": "node tests/test-app.js",

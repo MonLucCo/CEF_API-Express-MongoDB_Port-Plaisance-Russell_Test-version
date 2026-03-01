@@ -83,11 +83,11 @@ La base est prête pour la gestion d’erreurs avancée (issue‑22).
 
 ---
 
-## 2.3 Décision — Gestion des erreurs MongoDB & résilience serveur (issue‑22)
+### 2.3 Décision — Gestion des erreurs MongoDB & résilience serveur (issue‑22)
 
 Cette décision introduit une couche de résilience essentielle pour garantir la stabilité de l’API en conditions réelles.
 
-### 2.3.1 Motivations
+#### 2.3.1 Motivations
 
 - éviter que le serveur démarre sans base de données fonctionnelle  
 - fournir des erreurs cohérentes et normalisées  
@@ -95,7 +95,7 @@ Cette décision introduit une couche de résilience essentielle pour garantir la
 - préparer les tests d’intégration réels (Atlas)  
 - garantir un arrêt propre du serveur dans tous les scénarios
 
-### 2.3.2 Choix techniques
+#### 2.3.2 Choix techniques
 
 - ajout d’une fonction `normalizeMongoError()` dans `mongo.js`  
 - classification des erreurs MongoDB (DNS, timeout, auth, whitelist…)  
@@ -105,7 +105,7 @@ Cette décision introduit une couche de résilience essentielle pour garantir la
 - arrêt propre via `disconnectClientDBConnection()`  
 - logs structurés et explicites
 
-### 2.3.3 Résultats attendus
+#### 2.3.3 Résultats attendus
 
 - le serveur ne démarre plus si MongoDB est inaccessible  
 - les erreurs sont compréhensibles et homogènes  
@@ -124,6 +124,65 @@ Sécurisation des headers HTTP.
 ## 4. Organisation du code
 
 Séparation stricte modèles / contrôleurs / routes.
+
+### 4.1 Décision — Séparation du module Reservations (issue‑31)
+
+Pour garantir une architecture modulaire et éviter de surcharger `catwayRoutes.js`, un routeur dédié aux réservations a été introduit :
+
+- `reservationRoutes.js` : routes `/catways/:id/reservations`
+- `reservationController.js` : logique métier des réservations
+- `reservationMiddleware.js` : middlewares de validation et résolution
+
+Motivations :
+
+- éviter la duplication de logique dans les routes Catways  
+- isoler la ressource imbriquée Reservations dans un module dédié  
+- conserver une architecture REST claire et évolutive  
+- faciliter les tests unitaires et d’intégration  
+- maintenir la cohérence avec la Phase 4 (Catways)
+
+Le routeur est monté dans `app.js` via :
+
+```js
+app.use('/catways', reservationRoutes);
+```
+
+---
+
+### 4.2 Décision — Architecture Reservations (issue‑31 → 36)
+
+La Phase 5 introduit la gestion des réservations associées aux catways.  
+L’architecture retenue suit strictement les principes établis dans la Phase 4.
+
+#### 4.2.1 Motivations
+
+- éviter de surcharger `catwayRoutes.js`  
+- isoler la ressource Reservations dans un module dédié  
+- conserver une architecture REST claire (ressource imbriquée)  
+- préparer les règles métier complexes (dates, chevauchements)  
+- faciliter les tests unitaires et d’intégration  
+- maintenir une documentation modulaire et versionnée
+
+#### 4.2.2 Choix techniques
+
+- création d’un routeur dédié : `reservationRoutes.js`  
+- création d’un contrôleur dédié : `reservationController.js`  
+- création d’un middleware dédié : `reservationMiddleware.js`  
+- montage du routeur sur `/catways`  
+- pipeline Express identique à celui des Catways :
+  - validation → résolution → logique métier
+
+#### 4.2.3 Impacts
+
+- architecture plus claire et maintenable  
+- contrôleurs allégés  
+- middlewares spécialisés  
+- tests plus simples et plus robustes  
+- documentation enrichie dans `architecture.md` et `tests-strategy.md`
+
+#### 4.2.4 Résultat
+
+La Phase 5 dispose d’une architecture complète, modulaire et cohérente, prête pour l’implémentation progressive des fonctionnalités dans les issues 33 → 36.
 
 ---
 

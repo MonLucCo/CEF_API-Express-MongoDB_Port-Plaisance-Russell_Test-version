@@ -48,19 +48,22 @@ src/                        ← Dossier principal du code de l'API
   │
   ├── controllers/              ← Contrôleurs Express (logique métier)
   │   ├── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
-  │   └── catwayController.js       ← Contrôleur des Catways
+  │   ├── catwayController.js       ← Contrôleur des Catways
+  │   └── reservationController.js  ← Contrôleur des Reservations
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
   │   ├── authMiddleware.js              ← Middleware JWT (issue‑16), vérification du token et protection des routes
   │   ├── catwayMiddleware.js            ← Middleware Catway (issue‑26), vérification de l'identifiant
-  │   └── catwayPayloadMiddleware.js     ← Middleware Payload du Catway (issue‑27), vérification du payload (complet, partiel)
+  │   ├── catwayPayloadMiddleware.js     ← Middleware Payload du Catway (issue‑27), vérification du payload (complet, partiel)
+  │   └── reservationMiddleware.js       ← Middleware des Reservations
   │
   ├── services/                 ← Logique métier réutilisable
   │
   └── routes/                   ← Définition des routes Express
       ├── accueilRoutes.js          ← Route d’accueil (GET /)
       ├── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
-      └── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
+      ├── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
+      └── reservationRoutes.js      ← Routes des Reservations (GET, POST, DELETE)
 
 scripts/
   └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
@@ -179,16 +182,21 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 - Issue 23 : Routes Catways
 - Issue 24 : Contrôleur Catways
-- Issue 25 : fonction GET /catways (liste des catways)
-- Issue 26 : fonction GET /catways/:id (détail d'un catway)
-- Issue 27 : fonction POST /catways (création d'un catway)
-- Issue 28 : fonction PUT /catways/:id (modifier un catway)
-- Issue 29 : fonction PATCH /catway/:id (actualiser un catway)
-- Issue 30 : fonction DELETE /catway/:id (supprimer un catway)
+- Issue 25 : fonction `GET /catways` (liste des catways)
+- Issue 26 : fonction `GET /catways/:id` (détail d'un catway)
+- Issue 27 : fonction `POST /catways` (création d'un catway)
+- Issue 28 : fonction `PUT /catways/:id` (modifier un catway)
+- Issue 29 : fonction `PATCH /catway/:id` (actualiser un catway)
+- Issue 30 : fonction `DELETE /catway/:id` (supprimer un catway)
 
 #### 1.3.4 Phase 5 — Reservations
 
-(sera complété avec les issues lors de l'engagement de la phase)
+- Issue 31 : Routes Reservations
+- Issue 32 : Contrôleur Reservation
+- Issue 33 : fonction `GET /catways/:id/reservations` (liste des réservations d'un catway)
+- Issue 34 : fonction `GET /catways/:id/reservations/:idReservation` (détail d'une réservation d'un catway)
+- Issue 35 : fonction `POST /catways/:id/reservations` (création d'une réservation d'un catway)
+- Issue 36 : fonction `DELETE /catways/:id/reservations/:idReservation` (suppression d'une réservation d'un catway)
 
 #### 1.3.5 Phase 6 — Front-end minimal
 
@@ -948,7 +956,7 @@ L’ensemble confirme l’intégration correcte du module `mongo.js` dans le ser
 Cette issue renforce la robustesse de l’API en introduisant une gestion complète des erreurs liées à MongoDB et au serveur Express.  
 Elle s’appuie sur le module `mongo.js` introduit dans les issues 20B et 21, et ajoute une couche de résilience indispensable pour la Phase 4.
 
-#### 🔧 Évolutions techniques
+##### 2.2.5.1 Évolutions techniques
 
 - **Normalisation des erreurs MongoDB**  
   Le module `mongo.js` analyse les messages d’erreur renvoyés par Mongoose/MongoDB et les convertit en codes internes cohérents :  
@@ -977,7 +985,7 @@ Elle s’appuie sur le module `mongo.js` introduit dans les issues 20B et 21, et
   - `error`  
   Ces événements facilitent le debug et la surveillance.
 
-#### 🔍 Résultats
+##### 2.2.5.2 Résultats
 
 - Le serveur démarre uniquement si MongoDB est accessible.  
 - Les erreurs critiques sont normalisées et lisibles.  
@@ -1475,7 +1483,85 @@ Cette issue clôture le CRUD complet des Catways.
 
 ### 2.4 Phase 5 — Reservations
 
-(sera complété avec les issues correspondantes)
+La Phase 5 introduit la gestion des réservations associées aux catways.  
+Elle suit la même logique architecturale que la Phase 4 (Catways) avec séparation stricte entre routes, middlewares et contrôleurs, pipeline Express explicite, tests progressifs et documentation continue :
+
+- création d’un routeur dédié (`reservationRoutes.js`)  
+- création d’un contrôleur dédié (`reservationController.js`)  
+- création d’un middleware dédié (`reservationMiddleware.js`)  
+- implémentation progressive des endpoints via les issues 33 → 36  
+- tests niveau‑1 et niveau‑2 pour chaque endpoint  
+- mise à jour documentaire en fin de phase
+
+**Progression fonctionnelle (issues 31 → 36) de la Phase 5 :**
+
+- **Issue 31** : création des modules (routes, contrôleur, middlewares) — placeholders
+- **Issue 32** : structure interne du contrôleur — placeholders
+- **Issue 33** : implémentation GET liste + tests niveau 1 et 2
+- **Issue 34** : implémentation GET détail + tests niveau 1 et 2
+- **Issue 35** : implémentation POST + tests niveau 1 et 2
+- **Issue 36** : implémentation DELETE + tests niveau 1 et 2
+
+---
+
+#### 2.4.1 Issue-31 - Création des routes Reservations
+
+L'issue-31 introduit une ressource imbriquée, les réservations d’un catway, selon les mêmes principes de l’architecture établie dans la Phase 4 :
+
+- séparation stricte routes / middlewares / contrôleurs  
+- pipeline Express clair : validation → résolution → logique métier  
+- documentation continue dans `docs-dev/`
+
+Les tests unitaires (niveau‑1) et intégration (niveau‑2) ne sont pas réalisés dans cette issue-31, mais serontmis en place pour chaque issue fonctionnelle (issues 33 à 36).
+
+##### 2.4.1.1 Architecture introduite
+
+**Les routes introduites sont :**
+
+- `GET /catways/:id/reservations`
+- `GET /catways/:id/reservations/:idReservation`
+- `POST /catways/:id/reservations`
+- `DELETE /catways/:id/reservations/:idReservation`
+
+**Les middlewares suivent la même architecture que ceux des Catways :**
+
+- `validateReservationId`
+- `resolveReservationIdentifier`
+- `validateReservationPayload`
+
+**Le routeur Reservations est monté dans `app.js` via :**
+
+```js
+app.use('/catways', reservationRoutes);
+```
+
+Ce montage permet de conserver une architecture modulaire tout en regroupant les sous‑ressources Reservations sous la ressource parent Catways.
+
+##### 2.4.1.2 Modules introduits
+
+Tous les modules nécessaires aux routes de Reservations (routes, middlewares et contrôleurs) sont réalisés afin que chaque route soit définie structurellement. Les middlewares et les contrôleurs sont des placeholders.
+
+Définition structurelle des modules :
+
+- `reservationRoutes.js` (v0.1.0) - routes des Reservations
+- `reservationController.js` (v0.0.1) - contrôleur Reservations
+- `reservationMiddleware.js` (v0.0.1) - middlewares Reservations
+
+##### 2.4.1.3 Pipeline général des routes Reservations
+
+- GET /catways/:id/reservations  
+  → `validateCatwayId` → `resolveCatwayIdentifier` → contrôleur
+
+- GET /catways/:id/reservations/:idReservation  
+  → `validateCatwayId` → `resolveCatwayIdentifier` → `validateReservationId` → `resolveReservationIdentifier` → contrôleur
+
+- POST /catways/:id/reservations  
+  → `validateCatwayId` → `resolveCatwayIdentifier` → `validateReservationPayload` → contrôleur
+
+- DELETE /catways/:id/reservations/:idReservation  
+  → pipeline complet identique au GET by ID
+
+Cette architecture garantit une cohérence totale avec la Phase 4 et prépare la montée en complexité des règles métier (chevauchement, dates, cohérence Catway/Reservation).
 
 ---
 

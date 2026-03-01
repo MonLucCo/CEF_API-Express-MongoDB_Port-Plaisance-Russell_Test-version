@@ -1565,6 +1565,16 @@ Cette architecture garantit une cohérence totale avec la Phase 4 et prépare la
 
 ---
 
+#### 2.4.2 Issue-32 Créations du contrôleur Reservation
+
+Cette issue introduit la structure initiale du contrôleur Reservations. Les quatre fonctions sont créées avec une JSDoc complète, versionnées en 0.1.0, et renvoient des réponses simulées.  
+
+Aucune logique métier n’est encore implémentée : les middlewares Reservation restent en placeholders.  
+
+Cette étape prépare l’implémentation progressive de la logique métier dans les issues 33 → 36.
+
+---
+
 ### 2.5 Phase 6 — Front-end minimal
 
 (sera complété avec les issues correspondantes)

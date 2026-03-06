@@ -475,3 +475,34 @@ Les tests couvrent :
 Aucune modification structurelle des routes. Mise à jour documentaire légère de catwayRoutes.js (v0.4.3).
 
 ---
+
+### 6.7 Liste des réservation d'un catway (issue‑33)
+
+Cette décision introduit la première opération fonctionnelle du module Reservations.  
+Elle s’appuie sur les principes établis dans la Phase‑4 (Catways) : séparation middlewares / contrôleur, identifiant hybride, tests multi‑niveaux.
+
+#### 6.7.1 Motivations
+
+- fournir une liste fiable et cohérente des réservations d’un catway
+- réutiliser l’identifiant hybride (_id ou catwayNumber_)
+- éviter toute duplication de logique dans le contrôleur
+- garantir une architecture modulaire et testable
+
+#### 6.7.2 Choix techniques
+
+- validation et résolution de l’identifiant entièrement déléguées aux middlewares Catways
+- contrôleur réduit à la logique métier :
+  - requête `Reservation.find({ catwayNumber })`
+  - statut 200 ou 500
+- aucun tri imposé (l’ordre n’est pas contractuel)
+- gestion d’erreur interne générique :  
+  `{ error: 'Erreur interne du serveur' }`
+
+#### 6.7.3 Impacts
+
+- cohérence totale avec les routes Catways
+- contrôleur Reservation minimaliste et stable
+- tests niveau‑1 et niveau‑2 complets
+- architecture prête pour les issues 34 → 36
+
+---

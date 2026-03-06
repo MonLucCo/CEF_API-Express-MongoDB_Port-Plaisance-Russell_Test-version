@@ -141,8 +141,10 @@ docs-dev/                   ← Documentation interne versionnée
       │   └── modeles-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
       │
       └── fonctions/                           ← Catégorie Fonctionnalités
-          ├── catways-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires
-          └── catways-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
+          ├── catways-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires Catways
+          ├── catways-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration Catways
+          ├── reservations-niveau-1-unitaires.md    ← Tests de niveau 1 - tests unitaires Reservations
+          └── reservations-niveau-2-integration.md  ← Tests de niveau 2 - tests d'intégration Reservations
     
 ```
 
@@ -1565,13 +1567,60 @@ Cette architecture garantit une cohérence totale avec la Phase 4 et prépare la
 
 ---
 
-#### 2.4.2 Issue-32 Créations du contrôleur Reservation
+#### 2.4.2 Issue-32 - Créations du contrôleur Reservation
 
 Cette issue introduit la structure initiale du contrôleur Reservations. Les quatre fonctions sont créées avec une JSDoc complète, versionnées en 0.1.0, et renvoient des réponses simulées.  
 
 Aucune logique métier n’est encore implémentée : les middlewares Reservation restent en placeholders.  
 
 Cette étape prépare l’implémentation progressive de la logique métier dans les issues 33 → 36.
+
+---
+
+#### 2.4.3 Issue‑33 — Liste des réservations d’un catway (GET /catways/:id/reservations)
+
+Cette issue introduit la première fonctionnalité réelle du module Reservations.  
+Elle repose entièrement sur l’architecture établie dans l’issue‑31 (routes) et l’issue‑32 (placeholders du contrôleur).
+
+##### 2.4.3.1 Objectifs
+
+- récupérer toutes les réservations associées à un catway
+- utiliser l’identifiant hybride du catway (`_id` ou `catwayNumber`)
+- garantir un comportement cohérent avec la Phase‑4 (Catways)
+- fournir une réponse JSON stable et testée
+
+##### 2.4.3.2 Choix techniques
+
+- utilisation du middleware `validateCatwayId` pour valider l’identifiant hybride
+- utilisation du middleware `resolveCatwayIdentifier` pour attacher `req.catway`
+- requête Mongoose basée sur le champ métier `catwayNumber`
+- contrôleur minimaliste, centré sur la logique métier
+- gestion des erreurs internes (500) sans exposer de détails
+
+##### 2.4.3.3 Implémentation
+
+```js
+const reservations = await Reservation.find({
+    catwayNumber: req.catway.catwayNumber
+});
+return res.status(200).json(reservations);
+```
+
+##### 2.4.3.4 Tests
+
+- **niveau‑1** : [tests unitaires du contrôleur](./tests/fonctions/reservations-niveau-1-unitaires.md) avec mocks/stubs  
+- **niveau‑2** : [tests d’intégration](./tests/fonctions/reservations-niveau-2-integration.md) via Supertest + MongoMemoryServer  
+- cas testés :
+  - 200 — tableau vide
+  - 200 — tableau avec plusieurs réservations
+  - 500 — erreur interne simulée
+
+##### 2.4.3.4 Résultat
+
+- première fonctionnalité complète du module Reservations
+- pipeline Express cohérent :  
+  `validateCatwayId → resolveCatwayIdentifier → getReservationsByCatway`
+- architecture prête pour les issues 34 → 36
 
 ---
 

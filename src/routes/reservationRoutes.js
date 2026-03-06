@@ -185,3 +185,5 @@ router.delete(
     resolveReservationIdentifier,
     deleteReservation
 );
+
+module.exports = router;

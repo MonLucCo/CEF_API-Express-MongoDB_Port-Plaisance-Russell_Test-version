@@ -1,0 +1,50 @@
+const { expect } = require('chai');
+
+const { mockResponse, afterEachRestore } = require('../mocks/tests.mock');
+const {
+    mockFindAll,
+    mockFindAllError,
+} = require('../mocks/reservation.mock');
+
+const {
+    getReservationsByCatway,
+} = require('../../src/controllers/reservationController');
+
+// ----------------------------- 
+// GET ALL RESERVATIONS BY CATWAY
+// -----------------------------
+describe('Controller Reservations — getReservationsByCatway (niveau‑1)', () => {
+
+    afterEachRestore();
+
+    it('devrait renvoyer 200 et la liste des réservations', async () => {
+        const fakeDataReservation = [
+            { catwayNumber: 1, clientName: 'Alice', boatName: 'Boaty McBoatface', checkIn: "2022-05-21T06:00:00Z", checkOut: "2022-05-22T06:00:00Z" },
+            { catwayNumber: 1, clientName: 'Diana', boatName: 'Ocean Breeze', checkIn: "2022-05-23T06:00:00Z", checkOut: "2022-05-25T06:00:00Z" },
+            { catwayNumber: 1, clientName: 'Eve', boatName: 'Wave Rider', checkIn: "2022-05-25T06:00:00Z", checkOut: "2022-05-30T06:00:00Z" }
+        ];
+
+        mockFindAll(fakeDataReservation);
+
+        const req = { catway: { catwayNumber: 1 } };
+        const res = mockResponse();
+
+        await getReservationsByCatway(req, res);
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWith(fakeDataReservation)).to.be.true;
+    });
+
+    it('devrait renvoyer 500 en cas d’erreur interne', async () => {
+        mockFindAllError(new Error('Erreur Mongo'));
+
+        const req = { catway: { catwayNumber: 1 } };
+
+        const res = mockResponse();
+
+        await getReservationsByCatway(req, res);
+
+        expect(res.status.calledWith(500)).to.be.true;
+        expect(res.json.calledWithMatch({ error: 'Erreur interne du serveur' })).to.be.true;
+    });
+});

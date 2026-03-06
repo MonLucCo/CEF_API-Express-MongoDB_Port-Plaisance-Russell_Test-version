@@ -54,6 +54,8 @@ Documents disponibles :
 
 - [catways-niveau-1-unitaires.md](./fonctions/catways-niveau-1-unitaires.md)
 - [catways-niveau-2-integration.md](./fonctions/catways-niveau-2-integration.md)
+- [reservations-niveau-1-unitaires.md](./fonctions/reservations-niveau-1-unitaires.md)
+- [reservations-niveau-2-integration.md](./fonctions/reservations-niveau-2-integration.md)
 
 ---
 
@@ -172,7 +174,8 @@ docs-dev/tests/
 └── fonctions/                   ← Catégorie Fonctionnalités
     ├── catways-niveau-1-unitaires.md
     ├── catways-niveau-2-integration.md
-    └── (à compléter lors de la phase 5)
+    ├── reservations-niveau-1-unitaires.md
+    └── reservations-niveau-2-integration.md
 ```
 
 ---

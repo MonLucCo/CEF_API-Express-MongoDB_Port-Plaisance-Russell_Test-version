@@ -506,3 +506,33 @@ Elle s’appuie sur les principes établis dans la Phase‑4 (Catways) : sépara
 - architecture prête pour les issues 34 → 36
 
 ---
+
+### 6.8 Détail d'une réservation d'un catway (issue-34)
+
+#### 6.8.1 Identifiant de réservation = ObjectId
+
+Contrairement aux catways, les réservations **n’ont pas d’identifiant métier**.  
+Elles sont donc identifiées uniquement par leur `_id` MongoDB.
+
+#### 6.8.2 Validation et résolution via middlewares
+
+Comme pour Catways :
+
+- la validation syntaxique (`validateReservationId`) est séparée,
+- la résolution (`resolveReservationIdentifier`) est isolée,
+- le contrôleur reste minimaliste.
+
+#### 6.8.3 Vérification d’appartenance
+
+Une réservation doit appartenir au catway demandé :
+
+```js
+reservation.catwayNumber === req.catway.catwayNumber
+```
+
+#### 6.8.4 Simulation d’erreur interne en niveau‑1
+
+Pour tester le `catch` du contrôleur, on utilise un getter qui jette une erreur.  
+Cela évite de re‑stubber `res.status()` ou `res.json()`.
+
+---

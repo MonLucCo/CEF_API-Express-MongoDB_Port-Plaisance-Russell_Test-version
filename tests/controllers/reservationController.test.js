@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const sinon = require('sinon');
 
 const { mockResponse, afterEachRestore } = require('../mocks/tests.mock');
 const {
@@ -8,6 +9,7 @@ const {
 
 const {
     getReservationsByCatway,
+    getReservationById,
 } = require('../../src/controllers/reservationController');
 
 // ----------------------------- 
@@ -43,6 +45,49 @@ describe('Controller Reservations — getReservationsByCatway (niveau‑1)', () 
         const res = mockResponse();
 
         await getReservationsByCatway(req, res);
+
+        expect(res.status.calledWith(500)).to.be.true;
+        expect(res.json.calledWithMatch({ error: 'Erreur interne du serveur' })).to.be.true;
+    });
+});
+
+
+// -----------------------------
+// GET DETAIL RESERVATION BY CATWAY
+// -----------------------------
+describe('Controller Reservations — getReservationById (niveau-1)', () => {
+
+    afterEachRestore();
+
+    it('200 — renvoie la réservation depuis req.reservation', () => {
+        const req = {
+            reservation: {
+                boatName: 'Sea Breeze',
+                clientName: 'Bob'
+            }
+        };
+
+        const res = mockResponse();
+
+        getReservationById(req, res);
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWith(req.reservation)).to.be.true;
+    });
+
+    it('500 — erreur interne simulée', () => {
+        const req = {};
+
+        // Définir un getter qui jette une erreur quand le contrôleur accède à req.reservation
+        Object.defineProperty(req, 'reservation', {
+            get() {
+                throw new Error('Test error');
+            }
+        });
+
+        const res = mockResponse();
+
+        getReservationById(req, res);
 
         expect(res.status.calledWith(500)).to.be.true;
         expect(res.json.calledWithMatch({ error: 'Erreur interne du serveur' })).to.be.true;

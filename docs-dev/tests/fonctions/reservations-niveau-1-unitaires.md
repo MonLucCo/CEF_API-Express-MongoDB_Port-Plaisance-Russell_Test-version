@@ -42,6 +42,19 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 
 ---
 
+### 4.2 `getReservationById()` (issue-34)
+
+#### 4.2.1 Cas testés
+
+- 200 : renvoie la réservation
+- 500 : erreur interne simulée via getter
+
+#### 4.2.2 Note technique
+
+Le getter permet de déclencher une erreur interne **sans re‑stubber** les méthodes Express déjà stubées par `mockResponse()`.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/reservationController.test.js`
@@ -57,3 +70,9 @@ Ils ne dépendent d’aucune base de données ni d’aucun service externe.
 **Résultats des tests (issue-33) :**
 
 ![alt text](../assets/img_issue-33_resultats-tests-niveau-1.png)
+
+### 6.2 issue-34 : détail d'une Reservation d'un Catway
+
+**Résultats des tests (issue-34) et non régression :**
+
+![alt text](../assets/img_issue-34_resultats-tests-niveau-1.png)

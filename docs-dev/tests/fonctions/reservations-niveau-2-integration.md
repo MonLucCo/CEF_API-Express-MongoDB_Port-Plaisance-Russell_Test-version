@@ -41,6 +41,23 @@ Les tests d’intégration valident le fonctionnement réel des routes Reservati
 
 ---
 
+### 4.2 `GET /catways/:id/reservations/:idReservation` (issue-34)
+
+#### 4.2.1 Cas testés
+
+- 200 : réservation trouvée
+- 404 : réservation introuvable
+- 404 : réservation non associée au catway
+- 400 : idReservation invalide
+- 500 : erreur interne simulée
+
+#### 4.2.2 Notes
+
+- Dates fixes utilisées pour garantir la stabilité des tests.
+- Simulation d’erreur interne via stub de `Reservation.findById`.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/reservations.routes.test.js`
@@ -56,3 +73,9 @@ Les tests d’intégration valident le fonctionnement réel des routes Reservati
 **Résultats des tests (issue-33) :**
 
 ![alt text](../assets/img_issue-33_resultats-tests-niveau-2.png)
+
+### 6.2 issue-34 : route du détail d'une reservation d'un catway
+
+**Résultats des tests (issue-34) et non régression :**
+
+![alt text](../assets/img_issue-34_resultats-tests-niveau-2.png)

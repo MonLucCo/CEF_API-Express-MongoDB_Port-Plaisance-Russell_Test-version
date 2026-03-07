@@ -1624,6 +1624,150 @@ return res.status(200).json(reservations);
 
 ---
 
+#### 2.4.4 — Issue-34 - Détail d’une réservation d’un catway
+
+Cette issue implémente la route :
+
+```txt
+GET /catways/:id/reservations/:idReservation
+```
+
+Elle permet de récupérer le **détail d’une réservation** associée à un catway.
+
+##### 2.4.4.1 Objectifs
+
+- Introduire la première route de lecture d’une réservation individuelle.
+- Étendre l’architecture Catways (issue‑26) au domaine Reservations.
+- Implémenter les middlewares de validation et de résolution d’identifiant.
+- Garantir que la réservation appartient bien au catway demandé.
+- Ajouter les tests niveau‑1 et niveau‑2.
+
+---
+
+##### 2.4.4.2 Pipeline Express complet
+
+Le pipeline suit exactement la même logique que Catways :
+
+```txt
+validateCatwayId
+→ resolveCatwayIdentifier
+→ validateReservationId
+→ resolveReservationIdentifier
+→ getReservationById
+```
+
+| Middleware                   | Rôle                                                    |
+|------------------------------|---------------------------------------------------------|
+| validateCatwayId             | Vérifie que `:id` est un ObjectId valide                |
+| resolveCatwayIdentifier      | Charge le catway et l’attache à `req.catway`            |
+| validateReservationId        | Vérifie que `:idReservation` est un ObjectId valide     |
+| resolveReservationIdentifier | Charge la réservation, vérifie l’appartenance au catway |
+| getReservationById           | Renvoie `req.reservation`                               |
+
+---
+
+##### 2.4.4.3 Implémentation du contrôleur
+
+Le contrôleur reste minimaliste :
+
+```js
+exports.getReservationById = (req, res) => {
+    try {
+        return res.status(200).json(req.reservation);
+    } catch (error) {
+        return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+};
+```
+
+Toute la logique métier est gérée par les middlewares.
+
+---
+
+##### 2.4.4.4 Middlewares Reservation
+
+###### 2.4.4.4.1 validateReservationId
+
+- Vérifie que `idReservation` est un ObjectId valide.
+- Retourne 400 si invalide.
+
+###### 2.4.4.4.2 resolveReservationIdentifier
+
+- Recherche la réservation via `Reservation.findById`.
+- Vérifie l’existence.
+- Vérifie que `reservation.catwayNumber === req.catway.catwayNumber`.
+- Attache la réservation à `req.reservation`.
+- Retourne 404 ou 500 selon les cas.
+
+---
+
+##### 2.4.4.5 Tests niveau‑1
+
+###### 2.4.4.5.1 Contrôleur
+
+- 200 : renvoie `req.reservation`
+- 500 : erreur interne simulée
+
+> **Note importante :**
+>
+> Pour simuler une erreur interne, on utilise un **getter qui jette une exception** :
+>>
+>> ```js
+>> Object.defineProperty(req, 'reservation', {
+>>    get() { throw new Error('Test error'); }
+>> });
+>> ```
+>>
+> Cela permet de déclencher le `catch` **sans re‑stubber `res.status()` ou `res.json()`**, déjà stubés par `mockResponse()`.
+
+---
+
+###### 2.4.4.5.2 Middlewares
+
+- **validateReservationId :**
+
+  - 400 si id invalide  
+  - next() si id valide  
+
+- **resolveReservationIdentifier :**
+
+  - 404 si réservation introuvable  
+  - 404 si réservation d’un autre catway  
+  - next() si réservation cohérente  
+  - 500 si erreur interne simulée  
+
+---
+
+##### 2.4.4.6 Tests niveau‑2
+
+Les tests d’intégration valident le pipeline complet avec MongoMemoryServer.
+
+Cas testés :
+
+- 200 : réservation trouvée  
+- 404 : réservation introuvable  
+- 404 : réservation non associée au catway  
+- 400 : idReservation invalide  
+- 500 : erreur interne simulée  
+
+Les dates utilisées dans les tests sont désormais **déterministes** :
+
+```js
+const checkIn = new Date('2025-05-01T10:00:00Z');
+const checkOut = new Date('2025-05-01T12:00:00Z');
+```
+
+ou bien
+
+```js
+const now = new Date();
+
+const checkIn: new Date(now.getTime());   // aujourd’hui
+const checkOut: new Date(now.getTime() + 24 * 60 * 60 * 1000);  // demain
+```
+
+---
+
 ### 2.5 Phase 6 — Front-end minimal
 
 (sera complété avec les issues correspondantes)

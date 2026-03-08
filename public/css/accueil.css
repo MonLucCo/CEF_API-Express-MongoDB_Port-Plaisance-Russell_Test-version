@@ -1,0 +1,20 @@
+body {
+    font-family: sans-serif;
+    padding: 2rem;
+    background: #f5f7fa;
+    color: #333;
+}
+
+h1 {
+    color: #005580;
+}
+
+ul {
+    margin-top: 1rem;
+}
+
+.meta {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #666;
+}

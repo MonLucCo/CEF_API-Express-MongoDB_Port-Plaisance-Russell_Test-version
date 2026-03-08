@@ -10,7 +10,8 @@ const {
 const {
     getReservationsByCatway,
     getReservationById,
-    createReservation
+    createReservation,
+    deleteReservation
 } = require('../../src/controllers/reservationController');
 
 const Reservation = require('../../src/models/reservation');
@@ -156,6 +157,62 @@ describe('Controller Reservations — createReservation (niveau‑1)', () => {
         const res = mockResponse();
 
         await createReservation(req, res);
+
+        expect(res.status.calledWith(500)).to.be.true;
+        expect(res.json.calledWithMatch({
+            error: 'Erreur interne du serveur'
+        })).to.be.true;
+    });
+});
+
+// -----------------------------
+// DELETE RESERVATION BY CATWAY
+// -----------------------------
+describe('Controller Reservations — deleteReservation (niveau‑1)', () => {
+
+    afterEachRestore();
+
+    // -----------------------------------------------------
+    // 200 — suppression réussie
+    // -----------------------------------------------------
+    it('200 — supprime la réservation et renvoie un message de confirmation', async () => {
+        const fakeReservation = { _id: '123456789' };
+
+        // Stub de findByIdAndDelete
+        sinon.stub(Reservation, 'findByIdAndDelete').resolves();
+
+        const req = {
+            reservation: fakeReservation
+        };
+
+        const res = mockResponse();
+
+        await deleteReservation(req, res);
+
+        expect(Reservation.findByIdAndDelete.calledOnce).to.be.true;
+        expect(Reservation.findByIdAndDelete.calledWith(fakeReservation._id)).to.be.true;
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWithMatch({
+            message: 'Réservation supprimée avec succès'
+        })).to.be.true;
+    });
+
+    // -----------------------------------------------------
+    // 500 — erreur interne simulée
+    // -----------------------------------------------------
+    it('500 — erreur interne simulée', async () => {
+        const fakeReservation = { _id: '123456789' };
+
+        sinon.stub(Reservation, 'findByIdAndDelete').throws(new Error('Test error'));
+
+        const req = {
+            reservation: fakeReservation
+        };
+
+        const res = mockResponse();
+
+        await deleteReservation(req, res);
 
         expect(res.status.calledWith(500)).to.be.true;
         expect(res.json.calledWithMatch({

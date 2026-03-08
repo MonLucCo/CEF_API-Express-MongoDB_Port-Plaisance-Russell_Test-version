@@ -69,6 +69,20 @@ Le getter permet de déclencher une erreur interne **sans re‑stubber** les mé
 
 ---
 
+### 4.4 `deleteReservation()` (issue-36)
+
+#### 4.4.1 Cas testés
+
+- **200** : suppression réussie  
+- **500** : erreur interne simulée  
+
+#### 4.4.2 Notes
+
+- `req.reservation` est fourni par les middlewares → mock simple.  
+- Le contrôleur ne valide rien : il supprime et renvoie un message.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/reservationController.test.js`
@@ -96,3 +110,9 @@ Le getter permet de déclencher une erreur interne **sans re‑stubber** les mé
 **Résultats des tests (issue-35) et non régression :**
 
 ![alt text](../assets/img_issue-35_resultats-tests-niveau-1.png)
+
+### 6.4 issue-36 : suppression d'une Reservation d'un Catway
+
+**Résultats des tests (issue-36) et non régression :**
+
+![alt text](../assets/img_issue-36_resultats-tests-niveau-1.png)

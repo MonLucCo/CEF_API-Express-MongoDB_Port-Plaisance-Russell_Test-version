@@ -58,6 +58,27 @@ Les tests d’intégration valident le fonctionnement réel des routes Reservati
 
 ---
 
+### 4.3 `POST /catways/:id/reservations` (issue-35)
+
+#### 4.3.1 Cas testés
+
+| Cas                    | Statut |
+|------------------------|--------|
+| Création réussie       | 201    |
+| Champs manquants       | 400    |
+| Dates invalides        | 400    |
+| checkIn >= checkOut    | 400    |
+| Catway introuvable     | 404    |
+| Erreur interne simulée | 500    |
+
+#### 4.3.2 Notes
+
+- Pipeline complet testé avec MongoMemoryServer.  
+- Dates déterministes utilisées pour garantir la stabilité.  
+- Vérification que `catwayNumber` est correctement injecté.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/reservations.routes.test.js`
@@ -79,3 +100,9 @@ Les tests d’intégration valident le fonctionnement réel des routes Reservati
 **Résultats des tests (issue-34) et non régression :**
 
 ![alt text](../assets/img_issue-34_resultats-tests-niveau-2.png)
+
+### 6.3 issue-35 : route de création d'une reservation d'un catway
+
+**Résultats des tests (issue-35) et non régression :**
+
+![alt text](../assets/img_issue-35_resultats-tests-niveau-2.png)

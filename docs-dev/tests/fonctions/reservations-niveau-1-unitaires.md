@@ -55,6 +55,20 @@ Le getter permet de déclencher une erreur interne **sans re‑stubber** les mé
 
 ---
 
+### 4.3 `createReservation()` (issue-35)
+
+#### 4.3.1 Cas testés
+
+- **201** : création réussie  
+- **500** : erreur interne simulée  
+
+#### 4.3.2 Notes
+
+- Le contrôleur ne valide rien : tout est géré par les middlewares.  
+- `catwayNumber` est injecté automatiquement depuis `req.catway`.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/controllers/reservationController.test.js`
@@ -76,3 +90,9 @@ Le getter permet de déclencher une erreur interne **sans re‑stubber** les mé
 **Résultats des tests (issue-34) et non régression :**
 
 ![alt text](../assets/img_issue-34_resultats-tests-niveau-1.png)
+
+### 6.3 issue-35 : création d'une Reservation d'un Catway
+
+**Résultats des tests (issue-35) et non régression :**
+
+![alt text](../assets/img_issue-35_resultats-tests-niveau-1.png)

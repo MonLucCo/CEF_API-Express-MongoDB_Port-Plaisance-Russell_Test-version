@@ -536,3 +536,48 @@ Pour tester le `catch` du contrôleur, on utilise un getter qui jette une erreur
 Cela évite de re‑stubber `res.status()` ou `res.json()`.
 
 ---
+
+### 6.9 — Création d’une réservation (issue‑35)
+
+#### 6.9.1 Validation métier dans un middleware dédié
+
+La validation du payload est centralisée dans `validateReservationPayload` pour :
+
+- isoler la logique métier,  
+- garder un contrôleur minimaliste,  
+- faciliter les tests niveau‑1,  
+- garantir la cohérence avec Catways (issue‑26).
+
+#### 6.9.2 Injection automatique du catwayNumber
+
+Le client **ne peut pas** fournir `catwayNumber`.  
+Il est injecté depuis `req.catway.catwayNumber`.
+
+Cela garantit :
+
+- la cohérence métier,  
+- l’intégrité des données,  
+- l’absence de contournement côté client.
+
+#### 6.9.3 Dates déterministes dans les tests
+
+Les tests utilisent des dates ISO fixes :
+
+```js
+2025-05-01T10:00:00Z
+2025-05-01T12:00:00Z
+```
+
+Cela évite les flakiness liés à `new Date()`.
+
+#### 6.9.4 Simulation d’erreur interne
+
+En niveau‑2, l’erreur interne est simulée via :
+
+```js
+sinon.stub(Reservation, 'create').throws(...)
+```
+
+C’est cohérent avec les issues 33 et 34.
+
+---

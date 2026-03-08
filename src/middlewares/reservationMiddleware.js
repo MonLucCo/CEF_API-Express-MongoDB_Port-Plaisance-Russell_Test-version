@@ -1,20 +1,19 @@
 /**
  * @file reservationMiddleware.js
  * @description 
- * Middlewares de validation et de résolution des identifiants pour les réservations (Phase 5 — issue‑34).
+ * Middlewares de validation et de résolution des identifiants pour les réservations (issue‑34).
+ * Middleware de validation du payload de création de réservation (issue‑35).
  *
  * Ces middlewares suivent la même architecture que ceux des Catways (issue‑26) :
  * - validation syntaxique de l’identifiant
  * - résolution de l’identifiant en base
  * - attachement de la ressource à l’objet `req`
  *
- * @todo Implémentation dans l'issue-35 de la validation du payload de création de réservation.
- * 
  * @module middlewares/reservationMiddleware
  * @requires mongoose
  * @requires ../models/reservation
  * 
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 const mongoose = require('mongoose');
@@ -117,14 +116,65 @@ exports.resolveReservationIdentifier = async (req, res, next) => {
 };
 
 /**
- * Valide le payload de création de réservation.
  * @middleware validateReservationPayload
+ * @description
+ * Valide le payload de création d’une réservation (issue‑35).
+ *
+ * Règles :
+ * - clientName : string obligatoire
+ * - boatName : string obligatoire
+ * - checkIn : date valide obligatoire
+ * - checkOut : date valide obligatoire
+ * - checkIn < checkOut (strict)
+ * - catwayNumber ne doit PAS être fourni par le client (utilisé depuis req.catway)
+ *
+ * En cas d’erreur → 400
+ * En cas de succès → next()
+ *
+ * @param {Object} req - Express Request
+ * @param {Object} res - Express Response
+ * @param {Function} next - Fonction Express pour passer au middleware suivant
+ *
  * @returns {void}
+ * @throws {Object} 400 - Payload de réservation invalide
  * 
- * @todo Implémentation dans l'issue-35 de la validation du payload de création de réservation.
+ * @example
+ * POST /catways/1/reservations
  * 
- * @version 0.0.1
+ * @requires mongoose
+ * @requires ../models/reservation
+ *
+ * @version 0.1.0
  */
 exports.validateReservationPayload = (req, res, next) => {
-  next(); // Implémentation issue‑35
+  const { clientName, boatName, checkIn, checkOut, catwayNumber } = req.body;
+
+  // Interdiction d’écraser le catwayNumber
+  if (catwayNumber !== undefined) {
+    return res.status(400).json({
+      error: 'Le champ catwayNumber ne doit pas être fourni dans le payload'
+    });
+  }
+
+  // Champs obligatoires
+  if (!clientName || !boatName || !checkIn || !checkOut) {
+    return res.status(400).json({
+      error: 'Les champs clientName, boatName, checkIn et checkOut sont obligatoires'
+    });
+  }
+  // Validation des dates
+  const start = new Date(checkIn);
+  const end = new Date(checkOut);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return res.status(400).json({
+      error: 'Les champs checkIn et checkOut doivent être des dates valides'
+    });
+  }
+  // checkIn < checkOut (strict)
+  if (start >= end) {
+    return res.status(400).json({
+      error: 'La date checkIn doit être strictement inférieure à checkOut'
+    });
+  }
+  next();
 };

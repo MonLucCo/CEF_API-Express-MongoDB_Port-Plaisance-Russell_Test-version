@@ -1768,6 +1768,78 @@ const checkOut: new Date(now.getTime() + 24 * 60 * 60 * 1000);  // demain
 
 ---
 
+#### 2.4.5 — issue-35 - Création d’une réservation
+
+Cette issue introduit la route :
+
+```txt
+POST /catways/:id/reservations
+```
+
+Elle permet de créer une réservation associée à un catway existant.
+
+##### 2.4.5.1 Objectifs
+
+- Ajouter la création d’une réservation dans le domaine Reservations.  
+- Étendre le pipeline Express existant (issues 33–34).  
+- Introduire un middleware de validation métier complet.  
+- Garantir que `catwayNumber` est injecté automatiquement et ne peut pas être modifié par le client.  
+- Ajouter les tests niveau‑1 et niveau‑2.  
+
+---
+
+##### 2.4.5.2 Pipeline Express complet
+
+```txt
+validateCatwayId
+→ resolveCatwayIdentifier
+→ validateReservationPayload
+→ createReservation
+```
+
+| Élément                    | Rôle                                         |
+|----------------------------|----------------------------------------------|
+| validateCatwayId           | Vérifie que `:id` est un ObjectId valide     |
+| resolveCatwayIdentifier    | Charge le catway et l’attache à `req.catway` |
+| validateReservationPayload | Valide le payload métier                     |
+| createReservation          | Crée la réservation et renvoie 201           |
+
+---
+
+#### 2.4.5.3 Middleware validateReservationPayload
+
+Ce middleware valide :
+
+- `clientName` : string obligatoire  
+- `boatName` : string obligatoire  
+- `checkIn` : date valide obligatoire  
+- `checkOut` : date valide obligatoire  
+- `checkIn < checkOut` (strict)  
+- `catwayNumber` ne doit **pas** être fourni par le client  
+
+En cas d’erreur → **400**  
+En cas de succès → **next()**
+
+---
+
+##### 2.4.5.4 Contrôleur createReservation
+
+Le contrôleur :
+
+- récupère les champs validés par le middleware  
+- injecte automatiquement `catwayNumber` depuis `req.catway`  
+- crée la réservation via `Reservation.create()`  
+- renvoie :
+
+| Cas          | Statut |
+|--------------|--------|
+| Succès       | 201    |
+| Erreur Mongo | 500    |
+
+Le contrôleur reste volontairement minimaliste, conformément à l’architecture Catways.
+
+---
+
 ### 2.5 Phase 6 — Front-end minimal
 
 (sera complété avec les issues correspondantes)

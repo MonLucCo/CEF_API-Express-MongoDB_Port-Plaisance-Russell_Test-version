@@ -6,7 +6,7 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 4](https://img.shields.io/badge/Phase%204-Catways-green) ![Version v0.4](https://img.shields.io/badge/Version-v0.4-blue)
+![Milestone Phase 5](https://img.shields.io/badge/Phase%205-Reservations-green) ![Version v0.5](https://img.shields.io/badge/Version-v0.5-blue)
  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
 ![Statut du dépôt](https://img.shields.io/badge/statut-en%20développement-blue)
 
@@ -130,10 +130,10 @@ L’API utilise :
 
 ### 🛥️ Ressource : Reservations
 
-- `GET /catways/:id/reservations`  
-- `GET /catways/:id/reservations/:idReservation`  
-- `POST /catways/:id/reservations`  
-- `DELETE /catways/:id/reservations/:idReservation`  
+- [x] `GET /catways/:id/reservations`  
+- [x] `GET /catways/:id/reservations/:idReservation`  
+- [x] `POST /catways/:id/reservations`  
+- [x] `DELETE /catways/:id/reservations/:idReservation`  
 
 ---
 
@@ -415,7 +415,7 @@ npm run test:app:watch   # avec nodemon (développement)
 - [x] Phase 2 — Authentification  
 - [x] Phase 3 — Modèles & données  
 - [x] Phase 4 — Catways  
-- [ ] Phase 5 — Reservations  
+- [x] Phase 5 — Reservations  
 - [ ] Phase 6 — Front-end  
 - [ ] Phase 7 — Tests  
 - [ ] Phase 8 — Documentation API  

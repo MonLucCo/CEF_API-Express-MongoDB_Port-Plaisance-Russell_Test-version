@@ -143,6 +143,21 @@ Résultat : conformité totale avec les statuts attendus et cohérence avec les 
 
 Les tests manuels de niveau-3 du CRUD Reservations seront ajoutés lors de la fin de la phase 5 du projet.
 
+Cette campagne de tests manuels a été réalisée via Postman, en utilisant :
+
+- le serveur Express local (`npm run dev`)
+- la base MongoDB Atlas réelle
+- la collection Postman locale (`docs-dev/tests/assets/collection-e2e-local.json`)
+
+Les scénarios suivants ont été validés :
+
+- GET /catways/:id/reservations : liste vide puis liste peuplée des reservations d'un catway
+- GET /catways/:id/reservations/:idReservation : pour Catways (ObjectId et catwayNumber), pour Reservations (ObjectId)
+- POST /catways/:id/reservations : création d'une réservation d'un catway
+- DELETE /catways/:id/reservations/:idReservation : suppression définitive
+
+Résultat : conformité totale avec les statuts attendus et cohérence avec les tests automatisés.
+
 ---
 
 #### 2.3.2 E2E réel

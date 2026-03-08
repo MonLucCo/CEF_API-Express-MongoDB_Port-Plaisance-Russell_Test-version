@@ -14,6 +14,8 @@
  * - PATCH /catways/:id         → mise à jour partielle d’un catway
  * - DELETE /catways/:id         → suppression d’un catway
  *
+ * Ce routeur est monté dans `app.js` sur le chemin `/catways` : app.use('/catways', catwayRoutes);
+ * 
  * @module routes/catwayRoutes
  * @requires express
  * @requires module:controllers/catwayController
@@ -152,7 +154,6 @@ router.put('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPayl
  */
 router.patch('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPartialPayload, patchCatway);
 
-// DELETE /catways/:id — suppression
 /**
  * DELETE /catways/:id
  * @summary Supprime un catway.

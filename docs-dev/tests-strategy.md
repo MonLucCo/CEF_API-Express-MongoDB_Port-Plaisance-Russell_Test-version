@@ -70,6 +70,8 @@ La stratégie de tests repose sur trois niveaux complémentaires, introduits pro
     - Les tests Postman (serveur local + MongoDB Atlas) servent de validation finale pour les fonctionnalités critiques des données (Phase 3).
   - **Tests réels (Phase-4 - Clôture)**
     - Les tests Postman (serveur local + MongoDB Atlas) servent de validation finale pour les fonctionnalités critiques du CRUD Catways (Phase 4).
+  - **Tests réels (Phase-5 - Clôture)**
+    - Les tests Postman (serveur local + MongoDB Atlas) servent de validation finale pour les fonctionnalités critiques du CRUD Reservations (Phase 5).
 
 ---
 
@@ -346,7 +348,7 @@ Garantir la stabilité du projet et éviter les régressions.
 
 ### 4.2 Emplacement des tests
 
-Les tests fonctionnels seront introduits en Phase 5 et 6.
+Les tests fonctionnels seront introduits en Phase 5 (Reservations) et 6 (Front-end).
 
 Pour la Phase 4 (Catways), les tests ne sont pas encore fonctionnels :  
 ils sont répartis dans les dossiers existants selon leur niveau :

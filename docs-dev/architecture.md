@@ -48,19 +48,22 @@ src/                        ← Dossier principal du code de l'API
   │
   ├── controllers/              ← Contrôleurs Express (logique métier)
   │   ├── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
-  │   └── catwayController.js       ← Contrôleur des Catways
+  │   ├── catwayController.js       ← Contrôleur des Catways
+  │   └── reservationController.js  ← Contrôleur des Reservations
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
   │   ├── authMiddleware.js              ← Middleware JWT (issue‑16), vérification du token et protection des routes
   │   ├── catwayMiddleware.js            ← Middleware Catway (issue‑26), vérification de l'identifiant
-  │   └── catwayPayloadMiddleware.js     ← Middleware Payload du Catway (issue‑27), vérification du payload (complet, partiel)
+  │   ├── catwayPayloadMiddleware.js     ← Middleware Payload du Catway (issue‑27), vérification du payload (complet, partiel)
+  │   └── reservationMiddleware.js       ← Middleware des Reservations
   │
   ├── services/                 ← Logique métier réutilisable
   │
   └── routes/                   ← Définition des routes Express
       ├── accueilRoutes.js          ← Route d’accueil (GET /)
       ├── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
-      └── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
+      ├── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
+      └── reservationRoutes.js      ← Routes des Reservations (GET, POST, DELETE)
 
 scripts/
   └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
@@ -138,8 +141,10 @@ docs-dev/                   ← Documentation interne versionnée
       │   └── modeles-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
       │
       └── fonctions/                           ← Catégorie Fonctionnalités
-          ├── catways-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires
-          └── catways-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
+          ├── catways-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires Catways
+          ├── catways-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration Catways
+          ├── reservations-niveau-1-unitaires.md    ← Tests de niveau 1 - tests unitaires Reservations
+          └── reservations-niveau-2-integration.md  ← Tests de niveau 2 - tests d'intégration Reservations
     
 ```
 
@@ -179,16 +184,21 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 - Issue 23 : Routes Catways
 - Issue 24 : Contrôleur Catways
-- Issue 25 : fonction GET /catways (liste des catways)
-- Issue 26 : fonction GET /catways/:id (détail d'un catway)
-- Issue 27 : fonction POST /catways (création d'un catway)
-- Issue 28 : fonction PUT /catways/:id (modifier un catway)
-- Issue 29 : fonction PATCH /catway/:id (actualiser un catway)
-- Issue 30 : fonction DELETE /catway/:id (supprimer un catway)
+- Issue 25 : fonction `GET /catways` (liste des catways)
+- Issue 26 : fonction `GET /catways/:id` (détail d'un catway)
+- Issue 27 : fonction `POST /catways` (création d'un catway)
+- Issue 28 : fonction `PUT /catways/:id` (modifier un catway)
+- Issue 29 : fonction `PATCH /catway/:id` (actualiser un catway)
+- Issue 30 : fonction `DELETE /catway/:id` (supprimer un catway)
 
 #### 1.3.4 Phase 5 — Reservations
 
-(sera complété avec les issues lors de l'engagement de la phase)
+- Issue 31 : Routes Reservations
+- Issue 32 : Contrôleur Reservation
+- Issue 33 : fonction `GET /catways/:id/reservations` (liste des réservations d'un catway)
+- Issue 34 : fonction `GET /catways/:id/reservations/:idReservation` (détail d'une réservation d'un catway)
+- Issue 35 : fonction `POST /catways/:id/reservations` (création d'une réservation d'un catway)
+- Issue 36 : fonction `DELETE /catways/:id/reservations/:idReservation` (suppression d'une réservation d'un catway)
 
 #### 1.3.5 Phase 6 — Front-end minimal
 
@@ -948,7 +958,7 @@ L’ensemble confirme l’intégration correcte du module `mongo.js` dans le ser
 Cette issue renforce la robustesse de l’API en introduisant une gestion complète des erreurs liées à MongoDB et au serveur Express.  
 Elle s’appuie sur le module `mongo.js` introduit dans les issues 20B et 21, et ajoute une couche de résilience indispensable pour la Phase 4.
 
-#### 🔧 Évolutions techniques
+##### 2.2.5.1 Évolutions techniques
 
 - **Normalisation des erreurs MongoDB**  
   Le module `mongo.js` analyse les messages d’erreur renvoyés par Mongoose/MongoDB et les convertit en codes internes cohérents :  
@@ -977,7 +987,7 @@ Elle s’appuie sur le module `mongo.js` introduit dans les issues 20B et 21, et
   - `error`  
   Ces événements facilitent le debug et la surveillance.
 
-#### 🔍 Résultats
+##### 2.2.5.2 Résultats
 
 - Le serveur démarre uniquement si MongoDB est accessible.  
 - Les erreurs critiques sont normalisées et lisibles.  
@@ -1475,7 +1485,422 @@ Cette issue clôture le CRUD complet des Catways.
 
 ### 2.4 Phase 5 — Reservations
 
-(sera complété avec les issues correspondantes)
+La Phase 5 introduit la gestion des réservations associées aux catways.  
+Elle suit la même logique architecturale que la Phase 4 (Catways) avec séparation stricte entre routes, middlewares et contrôleurs, pipeline Express explicite, tests progressifs et documentation continue :
+
+- création d’un routeur dédié (`reservationRoutes.js`)  
+- création d’un contrôleur dédié (`reservationController.js`)  
+- création d’un middleware dédié (`reservationMiddleware.js`)  
+- implémentation progressive des endpoints via les issues 33 → 36  
+- tests niveau‑1 et niveau‑2 pour chaque endpoint  
+- mise à jour documentaire en fin de phase
+
+**Progression fonctionnelle (issues 31 → 36) de la Phase 5 :**
+
+- **Issue 31** : création des modules (routes, contrôleur, middlewares) — placeholders
+- **Issue 32** : structure interne du contrôleur — placeholders
+- **Issue 33** : implémentation GET liste + tests niveau 1 et 2
+- **Issue 34** : implémentation GET détail + tests niveau 1 et 2
+- **Issue 35** : implémentation POST + tests niveau 1 et 2
+- **Issue 36** : implémentation DELETE + tests niveau 1 et 2
+
+---
+
+#### 2.4.1 Issue-31 - Création des routes Reservations
+
+L'issue-31 introduit une ressource imbriquée, les réservations d’un catway, selon les mêmes principes de l’architecture établie dans la Phase 4 :
+
+- séparation stricte routes / middlewares / contrôleurs  
+- pipeline Express clair : validation → résolution → logique métier  
+- documentation continue dans `docs-dev/`
+
+Les tests unitaires (niveau‑1) et intégration (niveau‑2) ne sont pas réalisés dans cette issue-31, mais serontmis en place pour chaque issue fonctionnelle (issues 33 à 36).
+
+##### 2.4.1.1 Architecture introduite
+
+**Les routes introduites sont :**
+
+- `GET /catways/:id/reservations`
+- `GET /catways/:id/reservations/:idReservation`
+- `POST /catways/:id/reservations`
+- `DELETE /catways/:id/reservations/:idReservation`
+
+**Les middlewares suivent la même architecture que ceux des Catways :**
+
+- `validateReservationId`
+- `resolveReservationIdentifier`
+- `validateReservationPayload`
+
+**Le routeur Reservations est monté dans `app.js` via :**
+
+```js
+app.use('/catways', reservationRoutes);
+```
+
+Ce montage permet de conserver une architecture modulaire tout en regroupant les sous‑ressources Reservations sous la ressource parent Catways.
+
+##### 2.4.1.2 Modules introduits
+
+Tous les modules nécessaires aux routes de Reservations (routes, middlewares et contrôleurs) sont réalisés afin que chaque route soit définie structurellement. Les middlewares et les contrôleurs sont des placeholders.
+
+Définition structurelle des modules :
+
+- `reservationRoutes.js` (v0.1.0) - routes des Reservations
+- `reservationController.js` (v0.0.1) - contrôleur Reservations
+- `reservationMiddleware.js` (v0.0.1) - middlewares Reservations
+
+##### 2.4.1.3 Pipeline général des routes Reservations
+
+- GET /catways/:id/reservations  
+  → `validateCatwayId` → `resolveCatwayIdentifier` → contrôleur
+
+- GET /catways/:id/reservations/:idReservation  
+  → `validateCatwayId` → `resolveCatwayIdentifier` → `validateReservationId` → `resolveReservationIdentifier` → contrôleur
+
+- POST /catways/:id/reservations  
+  → `validateCatwayId` → `resolveCatwayIdentifier` → `validateReservationPayload` → contrôleur
+
+- DELETE /catways/:id/reservations/:idReservation  
+  → pipeline complet identique au GET by ID
+
+Cette architecture garantit une cohérence totale avec la Phase 4 et prépare la montée en complexité des règles métier (chevauchement, dates, cohérence Catway/Reservation).
+
+---
+
+#### 2.4.2 Issue-32 - Créations du contrôleur Reservation
+
+Cette issue introduit la structure initiale du contrôleur Reservations. Les quatre fonctions sont créées avec une JSDoc complète, versionnées en 0.1.0, et renvoient des réponses simulées.  
+
+Aucune logique métier n’est encore implémentée : les middlewares Reservation restent en placeholders.  
+
+Cette étape prépare l’implémentation progressive de la logique métier dans les issues 33 → 36.
+
+---
+
+#### 2.4.3 Issue‑33 — Liste des réservations d’un catway (GET /catways/:id/reservations)
+
+Cette issue introduit la première fonctionnalité réelle du module Reservations.  
+Elle repose entièrement sur l’architecture établie dans l’issue‑31 (routes) et l’issue‑32 (placeholders du contrôleur).
+
+##### 2.4.3.1 Objectifs
+
+- récupérer toutes les réservations associées à un catway
+- utiliser l’identifiant hybride du catway (`_id` ou `catwayNumber`)
+- garantir un comportement cohérent avec la Phase‑4 (Catways)
+- fournir une réponse JSON stable et testée
+
+##### 2.4.3.2 Choix techniques
+
+- utilisation du middleware `validateCatwayId` pour valider l’identifiant hybride
+- utilisation du middleware `resolveCatwayIdentifier` pour attacher `req.catway`
+- requête Mongoose basée sur le champ métier `catwayNumber`
+- contrôleur minimaliste, centré sur la logique métier
+- gestion des erreurs internes (500) sans exposer de détails
+
+##### 2.4.3.3 Implémentation
+
+```js
+const reservations = await Reservation.find({
+    catwayNumber: req.catway.catwayNumber
+});
+return res.status(200).json(reservations);
+```
+
+##### 2.4.3.4 Tests
+
+- **niveau‑1** : [tests unitaires du contrôleur](./tests/fonctions/reservations-niveau-1-unitaires.md) avec mocks/stubs  
+- **niveau‑2** : [tests d’intégration](./tests/fonctions/reservations-niveau-2-integration.md) via Supertest + MongoMemoryServer  
+- cas testés :
+  - 200 — tableau vide
+  - 200 — tableau avec plusieurs réservations
+  - 500 — erreur interne simulée
+
+##### 2.4.3.4 Résultat
+
+- première fonctionnalité complète du module Reservations
+- pipeline Express cohérent :  
+  `validateCatwayId → resolveCatwayIdentifier → getReservationsByCatway`
+- architecture prête pour les issues 34 → 36
+
+---
+
+#### 2.4.4 — Issue-34 - Détail d’une réservation d’un catway
+
+Cette issue implémente la route :
+
+```txt
+GET /catways/:id/reservations/:idReservation
+```
+
+Elle permet de récupérer le **détail d’une réservation** associée à un catway.
+
+##### 2.4.4.1 Objectifs
+
+- Introduire la première route de lecture d’une réservation individuelle.
+- Étendre l’architecture Catways (issue‑26) au domaine Reservations.
+- Implémenter les middlewares de validation et de résolution d’identifiant.
+- Garantir que la réservation appartient bien au catway demandé.
+- Ajouter les tests niveau‑1 et niveau‑2.
+
+---
+
+##### 2.4.4.2 Pipeline Express complet
+
+Le pipeline suit exactement la même logique que Catways :
+
+```txt
+validateCatwayId
+→ resolveCatwayIdentifier
+→ validateReservationId
+→ resolveReservationIdentifier
+→ getReservationById
+```
+
+| Middleware                   | Rôle                                                    |
+|------------------------------|---------------------------------------------------------|
+| validateCatwayId             | Vérifie que `:id` est un ObjectId valide                |
+| resolveCatwayIdentifier      | Charge le catway et l’attache à `req.catway`            |
+| validateReservationId        | Vérifie que `:idReservation` est un ObjectId valide     |
+| resolveReservationIdentifier | Charge la réservation, vérifie l’appartenance au catway |
+| getReservationById           | Renvoie `req.reservation`                               |
+
+---
+
+##### 2.4.4.3 Implémentation du contrôleur
+
+Le contrôleur reste minimaliste :
+
+```js
+exports.getReservationById = (req, res) => {
+    try {
+        return res.status(200).json(req.reservation);
+    } catch (error) {
+        return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+};
+```
+
+Toute la logique métier est gérée par les middlewares.
+
+---
+
+##### 2.4.4.4 Middlewares Reservation
+
+###### 2.4.4.4.1 validateReservationId
+
+- Vérifie que `idReservation` est un ObjectId valide.
+- Retourne 400 si invalide.
+
+###### 2.4.4.4.2 resolveReservationIdentifier
+
+- Recherche la réservation via `Reservation.findById`.
+- Vérifie l’existence.
+- Vérifie que `reservation.catwayNumber === req.catway.catwayNumber`.
+- Attache la réservation à `req.reservation`.
+- Retourne 404 ou 500 selon les cas.
+
+---
+
+##### 2.4.4.5 Tests niveau‑1
+
+###### 2.4.4.5.1 Contrôleur
+
+- 200 : renvoie `req.reservation`
+- 500 : erreur interne simulée
+
+> **Note importante :**
+>
+> Pour simuler une erreur interne, on utilise un **getter qui jette une exception** :
+>>
+>> ```js
+>> Object.defineProperty(req, 'reservation', {
+>>    get() { throw new Error('Test error'); }
+>> });
+>> ```
+>>
+> Cela permet de déclencher le `catch` **sans re‑stubber `res.status()` ou `res.json()`**, déjà stubés par `mockResponse()`.
+
+---
+
+###### 2.4.4.5.2 Middlewares
+
+- **validateReservationId :**
+
+  - 400 si id invalide  
+  - next() si id valide  
+
+- **resolveReservationIdentifier :**
+
+  - 404 si réservation introuvable  
+  - 404 si réservation d’un autre catway  
+  - next() si réservation cohérente  
+  - 500 si erreur interne simulée  
+
+---
+
+##### 2.4.4.6 Tests niveau‑2
+
+Les tests d’intégration valident le pipeline complet avec MongoMemoryServer.
+
+Cas testés :
+
+- 200 : réservation trouvée  
+- 404 : réservation introuvable  
+- 404 : réservation non associée au catway  
+- 400 : idReservation invalide  
+- 500 : erreur interne simulée  
+
+Les dates utilisées dans les tests sont désormais **déterministes** :
+
+```js
+const checkIn = new Date('2025-05-01T10:00:00Z');
+const checkOut = new Date('2025-05-01T12:00:00Z');
+```
+
+ou bien
+
+```js
+const now = new Date();
+
+const checkIn: new Date(now.getTime());   // aujourd’hui
+const checkOut: new Date(now.getTime() + 24 * 60 * 60 * 1000);  // demain
+```
+
+---
+
+#### 2.4.5 — issue-35 - Création d’une réservation
+
+Cette issue introduit la route :
+
+```txt
+POST /catways/:id/reservations
+```
+
+Elle permet de créer une réservation associée à un catway existant.
+
+##### 2.4.5.1 Objectifs
+
+- Ajouter la création d’une réservation dans le domaine Reservations.  
+- Étendre le pipeline Express existant (issues 33–34).  
+- Introduire un middleware de validation métier complet.  
+- Garantir que `catwayNumber` est injecté automatiquement et ne peut pas être modifié par le client.  
+- Ajouter les tests niveau‑1 et niveau‑2.  
+
+---
+
+##### 2.4.5.2 Pipeline Express complet
+
+```txt
+validateCatwayId
+→ resolveCatwayIdentifier
+→ validateReservationPayload
+→ createReservation
+```
+
+| Élément                    | Rôle                                         |
+|----------------------------|----------------------------------------------|
+| validateCatwayId           | Vérifie que `:id` est un ObjectId valide     |
+| resolveCatwayIdentifier    | Charge le catway et l’attache à `req.catway` |
+| validateReservationPayload | Valide le payload métier                     |
+| createReservation          | Crée la réservation et renvoie 201           |
+
+---
+
+##### 2.4.5.3 Middleware validateReservationPayload
+
+Ce middleware valide :
+
+- `clientName` : string obligatoire  
+- `boatName` : string obligatoire  
+- `checkIn` : date valide obligatoire  
+- `checkOut` : date valide obligatoire  
+- `checkIn < checkOut` (strict)  
+- `catwayNumber` ne doit **pas** être fourni par le client  
+
+En cas d’erreur → **400**  
+En cas de succès → **next()**
+
+---
+
+##### 2.4.5.4 Contrôleur createReservation
+
+Le contrôleur :
+
+- récupère les champs validés par le middleware  
+- injecte automatiquement `catwayNumber` depuis `req.catway`  
+- crée la réservation via `Reservation.create()`  
+- renvoie :
+
+| Cas          | Statut |
+|--------------|--------|
+| Succès       | 201    |
+| Erreur Mongo | 500    |
+
+Le contrôleur reste volontairement minimaliste, conformément à l’architecture Catways.
+
+---
+
+#### 2.4.6 — Issue-36 - Suppression d’une réservation
+
+Cette issue introduit la route :
+
+```js
+DELETE /catways/:id/reservations/:idReservation
+```
+
+Elle permet de supprimer une réservation associée à un catway existant.
+
+##### 2.4.6.1 Objectifs
+
+- Ajouter la suppression d’une réservation dans le domaine Reservations.  
+- Réutiliser le pipeline Express complet introduit dans les issues 33–34.  
+- Implémenter un contrôleur minimaliste `deleteReservation`.  
+- Garantir que la réservation appartient bien au catway.  
+- Ajouter les tests niveau‑1 et niveau‑2.  
+
+---
+
+##### 2.4.6.2 Pipeline Express complet
+
+```txt
+validateCatwayId
+→ resolveCatwayIdentifier
+→ validateReservationId
+→ resolveReservationIdentifier
+→ deleteReservation
+```
+
+| Élément                      | Rôle                                                      |
+|------------------------------|-----------------------------------------------------------|
+| validateCatwayId             | Vérifie que `:id` est un ObjectId valide                  |
+| resolveCatwayIdentifier      | Charge le catway et l’attache à `req.catway`              |
+| validateReservationId        | Vérifie que `:idReservation` est un ObjectId valide       |
+| resolveReservationIdentifier | Charge la réservation et vérifie l’appartenance au catway |
+| deleteReservation            | Supprime la réservation et renvoie 200                    |
+
+---
+
+##### 2.4.6.3 Contrôleur deleteReservation
+
+Le contrôleur :
+
+- supprime la réservation via `Reservation.findByIdAndDelete(req.reservation._id)`  
+- renvoie :
+
+| Cas          | Statut |
+|--------------|--------|
+| Succès       | 200    |
+| Erreur Mongo | 500    |
+
+Réponse attendue :
+
+```json
+{
+  "message": "Réservation supprimée avec succès"
+}
+```
+
+Le contrôleur reste volontairement minimaliste, conformément à l’architecture Catways.
 
 ---
 

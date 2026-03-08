@@ -416,3 +416,162 @@ describe('POST /catways/:id/reservations — niveau‑2 (issue‑35)', () => {
         sinon.restore();
     });
 });
+
+describe('DELETE /catways/:id/reservations/:idReservation — niveau‑2 (issue‑36)', () => {
+
+    let mongoServer;
+
+    before(async () => {
+        mongoServer = await MongoMemoryServer.create();
+        const uri = mongoServer.getUri();
+        await mongoose.connect(uri);
+    });
+
+    after(async () => {
+        await mongoose.disconnect();
+        await mongoServer.stop();
+    });
+
+    beforeEach(async () => {
+        await Catway.deleteMany({});
+        await Reservation.deleteMany({});
+    });
+
+    // -----------------------------------------------------
+    // 200 — suppression réussie
+    // -----------------------------------------------------
+    it('200 — supprime une réservation existante', async () => {
+        const catway = await Catway.create({
+            catwayNumber: 1,
+            type: 'short',
+            catwayState: 'free'
+        });
+
+        const reservation = await Reservation.create({
+            clientName: 'Alice',
+            boatName: 'Sea Breeze',
+            checkIn: new Date('2025-05-01T10:00:00Z'),
+            checkOut: new Date('2025-05-01T12:00:00Z'),
+            catwayNumber: 1
+        });
+
+        const res = await request(app)
+            .delete(`/catways/${catway._id}/reservations/${reservation._id}`)
+            .expect(200);
+
+        expect(res.body.message).to.equal('Réservation supprimée avec succès');
+
+        const deleted = await Reservation.findById(reservation._id);
+        expect(deleted).to.be.null;
+    });
+
+    // -----------------------------------------------------
+    // 404 — réservation introuvable
+    // -----------------------------------------------------
+    it('404 — réservation introuvable', async () => {
+        const catway = await Catway.create({
+            catwayNumber: 1,
+            type: 'short',
+            catwayState: 'free'
+        });
+
+        const fakeId = new mongoose.Types.ObjectId();
+
+        const res = await request(app)
+            .delete(`/catways/${catway._id}/reservations/${fakeId}`)
+            .expect(404);
+
+        expect(res.body.error).to.equal('Réservation introuvable');
+    });
+
+    // -----------------------------------------------------
+    // 404 — réservation non associée au catway
+    // -----------------------------------------------------
+    it('404 — réservation non associée à ce catway', async () => {
+        const catway1 = await Catway.create({
+            catwayNumber: 1,
+            type: 'short',
+            catwayState: 'free'
+        });
+
+        const catway2 = await Catway.create({
+            catwayNumber: 2,
+            type: 'long',
+            catwayState: 'free'
+        });
+
+        const reservation = await Reservation.create({
+            clientName: 'Bob',
+            boatName: 'Blue Wave',
+            checkIn: new Date('2025-05-01T10:00:00Z'),
+            checkOut: new Date('2025-05-01T12:00:00Z'),
+            catwayNumber: 2
+        });
+
+        const res = await request(app)
+            .delete(`/catways/${catway1._id}/reservations/${reservation._id}`)
+            .expect(404);
+
+        expect(res.body.error).to.equal('Réservation non associée à ce catway');
+    });
+
+    // -----------------------------------------------------
+    // 400 — identifiant de réservation invalide
+    // -----------------------------------------------------
+    it('400 — identifiant de réservation invalide', async () => {
+        const catway = await Catway.create({
+            catwayNumber: 1,
+            type: 'short',
+            catwayState: 'free'
+        });
+
+        const res = await request(app)
+            .delete(`/catways/${catway._id}/reservations/invalid-id`)
+            .expect(400);
+
+        expect(res.body.error).to.equal('Identifiant de réservation invalide');
+    });
+
+    // -----------------------------------------------------
+    // 404 — catway introuvable
+    // -----------------------------------------------------
+    it('404 — catway introuvable', async () => {
+        const fakeId = new mongoose.Types.ObjectId();
+
+        const res = await request(app)
+            .delete(`/catways/${fakeId}/reservations/${fakeId}`)
+            .expect(404);
+
+        expect(res.body.error).to.equal('Catway introuvable');
+    });
+
+    // -----------------------------------------------------
+    // 500 — erreur interne simulée
+    // -----------------------------------------------------
+    it('500 — erreur interne simulée', async () => {
+        const catway = await Catway.create({
+            catwayNumber: 1,
+            type: 'short',
+            catwayState: 'free'
+        });
+
+        const reservation = await Reservation.create({
+            clientName: 'Alice',
+            boatName: 'Sea Breeze',
+            checkIn: new Date('2025-05-01T10:00:00Z'),
+            checkOut: new Date('2025-05-01T12:00:00Z'),
+            catwayNumber: 1
+        });
+
+        const sinon = require('sinon');
+        sinon.stub(Reservation, 'findByIdAndDelete').throws(new Error('Test error'));
+
+        const res = await request(app)
+            .delete(`/catways/${catway._id}/reservations/${reservation._id}`)
+            .expect(500);
+
+        expect(res.body.error).to.equal('Erreur interne du serveur');
+
+        sinon.restore();
+    });
+});

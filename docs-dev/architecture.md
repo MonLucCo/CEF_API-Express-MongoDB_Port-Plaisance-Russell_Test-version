@@ -1806,7 +1806,7 @@ validateCatwayId
 
 ---
 
-#### 2.4.5.3 Middleware validateReservationPayload
+##### 2.4.5.3 Middleware validateReservationPayload
 
 Ce middleware valide :
 
@@ -1835,6 +1835,70 @@ Le contrôleur :
 |--------------|--------|
 | Succès       | 201    |
 | Erreur Mongo | 500    |
+
+Le contrôleur reste volontairement minimaliste, conformément à l’architecture Catways.
+
+---
+
+#### 2.4.6 — Issue-36 - Suppression d’une réservation
+
+Cette issue introduit la route :
+
+```js
+DELETE /catways/:id/reservations/:idReservation
+```
+
+Elle permet de supprimer une réservation associée à un catway existant.
+
+##### 2.4.6.1 Objectifs
+
+- Ajouter la suppression d’une réservation dans le domaine Reservations.  
+- Réutiliser le pipeline Express complet introduit dans les issues 33–34.  
+- Implémenter un contrôleur minimaliste `deleteReservation`.  
+- Garantir que la réservation appartient bien au catway.  
+- Ajouter les tests niveau‑1 et niveau‑2.  
+
+---
+
+##### 2.4.6.2 Pipeline Express complet
+
+```txt
+validateCatwayId
+→ resolveCatwayIdentifier
+→ validateReservationId
+→ resolveReservationIdentifier
+→ deleteReservation
+```
+
+| Élément                      | Rôle                                                      |
+|------------------------------|-----------------------------------------------------------|
+| validateCatwayId             | Vérifie que `:id` est un ObjectId valide                  |
+| resolveCatwayIdentifier      | Charge le catway et l’attache à `req.catway`              |
+| validateReservationId        | Vérifie que `:idReservation` est un ObjectId valide       |
+| resolveReservationIdentifier | Charge la réservation et vérifie l’appartenance au catway |
+| deleteReservation            | Supprime la réservation et renvoie 200                    |
+
+---
+
+##### 2.4.6.3 Contrôleur deleteReservation
+
+Le contrôleur :
+
+- supprime la réservation via `Reservation.findByIdAndDelete(req.reservation._id)`  
+- renvoie :
+
+| Cas          | Statut |
+|--------------|--------|
+| Succès       | 200    |
+| Erreur Mongo | 500    |
+
+Réponse attendue :
+
+```json
+{
+  "message": "Réservation supprimée avec succès"
+}
+```
 
 Le contrôleur reste volontairement minimaliste, conformément à l’architecture Catways.
 

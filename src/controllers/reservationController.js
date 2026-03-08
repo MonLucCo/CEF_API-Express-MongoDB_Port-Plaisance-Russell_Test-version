@@ -8,10 +8,8 @@
  * Version issue‑33 : implémentation de la fonction getReservationsByCatway pour récupérer les réservations d’un catway.
  * Version issue‑34 : implémentation de la fonction getReservationById pour récupérer le détail d’une réservation.
  * Version issue‑35 : implémentation de la fonction createReservation pour créer une réservation.
+ * Version issue‑36 : implémentation de la fonction deleteReservation pour supprimer une réservation.
  * 
- * La fonction deleteReservation est actuellement un placeholder avec une structure minimale, 
- * sans logique métier ni interaction avec la base de données. Elle sera implémentée progressivement dans l'issue‑36.
- *
  * Routes gérées par ce contrôleur :
  * - issue‑33 : GET /catways/:id/reservations   
  * - issue‑34 : GET /catways/:id/reservations/:idReservation
@@ -26,7 +24,7 @@
  * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
  * @see module:middlewares/reservationMiddleware.validateReservationId
  * @see module:middlewares/reservationMiddleware.resolveReservationIdentifier
- * @version 0.4.0
+ * @version 0.5.0
  */
 
 const Reservation = require('../models/reservation');
@@ -130,24 +128,35 @@ exports.createReservation = async (req, res) => {
 /**
  * DELETE /catways/:id/reservations/:idReservation
  * @function deleteReservation
- * @description Supprime une réservation d’un catway.
+ * @async
+ * @description Supprime une réservation associée à un catway.
  *
- * Version issue‑32 :
- * - structure interne minimale
- * - aucune logique métier
- * - aucune interaction avec la base
+ * Règles métier (issue‑36) :
+ * - La réservation est déjà validée et chargée par resolveReservationIdentifier
+ * - Le contrôleur supprime simplement la réservation
+ * - En cas de succès : 200 + message de confirmation
+ * - En cas d’erreur MongoDB : 500
  *
- * @param {Object} req - Objet Request Express
+ * @param {Object} req - Objet Request Express (req.reservation défini par resolveReservationIdentifier)
  * @param {Object} res - Objet Response Express
- * @returns {Object} 200 - Réponse JSON simulée
- * 
- * @version 0.1.0
- * @todo Implémentation complète dans l’issue‑36
+ * @returns {Object} 200 - Message de confirmation
+ * @throws {Object} 500 - Erreur interne
+ *
+ * @requires ../models/reservation
+ *
+ * @version 0.2.0
  */
-exports.deleteReservation = (req, res) => {
-    res.status(200).json({
-        message: 'DELETE reservation — placeholder (issue‑32)',
-        catwayId: req.params.id,
-        reservationId: req.params.idReservation
-    });
+exports.deleteReservation = async (req, res) => {
+    try {
+        await Reservation.findByIdAndDelete(req.reservation._id);
+
+        return res.status(200).json({
+            message: 'Réservation supprimée avec succès'
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Erreur interne du serveur'
+        });
+    }
 };

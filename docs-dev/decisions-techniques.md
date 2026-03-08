@@ -581,3 +581,40 @@ sinon.stub(Reservation, 'create').throws(...)
 C’est cohérent avec les issues 33 et 34.
 
 ---
+
+### 6.10 — Suppression d’une réservation (issue‑36)
+
+#### 6.10.1 Réutilisation complète du pipeline existant
+
+Aucune validation supplémentaire n’est ajoutée :  
+tout est géré par les middlewares déjà introduits dans les issues 33–34.
+
+##### 6.10.2 Contrôleur minimaliste
+
+Le contrôleur ne fait que :
+
+- supprimer la réservation,  
+- renvoyer un message de confirmation,  
+- gérer les erreurs internes.
+
+Cela garantit :
+
+- une architecture claire,  
+- une testabilité maximale,  
+- une cohérence avec les autres opérations CRUD.
+
+##### 6.10.3 Cohérence métier
+
+La vérification d’appartenance (`reservation.catwayNumber === req.catway.catwayNumber`) reste dans `resolveReservationIdentifier`, évitant toute duplication.
+
+##### 6.10.4 Simulation d’erreur interne
+
+En niveau‑2, l’erreur interne est simulée via :
+
+```js
+sinon.stub(Reservation, 'findByIdAndDelete').throws(...)
+```
+
+C’est cohérent avec les issues 33–35.
+
+---

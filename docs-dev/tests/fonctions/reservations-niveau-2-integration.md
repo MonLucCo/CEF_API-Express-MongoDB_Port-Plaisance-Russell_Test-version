@@ -79,6 +79,27 @@ Les tests d’intégration valident le fonctionnement réel des routes Reservati
 
 ---
 
+### 4.4 `DELETE /catways/:id/reservations/:idReservation` (issue-36)
+
+#### 4.4.1 Cas testés
+
+| Cas                                | Statut |
+|------------------------------------|--------|
+| Suppression réussie                | 200    |
+| Réservation introuvable            | 404    |
+| Réservation non associée au catway | 404    |
+| idReservation invalide             | 400    |
+| Catway introuvable                 | 404    |
+| Erreur interne simulée             | 500    |
+
+#### 4.4.2 Notes
+
+- Pipeline complet testé avec MongoMemoryServer.  
+- Vérification que la réservation n’existe plus après suppression.  
+- Simulation d’erreur interne via stub de `findByIdAndDelete`.
+
+---
+
 ## 5. Fichiers associés
 
 - Tests : `tests/integration/reservations.routes.test.js`
@@ -106,3 +127,9 @@ Les tests d’intégration valident le fonctionnement réel des routes Reservati
 **Résultats des tests (issue-35) et non régression :**
 
 ![alt text](../assets/img_issue-35_resultats-tests-niveau-2.png)
+
+### 6.4 issue-36 : route de suppression d'une reservation d'un catway
+
+**Résultats des tests (issue-36) et non régression :**
+
+![alt text](../assets/img_issue-36_resultats-tests-niveau-2.png)

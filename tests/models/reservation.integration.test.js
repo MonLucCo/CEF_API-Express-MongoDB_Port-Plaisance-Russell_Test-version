@@ -5,26 +5,9 @@
 
 const { expect } = require('chai');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const Reservation = require('../../src/models/reservation');
 
 describe('Model Reservation — Tests d’intégration (niveau‑2)', () => {
-    let mongoServer;
-
-    before(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = mongoServer.getUri();
-        await mongoose.connect(uri);
-    });
-
-    after(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    });
-
-    beforeEach(async () => {
-        await Reservation.deleteMany({});
-    });
 
     it('devrait insérer une réservation valide', async () => {
         const reservation = await Reservation.create({

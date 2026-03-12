@@ -47,9 +47,13 @@ src/                        ← Dossier principal du code de l'API
   │   └── reservation.js            ← Modèle Reservation (issue‑19)
   │
   ├── controllers/              ← Contrôleurs Express (logique métier)
-  │   ├── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
-  │   ├── catwayController.js       ← Contrôleur des Catways
-  │   └── reservationController.js  ← Contrôleur des Reservations
+  │   ├── api                       ← Contrôleur de l'API
+  │   │   ├── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
+  │   │   ├── catwayController.js       ← Contrôleur des Catways
+  │   │   └── reservationController.js  ← Contrôleur des Reservations
+  │   │
+  │   └── pages                     ← Contrôleur du Frontend
+  │       └── pagesController.js        ← Contrôleur des pages du frontend
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
   │   ├── authMiddleware.js              ← Middleware JWT (issue‑16), vérification du token et protection des routes
@@ -60,10 +64,16 @@ src/                        ← Dossier principal du code de l'API
   ├── services/                 ← Logique métier réutilisable
   │
   └── routes/                   ← Définition des routes Express
-      ├── accueilRoutes.js          ← Route d’accueil (GET /)
-      ├── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
-      ├── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
-      └── reservationRoutes.js      ← Routes des Reservations (GET, POST, DELETE)
+      ├── api                       ← Routes de l'API
+      │   ├── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
+      │   ├── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
+      │   └── reservationRoutes.js      ← Routes des Reservations (GET, POST, DELETE)
+      │
+      └── pages                     ← Routes du Frontend
+          └── pagesRoutes.js            ← Routes des pages du frontend
+
+views/
+  └── accueil.ejs                  ← Page dynamique (EJS) de l'accueil du Frontend
 
 scripts/
   └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
@@ -78,9 +88,13 @@ config/                     ← Configuration globale (JWT, paramètres transver
   └── dev/                      ← Configuration locale de développement
       └── nodemon.json              ← Configuration nodemon (issue‑17)
 
-public/                         ← Front-end minimal
+public/                     ← Eléments statique du frontend
+  ├── css/                      ← Feuilles de style
+  │   └── accueil.css               ← Feuille des styles de l'accueil
+  └── js/                       ← Scripts exécutés côté navigateur (frontend)
 
 tests/                      ← Tests Mocha/Chai/Supertest
+  ├── root-hooks.js             ← Définition initiale des Hooks de MOCHA (issue‑37)
   ├── test-app.js               ← Serveur Express dédié aux tests E2E simulés (issue‑17)
   │
   ├── controllers/              ← Tests unitaires (niveau‑1) des contrôleurs via Mocha + Chai + Sinon
@@ -156,6 +170,9 @@ Les mécanismes de sécurité (JWT, hashage, bonnes pratiques Express/MongoDB) s
 
 la stratégie complète des tests est détaillée dans [docs-dev/tests-strategy.md](./tests-strategy.md) et [docs-dev/tests/README_tests.md](./tests/README_tests.md).
 
+À partir de l'issue-37 (version v0..2-dev), l'architecture sépare l'API REST (routes sous /api/…, /`<nom-projet>`/api/… sur Alwaysdata) et les pages dynamiques EJS (routes sous /).  
+Cette séparation garantie une architecture claire, modulaire et compatible avec Alwaysdata.
+
 ---
 
 ### 1.3. Organisation fonctionnelle (Phases 2 à 8)
@@ -202,7 +219,9 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 #### 1.3.5 Phase 6 — Front-end minimal
 
-(sera complété avec les issues lors de l'engagement de la phase)
+- Issue-37 : Création de la page d'accueil du frontend
+- Issue-38 : Création du Dashboard de l'Utilisateur
+- Issue-39 : Création des pages listes et détails (finalisation du frontend)
 
 #### 1.3.6 Phase 7 — Tests unitaires
 
@@ -1906,7 +1925,90 @@ Le contrôleur reste volontairement minimaliste, conformément à l’architectu
 
 ### 2.5 Phase 6 — Front-end minimal
 
-(sera complété avec les issues correspondantes)
+La Phase 6 introduit la séparation complète entre :
+
+- le front-end dynamique (EJS)
+- l’API REST
+
+**Progression fonctionnelle (issues 37 → 39) de la Phase 6 :**
+
+- **Issue-37** : Création de la page d'accueil du frontend
+  - Etape 1 : intégration de page dynamique (EJS)
+  - Etape 2 : séparation des architectures de l'API (REST) et des Pages (EJS) - tests de non régressions de l'API
+  - Etape 3 : intégration des fonctionnalités de la page d'accueil (Login, Dashboard en placeholder, Logout, sécurisation JWT)
+  - Etape 4 : tests et déploiement de la version (v0.2-dev EJS + REST)
+- **Issue-38** : Création du Dashboard de l'Utilisateur
+- **Issue-39** : Création des pages listes et détails (finalisation du frontend)
+
+#### 2.5.1 - Issue-37 - Création de la page d'accueil du frontend
+
+À partir de la version v0.1.2-dev, l’application adopte une séparation stricte entre :
+
+1. **Le frontend dynamique (EJS)**
+   - routes sous `/`
+   - contrôleur : `pagesController.js`
+   - routeur : `pagesRoutes.js`
+   - vues : `views/*.ejs`
+   - assets : `public/css`, `public/js`
+
+2. **L’API REST**
+   - racine locale : `/api/`
+   - racine Alwaysdata : `/port-plaisance-russell/api/`
+   - routeur principal : `apiRoutes.js`
+   - sous-routeurs : `authRoutes.js`, `catwayRoutes.js`, `reservationRoutes.js`
+
+Cette séparation garantit :
+
+- une architecture claire et modulaire
+- une compatibilité totale avec Alwaysdata
+- une évolution progressive du frontend (issues 38–39)
+- une distinction nette entre logique métier (API) et rendu (EJS)
+
+##### 2.5.1.1 Etape 1 - intégration d'une page dynamique EJS
+
+La première étape a consisté à remplacer la page statique `accueilRoutes.js` par une page dynamique (EJS). Aucune séparation des routes entre l'API et le frontend n'est mise en place.
+
+La page d'accueil avec une page EJS correspond à la version `v0.1.1-dev (EJS)` qui reste une version locale de développement. Aucun déploiement n'est réalisé car les routes de l'API ne sont pas protégées.
+
+---
+
+##### 2.5.1.2 Etape 2 - séparation des architectures de l'API et des Pages
+
+La seconde étape adopte une séparation stricte entre :
+
+1. **Le frontend dynamique (EJS)**
+   - routes sous `/`
+   - contrôleur : `pagesController.js`
+   - routeur : `pagesRoutes.js`
+   - vues : `views/*.ejs`
+   - assets : `public/css`, `public/js`
+
+2. **L’API REST**
+   - racine locale : `/api/`
+   - racine Alwaysdata : `/port-plaisance-russell/api/`
+   - routeur principal : `apiRoutes.js`
+   - sous-routeurs : `authRoutes.js`, `catwayRoutes.js`, `reservationRoutes.js`
+
+Cette séparation garantit :
+
+- une architecture claire et modulaire
+- une compatibilité totale avec Alwaysdata
+- une évolution progressive du frontend (issues 38–39)
+- une distinction nette entre logique métier (API) et rendu (EJS)
+
+La page d'accueil avec une page EJS correspond à la version `v0.1.2-dev (EJS & REST)` qui reste une version locale de développement. Aucun déploiement n'est réalisé car les routes de l'API, séparées des routes du frontend, ne sont pas protégées.
+
+---
+
+##### 2.5.1.3 Etape 3 - intégration des fonctionnalités de la page d'accueil
+
+(à compléter - commit-3 de l'issue-37)
+
+---
+
+##### 2.5.1.4 Etape 4 - tests et déploiement de la version de la page d'accueil du frontend
+
+(à compléter - commit-4 de l'issue-37)
 
 ---
 

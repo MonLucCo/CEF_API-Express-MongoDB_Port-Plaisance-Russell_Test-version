@@ -3,6 +3,21 @@
 **En préambule** : cette version initiale du document présente la situation des tests prévus pour ce projet. Il fait des hypothèses quant à la mise en oeuvre technique avec des options possibles.  
 La version finale lors de la livraison du projet fera l'objet d'une actualisation en ne conservant que les éléments réellement mis en place. Le préambule sera retiré pour cette finalisation.
 
+À partir de l’issue‑37, la stratégie de tests distingue deux familles complémentaires :
+
+1) **Tests développeurs** (`npm run test`)
+   - tests unitaires (niveau 1)
+   - tests d’intégration (niveau 2)
+   - tests E2E simulés (niveau 3)
+   Ces tests garantissent la stabilité technique du code.
+
+2) **Tests opérationnels Client** (`npm run tests`)
+   - tests orientés métier
+   - couvrant modèle, frontend, API et fonctions Client
+   Ces tests seront développés en Phase 7.
+
+Cette séparation évite les interférences entre tests techniques et tests métier, et prépare l’automatisation future.
+
 ---
 
 ## 1. Organisation des tests
@@ -40,7 +55,7 @@ La stratégie de tests repose sur trois niveaux complémentaires, introduits pro
   - `User.findByIdAndDelete`
 - Les tests de `deleteUser` utilisent désormais des **ObjectId valides** pour refléter le contrôle ajouté dans l’issue‑17.
 
-### 2.1.2 Niveau‑2 : Tests d’intégration
+#### 2.1.2 Niveau‑2 : Tests d’intégration
 
 - Outils : **Supertest**, **MongoMemoryServer**  
 - Objectif : tester les routes Express et leur interaction réelle avec Mongoose  

@@ -11,29 +11,11 @@ const { expect } = require('chai');
 const sinon = require('sinon'); // Seulement pour le test d’erreur interne dans POST /catways
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 
 const app = require('../../src/app');
 const Catway = require('../../src/models/catway');
 
 describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
-
-    let mongoServer;
-
-    before(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = mongoServer.getUri();
-        await mongoose.connect(uri);
-    });
-
-    after(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    });
-
-    beforeEach(async () => {
-        await Catway.deleteMany({});
-    });
 
     // -----------------------------
     // GET /catways
@@ -41,7 +23,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
     describe('GET /catways', () => {
 
         it('retourne 200 et une liste vide si aucun catway', async () => {
-            const res = await request(app).get('/catways');
+            const res = await request(app).get('/api/catways');
 
             expect(res.status).to.equal(200);
             expect(res.body).to.be.an('array').that.is.empty;
@@ -53,13 +35,13 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
                 { catwayNumber: 2, type: 'long', catwayState: 'en réparation' }
             ]);
 
-            const res = await request(app).get('/catways');
+            const res = await request(app).get('/api/catways');
 
             expect(res.status).to.equal(200);
             expect(res.body).to.be.an('array').with.lengthOf(2);
 
-            expect(res.body[0]).to.have.property('catwayNumber', 1);
-            expect(res.body[1]).to.have.property('catwayNumber', 2);
+            const numbers = res.body.map(c => c.catwayNumber);
+            expect(numbers).to.have.members([1, 2]);
         });
 
     });
@@ -70,18 +52,18 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
     describe('GET /catways/:id', () => {
 
         it('retourne 400 si ID invalide (ni ObjectId, ni nombre)', async () => {
-            const res = await request(app).get('/catways/ab123');
+            const res = await request(app).get('/api/catways/ab123');
             expect(res.status).to.equal(400);
         });
 
         it('retourne 404 si catway introuvable (ObjectId inexistant)', async () => {
             const fakeId = new mongoose.Types.ObjectId();
-            const res = await request(app).get(`/catways/${fakeId}`);
+            const res = await request(app).get(`/api/catways/${fakeId}`);
             expect(res.status).to.equal(404);
         });
 
         it('retourne 404 si catway introuvable (catwayNumber inexistant)', async () => {
-            const res = await request(app).get('/catways/999');
+            const res = await request(app).get('/api/catways/999');
             expect(res.status).to.equal(404);
         });
 
@@ -92,7 +74,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
                 catwayState: 'bon état'
             });
 
-            const res = await request(app).get(`/catways/${catway._id}`);
+            const res = await request(app).get(`/api/catways/${catway._id}`);
 
             expect(res.status).to.equal(200);
             expect(res.body).to.have.property('catwayNumber', 1);
@@ -105,7 +87,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
                 catwayState: 'bon état'
             });
 
-            const res = await request(app).get('/catways/7');
+            const res = await request(app).get('/api/catways/7');
 
             expect(res.status).to.equal(200);
             expect(res.body).to.have.property('catwayNumber', 7);
@@ -120,7 +102,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
         it('retourne 400 si payload invalide', async () => {
             const res = await request(app)
-                .post('/catways')
+                .post('/api/catways')
                 .send({});
 
             expect(res.status).to.equal(400);
@@ -135,7 +117,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             };
 
             const res = await request(app)
-                .post('/catways')
+                .post('/api/catways')
                 .send(payload);
 
             expect(res.status).to.equal(201);
@@ -153,7 +135,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             });
 
             const res = await request(app)
-                .post('/catways')
+                .post('/api/catways')
                 .send({
                     catwayNumber: 1,
                     type: 'short',
@@ -169,7 +151,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             const stub = sinon.stub(Catway, 'create').throws(new Error('Erreur interne'));
 
             const res = await request(app)
-                .post('/catways')
+                .post('/api/catways')
                 .send({
                     catwayNumber: 2,
                     type: 'short',
@@ -197,7 +179,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             });
 
             const res = await request(app)
-                .put(`/catways/${catway._id}`)
+                .put(`/api/catways/${catway._id}`)
                 .send({}); // payload invalide
 
             expect(res.status).to.equal(400);
@@ -207,7 +189,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             const fakeId = new mongoose.Types.ObjectId();
 
             const res = await request(app)
-                .put(`/catways/${fakeId}`)
+                .put(`/api/catways/${fakeId}`)
                 .send({
                     catwayNumber: 99,
                     type: 'long',
@@ -225,7 +207,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             });
 
             const res = await request(app)
-                .put(`/catways/${catway._id}`)
+                .put(`/api/catways/${catway._id}`)
                 .send({
                     catwayNumber: 99,
                     type: 'long',
@@ -253,7 +235,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             });
 
             const res = await request(app)
-                .put(`/catways/${catway2._id}`)
+                .put(`/api/catways/${catway2._id}`)
                 .send({
                     catwayNumber: 1, // duplication
                     type: 'long',
@@ -273,7 +255,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             const stub = sinon.stub(Catway.prototype, 'save').throws(new Error('Erreur interne'));
 
             const res = await request(app)
-                .put(`/catways/${catway._id}`)
+                .put(`/api/catways/${catway._id}`)
                 .send({
                     catwayNumber: 99,
                     type: 'long',
@@ -300,7 +282,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             });
 
             const res = await request(app)
-                .patch(`/catways/${catway._id}`)
+                .patch(`/api/catways/${catway._id}`)
                 .send({ type: 'medium' }); // invalide
 
             expect(res.status).to.equal(400);
@@ -310,7 +292,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             const fakeId = new mongoose.Types.ObjectId();
 
             const res = await request(app)
-                .patch(`/catways/${fakeId}`)
+                .patch(`/api/catways/${fakeId}`)
                 .send({ type: 'long' });
 
             expect(res.status).to.equal(404);
@@ -324,7 +306,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             });
 
             const res = await request(app)
-                .patch(`/catways/${catway._id}`)
+                .patch(`/api/catways/${catway._id}`)
                 .send({ type: 'long' });
 
             expect(res.status).to.equal(200);
@@ -348,7 +330,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             });
 
             const res = await request(app)
-                .patch(`/catways/${catway2._id}`)
+                .patch(`/api/catways/${catway2._id}`)
                 .send({ catwayNumber: 1 }); // duplication
 
             expect(res.status).to.equal(409);
@@ -364,7 +346,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             const stub = sinon.stub(Catway.prototype, 'save').throws(new Error('Erreur interne'));
 
             const res = await request(app)
-                .patch(`/catways/${catway._id}`)
+                .patch(`/api/catways/${catway._id}`)
                 .send({ type: 'long' });
 
             expect(res.status).to.equal(500);
@@ -381,7 +363,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
         it('retourne 400 si ID invalide', async () => {
             const res = await request(app)
-                .delete('/catways/abc123') // ni ObjectId, ni nombre
+                .delete('/api/catways/abc123') // ni ObjectId, ni nombre
                 .send();
 
             expect(res.status).to.equal(400);
@@ -391,7 +373,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             const fakeId = new mongoose.Types.ObjectId();
 
             const res = await request(app)
-                .delete(`/catways/${fakeId}`)
+                .delete(`/api/catways/${fakeId}`)
                 .send();
 
             expect(res.status).to.equal(404);
@@ -405,7 +387,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
             });
 
             const res = await request(app)
-                .delete(`/catways/${catway._id}`)
+                .delete(`/api/catways/${catway._id}`)
                 .send();
 
             expect(res.status).to.equal(204);
@@ -425,7 +407,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
                 .throws(new Error('Erreur interne'));
 
             const res = await request(app)
-                .delete(`/catways/${catway._id}`)
+                .delete(`/api/catways/${catway._id}`)
                 .send();
 
             expect(res.status).to.equal(500);

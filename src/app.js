@@ -2,23 +2,23 @@
  * @file app.js
  * @description Configuration principale de l'application Express :
  * - Middlewares globaux
- * - Montage des routeurs (accueil, auth, catways, reservations)
- * - Configuration du moteur de vues EJS
+ * - Montage du routeur des Pages (EJS)
+ * - Montage du routeurs API (REST)
+ * - Configuration du moteur de vues EJS (views/)
  * - Configuration des fichiers statiques (public/)
  *
  * @module app
  * @requires express
- * @version 0.5.1
+ * @requires path
+ * @version 0.5.2
  */
 
 const express = require('express');
 const path = require('path');
 
 // Import des routeurs
-const accueilRoutes = require('./routes/accueilRoutes');
-const authRoutes = require('./routes/authRoutes');
-const catwayRoutes = require('./routes/catwayRoutes');
-const reservationRoutes = require('./routes/reservationRoutes');
+const pagesRoutes = require('./routes/pages/pagesRoutes');
+const apiRoutes = require('./routes/api/apiRoutes');
 
 const app = express();
 
@@ -40,12 +40,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ---------------------------------------------------------
-   Routes
+   Routes Pages (EJS)
 --------------------------------------------------------- */
-app.use('/', accueilRoutes);
-app.use('/auth', authRoutes);
-app.use('/catways', catwayRoutes);
-app.use('/catways', reservationRoutes);
+app.use('/', pagesRoutes);
+
+/* ---------------------------------------------------------
+   Routes API (REST)
+--------------------------------------------------------- */
+app.use('/api', apiRoutes);
 
 /* ---------------------------------------------------------
    Export de l'application

@@ -22,8 +22,8 @@
 const express = require('express');
 const router = express.Router();
 
-const { register, login, deleteUser } = require('../controllers/authController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { register, login, deleteUser } = require('../../controllers/api/authController');
+const authMiddleware = require('../../middlewares/authMiddleware');
 
 // Route : inscription (publique)
 router.post('/register', register);

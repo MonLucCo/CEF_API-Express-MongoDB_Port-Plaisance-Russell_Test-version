@@ -186,6 +186,30 @@ La Phase 5 dispose d’une architecture complète, modulaire et cohérente, prê
 
 ---
 
+### 4.3 Décision - Séparation stricte API REST / Frontend EJS
+
+La phase 6 introduit un frontend qui vient compléter l'API du projet. Ces deux composantes du projet seront développées avec une séparation stricte (dossiers de développement et routes des URLs) dans le développement :
+
+- l'API REST (src/routes/api/)
+- les pages dynamiques EJS (src/routes/pages/)
+
+Motivations :
+
+- préparer le front minimal (Phase 6)
+- éviter la confusion entre routes API et routes HTML
+- permettre un déploiement propre sur Alwaysdata
+- clarifier la documentation et les tests
+
+Impacts :
+
+- création de pagesRoutes.js et pagesController.js
+- suppression de accueilRoutes.js
+- mise à jour de app.js pour monter les deux familles de routes
+- séparation des familles de tests (développeurs et opérationnels Client)
+- passage en version v0.1.2-dev
+
+---
+
 ## 5. Environnement de développement
 
 ### 5.1 Tests E2E simulés
@@ -202,6 +226,27 @@ Motivations :
 ### 5.2 Serveur local - Activation Nodemon
 
 Décision : ajouter une configuration nodemon locale (`config/dev/nodemon.json`) pour faciliter le développement, sans impacter le déploiement.
+
+### 5.3 Séparation des tests Développeurs et des tests Opérationnels Client
+
+L’issue‑37 (Phase 6) introduit une séparation nette entre :
+
+1) Tests développeurs (npm run test)
+   - tests unitaires (niveau 1)
+   - tests d’intégration (niveau 2)
+   - tests E2E simulés
+
+2) Tests opérationnels Client (npm run tests)
+   - tests du modèle et de la base
+   - tests du front-end
+   - tests de l’API
+   - tests des fonctions Client
+
+Motivations :
+
+- éviter les interférences entre tests techniques (développeurs) et opérationnels (Client)
+- préparer la Phase 7 (tests opérationnels)
+- clarifier le pipeline CI/CD
 
 ---
 
@@ -616,5 +661,37 @@ sinon.stub(Reservation, 'findByIdAndDelete').throws(...)
 ```
 
 C’est cohérent avec les issues 33–35.
+
+---
+
+## 7. Fonctionnalités applicatives (Frontend & API)
+
+### 7.1 — Frontend dynamique (EJS) et séparation REST/EJS (issue‑37)
+
+Le front-end minimal basé sur EJS, séparé de l’API REST, est développé à partir de la page statique initiale du projet.  
+
+L'issue-37 et développée en 4 étapes qui conduisent à une page d'accueil permettant d'accéder à un dahboard des utilisateurs tout en protégeant du côté serveur les routes du frontend et l'API par un jeton (JWT) lié à une connexion (Login/logout).
+
+Motivations :
+
+- fournir une page d’accueil dynamique
+- préparer le front-end complet (accueil, dahboard, documentation)
+- éviter toute confusion entre API et pages HTML
+- permettre un déploiement propre sur Alwaysdata
+
+Choix techniques :
+
+- pagesRoutes.js pour les routes HTML
+- pagesController.js pour la logique métier
+- views/accueil.ejs pour le rendu
+- variable métier “status” transmise à la vue
+- suppression de accueilRoutes.js
+
+Résultat :
+
+- architecture claire et modulaire
+- API REST totalement indépendante du front
+- Routes protégées par JWT
+- compatibilité totale avec Alwaysdata
 
 ---

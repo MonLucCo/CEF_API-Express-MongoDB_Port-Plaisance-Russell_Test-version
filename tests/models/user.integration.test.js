@@ -4,27 +4,9 @@
  */
 
 const { expect } = require('chai');
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const User = require('../../src/models/user');
 
 describe('Model User — Tests d’intégration (niveau‑2)', () => {
-    let mongoServer;
-
-    before(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = mongoServer.getUri();
-        await mongoose.connect(uri);
-    });
-
-    after(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    });
-
-    beforeEach(async () => {
-        await User.deleteMany({});
-    });
 
     it('devrait insérer un utilisateur valide', async () => {
         const user = await User.create({

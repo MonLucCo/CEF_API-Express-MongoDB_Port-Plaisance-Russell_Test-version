@@ -17,7 +17,7 @@ const {
     register,
     login,
     deleteUser
-} = require('../../src/controllers/authController');
+} = require('../../src/controllers/api/authController');
 
 describe('authController – tests niveau 1', () => {
 
@@ -150,6 +150,13 @@ describe('authController – tests niveau 1', () => {
     // DELETE USER
     // -----------------------------
     describe('deleteUser()', () => {
+        let fakeId;
+        let validId;
+
+        beforeEach(() => {
+            fakeId = new mongoose.Types.ObjectId();
+            validId = new mongoose.Types.ObjectId();
+        });
 
         it("retourne 400 si l'ID est invalide", async () => {
             const req = { params: { id: "123" } }; // ID invalide
@@ -162,7 +169,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it("retourne 404 si l'utilisateur est introuvable", async () => {
-            const fakeId = new mongoose.Types.ObjectId();
+            // const fakeId = new mongoose.Types.ObjectId();
 
             mockDelete(null);
 
@@ -178,7 +185,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it("retourne 200 si la suppression est valide", async () => {
-            const validId = new mongoose.Types.ObjectId();
+            // const validId = new mongoose.Types.ObjectId();
 
             mockDelete({ _id: validId });
 
@@ -194,7 +201,7 @@ describe('authController – tests niveau 1', () => {
         });
 
         it('retourne 500 en cas d’erreur interne', async () => {
-            const validId = new mongoose.Types.ObjectId();
+            // const validId = new mongoose.Types.ObjectId();
 
             mockDeleteError();
 

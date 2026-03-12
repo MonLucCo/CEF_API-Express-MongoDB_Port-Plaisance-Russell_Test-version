@@ -13,7 +13,6 @@ process.env.JWT_SECRET = 'testsecret'; // 🔐 Secret JWT pour les tests d’int
 const { expect } = require('chai');
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -22,23 +21,6 @@ const User = require('../../src/models/user');
 
 describe('Tests d’intégration - Niveau 2 – Routes d’authentification', () => {
 
-    let mongoServer;
-
-    before(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = mongoServer.getUri();
-        await mongoose.connect(uri);
-    });
-
-    after(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    });
-
-    beforeEach(async () => {
-        await User.deleteMany({});
-    });
-
     // -----------------------------
     // REGISTER
     // -----------------------------
@@ -46,7 +28,7 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
 
         it('retourne 400 si champs manquants', async () => {
             const res = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send({ name: null, email: 'x@test.com', password: '1234' });
 
             expect(res.status).to.equal(400);
@@ -54,13 +36,13 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
 
         it('retourne 400 si email déjà utilisé', async () => {
             const res1 = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send({ name: 'X', email: 'x@test.com', password: '1234' });
 
             expect(res1.status).to.equal(201);  // Création de l'utilisateur pour le test de duplication
 
             const res2 = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send({ name: 'XX', email: 'x@test.com', password: '1234' });
 
             expect(res2.status).to.equal(400);
@@ -68,7 +50,7 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
 
         it('retourne 201 si création valide', async () => {
             const res = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send({ name: 'X', email: 'x@test.com', password: '1234' });
 
             expect(res.status).to.equal(201);
@@ -83,7 +65,7 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
 
         it('retourne 400 si champs manquants', async () => {
             const res = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send({ email: '', password: '' });
 
             expect(res.status).to.equal(400);
@@ -91,7 +73,7 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
 
         it('retourne 401 si identifiants invalides', async () => {
             const res = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send({ email: 'x@test.com', password: 'wrong' });
 
             expect(res.status).to.equal(401);
@@ -99,13 +81,13 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
 
         it('retourne 200 et un token si identifiants valides', async () => {
             const res1 = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send({ name: 'X', email: 'x@test.com', password: '1234' });
 
             expect(res1.status).to.equal(201);  // Création de l'utilisateur pour le test de connexion
 
             const res2 = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send({ email: 'x@test.com', password: '1234' });
 
             expect(res2.status).to.equal(200);
@@ -121,14 +103,14 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
 
         it('retourne 401 si token manquant', async () => {
             const res = await request(app)
-                .delete('/auth/delete/123');
+                .delete('/api/auth/delete/123');
 
             expect(res.status).to.equal(401);
         });
 
         it('retourne 401 si token invalide', async () => {
             const res = await request(app)
-                .delete('/auth/delete/123')
+                .delete('/api/auth/delete/123')
                 .set('Authorization', 'Bearer invalid.token');
 
             expect(res.status).to.equal(401);
@@ -139,7 +121,7 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
             const token = jwt.sign({ userId: fakeId }, process.env.JWT_SECRET);
 
             const res = await request(app)
-                .delete(`/auth/delete/${fakeId}`)
+                .delete(`/api/auth/delete/${fakeId}`)
                 .set('Authorization', `Bearer ${token}`);
 
             expect(res.status).to.equal(404);
@@ -155,7 +137,7 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
             const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
             const res = await request(app)
-                .delete(`/auth/delete/${user._id}`)
+                .delete(`/api/auth/delete/${user._id}`)
                 .set('Authorization', `Bearer ${token}`);
 
             expect(res.status).to.equal(200);

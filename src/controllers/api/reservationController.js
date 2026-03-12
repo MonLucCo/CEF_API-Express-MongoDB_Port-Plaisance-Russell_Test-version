@@ -27,7 +27,7 @@
  * @version 0.5.0
  */
 
-const Reservation = require('../models/reservation');
+const Reservation = require('../../models/reservation');
 
 /**
  * GET /catways/:id/reservations

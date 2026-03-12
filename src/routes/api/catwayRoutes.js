@@ -30,7 +30,7 @@ const router = express.Router();
 const {
     validateCatwayId,
     resolveCatwayIdentifier
-} = require('../middlewares/catwayMiddleware');
+} = require('../../middlewares/catwayMiddleware');
 
 const {
     getAllCatways,
@@ -39,12 +39,12 @@ const {
     updateCatway,
     patchCatway,
     deleteCatway
-} = require('../controllers/catwayController');
+} = require('../../controllers/api/catwayController');
 
 const {
     validateCatwayPayload,
     validateCatwayPartialPayload
-} = require('../middlewares/catwayPayloadMiddleware');
+} = require('../../middlewares/catwayPayloadMiddleware');
 
 /**
  * GET /catways

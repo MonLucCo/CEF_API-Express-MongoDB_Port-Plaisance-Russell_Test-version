@@ -12,10 +12,10 @@
  * @version 0.4.0
  */
 
-const User = require('../models/user');
+const User = require('../../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const jwtConfig = require('../../config/jwt');
+const jwtConfig = require('../../../config/jwt');
 const { default: mongoose } = require('mongoose');
 
 /**

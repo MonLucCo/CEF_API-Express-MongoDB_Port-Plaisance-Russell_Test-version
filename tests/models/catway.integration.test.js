@@ -4,29 +4,9 @@
  */
 
 const { expect } = require('chai');
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const Catway = require('../../src/models/catway');
 
 describe('Model Catway – Tests d’intégration (niveau‑2)', () => {
-
-    let mongoServer;
-
-    before(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = mongoServer.getUri();
-        await mongoose.connect(uri);
-    });
-
-    after(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    });
-
-    beforeEach(async () => {
-        // Nettoyage complet de la base entre chaque test
-        await Catway.deleteMany({});
-    });
 
     it('devrait enregistrer un catway valide en base', async () => {
         const catway = new Catway({

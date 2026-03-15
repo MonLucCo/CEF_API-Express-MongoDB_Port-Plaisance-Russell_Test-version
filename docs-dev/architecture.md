@@ -73,7 +73,21 @@ src/                        ← Dossier principal du code de l'API
           └── pagesRoutes.js            ← Routes des pages du frontend
 
 views/
-  └── accueil.ejs                  ← Page dynamique (EJS) de l'accueil du Frontend
+  ├── dashboard.ejs             ← Page dynamique (EJS) de l'espace utilisateur (Dashboard) du Frontend
+  ├── app.js                    ← Page dynamique (EJS) de l'accueil (Home) du Frontend
+  ├── login.ejs                 ← Page dynamique (EJS) de la connexion (Login) du Frontend
+  │
+  ├── home/                     ← Page d'accueil (Home) découpée en parties (partials) élémentaires
+  │   ├── _title.ejs               ← Titre de la page (titre et sous-titre)
+  │   ├── _intro.ejs               ← Présentation succincte de l'application
+  │   ├── _auth.ejs                ← Authentification de la page (identification de la connexion, bouton d'action)
+  │   ├── _notes.ejs               ← Notes de développement pour le visiteur de la page
+  │   └── _meta.ejs                ← Informations sur le projet (accès dépôt GitHub, environnement et contenu de la version)
+  │
+  └── partials/                 ← Parties (partials en include) réutilisables d'une page HTML (EJS)
+      ├── head.ejs                 ← En-tête de la page HTML (métadonnées)
+      ├── header.ejs               ← En-tête du corps de la page <body> (logo et menu de navigation)
+      └── footer.ejs               ← Pied de page de la page <body> (copyright et version)
 
 scripts/
   └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
@@ -84,14 +98,18 @@ data/                           ← Données du projet
   └── reservations.json            ← Données initiales des Réservations (données fournies)
 
 config/                     ← Configuration globale (JWT, paramètres transversaux)
+  ├── appData.js                ← Configuration des métadonnées de l'application
   ├── jwt.js                    ← Configuration JWT
   └── dev/                      ← Configuration locale de développement
       └── nodemon.json              ← Configuration nodemon (issue‑17)
 
 public/                     ← Eléments statique du frontend
-  ├── css/                      ← Feuilles de style
-  │   └── accueil.css               ← Feuille des styles de l'accueil
-  └── js/                       ← Scripts exécutés côté navigateur (frontend)
+  ├── css/                       ← Feuilles de style
+  │   └── main.css                  ← Feuille des styles unifiée de l'application
+  └── img/                       ← Images de l'interface utilisateur (frontend) de l'application
+      ├── favicon.svg               ← Favicon de la page
+      ├── logo.svg                  ← Logo (minimaliste) pour le port en SVG (4:1)
+      └── logo_complet.svg          ← Logo (minimaliste) pour le port de plaisance en SVG (4:1)
 
 tests/                      ← Tests Mocha/Chai/Supertest
   ├── root-hooks.js             ← Définition initiale des Hooks de MOCHA (issue‑37)
@@ -170,7 +188,8 @@ Les mécanismes de sécurité (JWT, hashage, bonnes pratiques Express/MongoDB) s
 
 la stratégie complète des tests est détaillée dans [docs-dev/tests-strategy.md](./tests-strategy.md) et [docs-dev/tests/README_tests.md](./tests/README_tests.md).
 
-À partir de l'issue-37 (version v0..2-dev), l'architecture sépare l'API REST (routes sous /api/…, /`<nom-projet>`/api/… sur Alwaysdata) et les pages dynamiques EJS (routes sous /).  
+À partir de l'issue-37 (version v0..2-dev), l'architecture sépare l'API REST (routes sous /api/…, /`<nom-projet>`/api/… sur Alwaysdata) et les pages dynamiques basées sur EJS (routes sous /).  
+Les pages dynamiques sont rendues via `pagesController.js` et organisées dans le dossier `views/`.
 Cette séparation garantie une architecture claire, modulaire et compatible avec Alwaysdata.
 
 ---
@@ -2000,9 +2019,47 @@ La page d'accueil avec une page EJS correspond à la version `v0.1.2-dev (EJS & 
 
 ---
 
-##### 2.5.1.3 Etape 3 - intégration des fonctionnalités de la page d'accueil
+##### 2.5.1.3 Etape 3 - intégration des fonctionnalités de la page d'accueil (version v0.2.0-dev)
 
-(à compléter - commit-3 de l'issue-37)
+Cette troisième étape finalise la première version du frontend dynamique (v0.2.0-dev).  
+Elle clarifie les différentes versions du projet et, techniquement, introduit une page d’accueil (minimale et opérationnelle : pas d'accès à la documentation) et une page de connexion cohérente avec l’architecture globale.
+
+1. **Travaux réalisés**
+   - refonte complète de la page d’accueil (`views/home/`)  
+   - découpage en partials pour une architecture DRY  
+   - ajout d’une section d’introduction basée sur `appData.APP_INTRODUCTION`  
+   - mise en place d’un header dynamique :
+  
+     - masquage de l’onglet correspondant à la page active  
+     - header minimal sur la page `/login`  
+   - mise en place d’un footer affichant la version de l’application  
+   - création d’une page de connexion centrée, étroite, sans footer  
+   - centralisation des métadonnées dans `config/appData.js`  
+   - mise à jour du contrôleur `pagesController.js` pour intégrer `currentPage`  
+   - mise à jour du CSS global (`public/css/main.css`)
+
+2. **Tests manuels effectués**
+   - `/` : affichage correct des sections, header dynamique, footer versionné  
+   - `/login` : header minimal, formulaire vertical, message d’erreur fonctionnel  
+   - `/dashboard` : accès protégé, header dynamique  
+   - `/logout` : suppression du cookie + redirection  
+   - navigation cohérente entre les pages  
+   - favicon présent sur toutes les pages  
+   - cohérence visuelle (header/footer, sections, couleurs)
+
+3. **Clarification des versions (déployée / développement)**
+   - À partir de la v0.2.0-dev, le projet distingue explicitement :
+
+     - la version en développement (`vX.Y.Z-dev`)
+     - la version déployée sur Alwaysdata (`vX.Y.Z-dev`)
+     - les releases GitHub (`vX.Y.Z`)
+
+   - Cette clarification permet de suivre séparément :
+     - l’avancement local,
+     - l’état du site déployé,
+     - les versions stables publiées.  
+
+Cette étape clôture la version **v0.2.0‑dev** du frontend minimal développée en local. Cette version prépare la version qui sera déployée.
 
 ---
 

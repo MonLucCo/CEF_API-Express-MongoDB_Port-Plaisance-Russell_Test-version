@@ -6,9 +6,9 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 5](https://img.shields.io/badge/Phase%205-Reservations-green) ![Version v0.5](https://img.shields.io/badge/Version-v0.5-blue)
+![Milestone Phase 6](https://img.shields.io/badge/Phase%206-Frontend-green) ![Version v0.5](https://img.shields.io/badge/Release-v0.5-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.1.0--dev-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.2.0--dev-yellow)
  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
-![Statut du dépôt](https://img.shields.io/badge/statut-en%20développement-blue)
+![Statut du dépôt](https://img.shields.io/badge/Status%20dépôt-en%20développement-orange) [![Site déployé](https://img.shields.io/badge/Accès%20site-Alwaysdata-blue)](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
 
 > 🔗 [Accès aux phases](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/milestones/)
 > 🔗 [Accès aux issues](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/issues/)
@@ -16,7 +16,7 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 ---
 
 > **Préambule — Version en cours de développement**  
-> Ce dépôt correspond à la version de travail du projet API REST Express/MongoDB du CEF.  
+> Ce dépôt correspond à la version de travail du projet API REST Express/MongoDB du CEF (se reporter à la section [Versions du projet](#-versions-du-projet) pour le détail des différentes versions).  
 > Le README, l’architecture et la documentation sont mis à jour progressivement jusqu’à la livraison finale.  
 > Les sections indiquant des fonctionnalités non encore implémentées seront actualisées au fil de l’avancement (se reporter à la section [Roadmap](#-roadmap) pour l'avancement du projet).
 
@@ -50,20 +50,29 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 
 ```text
 ├── src/               ← Dossier principal du code de l'API
-│   ├── app.js                   ← Configuration Express (middlewares, routes, erreurs)
-│   ├── server.js                ← Lancement du serveur (écoute du port)
+│   ├── app.js               ← Configuration Express (middlewares, routes, erreurs)
+│   ├── server.js            ← Lancement du serveur (écoute du port)
 │   │
-│   ├── models/        ← Modèles Mongoose        
-│   ├── db/            ← Gestion de la Base de données MongoAtlas        
-│   ├── controllers/   ← Contrôleurs Express (logique métier liée aux routes)
-│   ├── middlewares/   ← Middlewares Express (authentification, validation, sécurité…)        
-│   ├── services/      ← Logique métier réutilisable (accès DB, règles métier…)  
-│   └── routes/        ← Définition des routes Express     
+│   ├── models/              ← Modèles Mongoose        
+│   ├── db/                  ← Gestion de la Base de données MongoDB Atlas        
+│   ├── controllers/         ← Contrôleurs Express (logique métier liée aux routes)
+│   │   ├── api/                  ← Contrôleur de l'API REST
+│   │   └── pages/                ← Contrôleur du frontend (pagesController.js)
+│   │
+│   ├── middlewares/        ← Middlewares Express (authentification, validation, sécurité…)        
+│   ├── services/           ← Logique métier réutilisable (accès DB, règles métier…)  
+│   └── routes/             ← Définition des routes Express     
+│       ├── api/                  ← Routes de l'API REST
+│       └── pages/                ← Routes du frontend (routesController.js)
 │
-├── config/            ← Configuration globale (JWT, paramètres transversaux)
-│   └── dev/                     ← Configurations de l'environnement de développement (nodemon…)
+├── config/            ← Configuration globale (JWT, métadonnées de l'application, paramètres transversaux)
+│   ├── appData.js                ← Métadonnées globales de l’application
+│   ├── jwt.js                    ← Configuration JWT
+│   └── dev/                      ← Configurations de l'environnement de développement (nodemon…)
 │
 ├── public/            ← Fichiers statiques pour le front minimal
+│   ├── css/               ← Styles unifiés (main.css)  
+│   └── img/               ← Favicon et Logos     
 │
 ├── tests/             ← Tests Mocha, Chai, Sinon et Supertest
 │   ├── test-app.js              ← Serveur Express dédié aux tests E2E simulés
@@ -90,7 +99,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── hebergement/             ← Documentation Alwaysdata & MongoDB
 │   ├── deploiement/             ← Procédures de déploiement, de validation et d'import JSON
 │   └── tests/                   ← Documentation détaillée des tests par catégorie et par niveau
-
+│
 ├── scripts/           ← Scripts de déploiement et de vérification
 ├── logs/              ← Logs générés par les scripts (check:local, check:site…)
 ├── scratches/         ← Dossier privé (non versionné) pour scripts sensibles, notes et brouillons
@@ -409,6 +418,39 @@ npm run test:app:watch   # avec nodemon (développement)
 
 ---
 
+## 📌 Versions du projet
+
+Le projet utilise trois types de versions, afin de distinguer clairement :
+
+1. Version en développement (locale)
+   - Format : `vX.Y.Z-dev`  
+    → version en cours de développement sur la branche `dev`.
+
+   - **Version actuelle : `v0.2.0-dev`**
+
+2. Version déployée (Alwaysdata)
+   - Format : `vX.Y.Z-dev`  
+    → version réellement en ligne, utilisée pour les tests opérationnels.
+
+   - **Version actuellement déployée : `v0.1.0-dev`**  
+    🔗 [Accès au site déployé](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
+
+3. Versions Release (GitHub)
+   - Format : `vX.Y.Z`  
+    → versions stables publiées dans GitHub Releases.
+
+   - **Dernière release : `v0.5`**  
+    🔗 [Releases du dépôt](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/releases)
+
+**Politique des versions :**
+
+- `vX.Y.Z-dev` → versions de développement  
+- `vX.Y.Z` → versions stables  
+- la version déployée peut être une version `-dev`  
+- une release GitHub n’est créée qu’après validation complète d’une phase
+
+---
+
 ## 🧭 Roadmap
 
 - [x] Phase 1 — Préparation du projet  
@@ -416,7 +458,7 @@ npm run test:app:watch   # avec nodemon (développement)
 - [x] Phase 3 — Modèles & données  
 - [x] Phase 4 — Catways  
 - [x] Phase 5 — Reservations  
-- [ ] Phase 6 — Front-end  
+- [x] Phase 6 — Front-end  
 - [ ] Phase 7 — Tests  
 - [ ] Phase 8 — Documentation API  
 - [ ] Phase 9 — Déploiement final  

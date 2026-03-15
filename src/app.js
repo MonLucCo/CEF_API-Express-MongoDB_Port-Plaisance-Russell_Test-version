@@ -15,6 +15,7 @@
 
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 // Import des routeurs
 const pagesRoutes = require('./routes/pages/pagesRoutes');
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 --------------------------------------------------------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 /* ---------------------------------------------------------
    Routes Pages (EJS)

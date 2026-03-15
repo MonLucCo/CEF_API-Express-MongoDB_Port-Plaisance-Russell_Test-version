@@ -1,0 +1,29 @@
+<header class="header">
+    <div class="header-left">
+        <a href="/">
+            <img src="/img/logo_complet.svg" alt="Logo Port de Plaisance Russell" class="logo">
+        </a>
+    </div>
+
+    <% if (currentPage !=='login' ) { %>
+        <nav class="nav">
+
+            <% if (currentPage !=='home' ) { %>
+                <a href="/">Accueil</a>
+                <% } %>
+
+                    <% if (authenticated && currentPage !=='dashboard' ) { %>
+                        <a href="/dashboard">Dashboard</a>
+                        <% } %>
+
+                            <% if (!authenticated && currentPage !=='login' ) { %>
+                                <a href="/login">Connexion</a>
+                                <% } %>
+
+                                    <% if (authenticated) { %>
+                                        <a href="/logout">Déconnexion</a>
+                                        <% } %>
+
+        </nav>
+        <% } %>
+</header>

@@ -1,0 +1,11 @@
+<section>
+    <h3>Authentification de l'utilisateur</h3>
+
+    <% if (authenticated) { %>
+        <p>Vous êtes connecté.</p>
+        <a href="/dashboard">Accéder au Dashboard</a>
+        <% } else { %>
+            <p>Vous n’êtes pas connecté.</p>
+            <a href="/login">Se connecter</a>
+            <% } %>
+</section>

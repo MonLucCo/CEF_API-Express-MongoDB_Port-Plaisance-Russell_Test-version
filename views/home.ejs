@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: status.title }) %>
+</head>
+
+<body>
+
+    <%- include('partials/header', { authenticated: status.authenticated }) %>
+
+        <main class="container">
+            <%- include('home/_title', { status }) %>
+                <%- include('home/_intro', { introduction: status.introduction }) %>
+                    <%- include('home/_auth', { authenticated: status.authenticated }) %>
+                        <%- include('home/_notes', { status }) %>
+                            <%- include('home/_meta', { status }) %>
+        </main>
+
+        <%- include('partials/footer', { version: version_tag }) %>
+
+</body>
+
+</html>

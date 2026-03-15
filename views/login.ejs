@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: "Connexion" }) %>
+</head>
+
+<body>
+
+    <%- include('partials/header', { authenticated: false, currentPage: 'login' }) %>
+
+        <main class="login-container">
+
+            <section class="login-card">
+                <h1>Connexion Utilisateur</h1>
+
+                <% if (error) { %>
+                    <p class="login-error">
+                        <%= error %>
+                    </p>
+                    <% } %>
+
+                        <form action="/login" method="POST" class="login-form">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+
+                            <label for="password">Mot de passe</label>
+                            <input type="password" id="password" name="password" required>
+
+                            <button type="submit" class="btn-login">Se connecter</button>
+                        </form>
+
+                        <p class="login-hint">Pour revenir à l’accueil, cliquez sur le logo en haut de la page.</p>
+
+            </section>
+
+        </main>
+
+</body>
+
+</html>

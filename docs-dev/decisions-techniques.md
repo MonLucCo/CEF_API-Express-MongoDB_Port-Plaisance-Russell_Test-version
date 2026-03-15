@@ -210,6 +210,36 @@ Impacts :
 
 ---
 
+### 4.4 Décision — Distinction des trois types de versions
+
+La phase 6 (dès l'issue-37) fait évoluer la version déployée. Ceci augmente le nombre de versions du projet.
+Afin de clarifier le cycle de développement et de déploiement, le projet adopte une distinction explicite entre :
+
+- **Version en développement (`vX.Y.Z-dev`)**  
+  Version locale active sur la branche `dev`.
+
+- **Version déployée (`vX.Y.Z-dev`)**  
+  Version réellement en ligne sur Alwaysdata.
+
+- **Version Release (`vX.Y.Z`)**  
+  Version stable publiée dans GitHub Releases.
+
+Motivations :
+
+- éviter la confusion entre version locale et version déployée  
+- permettre un suivi clair des releases  
+- préparer le déploiement du frontend (issue‑37 étape 4)  
+- aligner le projet avec les bonnes pratiques CI/CD
+
+Impacts :
+
+- mise à jour du README  
+- ajout de badges de version  
+- clarification dans `architecture.md`  
+- préparation des futures releases GitHub
+
+---
+
 ## 5. Environnement de développement
 
 ### 5.1 Tests E2E simulés

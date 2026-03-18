@@ -1,12 +1,33 @@
 /**
  * Tests d’intégration – Niveau 2 – Routes Catways
- * ----------------------------------------------------------
- * - Utilise MongoMemoryServer (base MongoDB en mémoire)
- * - Utilise Supertest pour appeler Express
- * - Utilise Chai pour les assertions
- * - Aucun mock → vrai test d’intégration
+ * ------------------------------------------------------------------
+ * Ce fichier teste l’ensemble des routes Catways :
+ *   - GET /catways
+ *   - GET /catways/:id
+ *   - POST /catways
+ *   - PUT /catways/:id
+ *   - PATCH /catways/:id
+ *   - DELETE /catways/:id
+ *
+ * Objectifs :
+ *   - Vérifier le comportement métier complet des routes Catways.
+ *   - Vérifier les statuts HTTP, les validations, les erreurs Mongo, et les cas limites.
+ *
+ * Architecture :
+ *   - Base Mongo isolée via MongoMemoryServer (root-hooks.js).
+ *   - Authentification JWT via createTestUser() dans beforeEach().
+ *   - Aucun mock : vrai test d’intégration Express + Mongoose.
+ *
+ * @module tests/integration/catways.routes.test
+ * @requires chai
+ * @requires sinon
+ * @requires supertest
+ * @requires mongoose
+ * @requires module:src/app
+ * @requires module:src/models/catway
+ * @requires module:tests/helpers/createTestUser
+ * @version 0.2.0
  */
-
 const { expect } = require('chai');
 const sinon = require('sinon'); // Seulement pour le test d’erreur interne dans POST /catways
 const request = require('supertest');
@@ -14,8 +35,20 @@ const mongoose = require('mongoose');
 
 const app = require('../../src/app');
 const Catway = require('../../src/models/catway');
+const createTestUser = require('../helpers/createTestUser')
 
 describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
+
+    // ------------------------------------------------------------------
+    // Création d'un utilisateur et du token JWT avant chaque test
+    // ------------------------------------------------------------------
+    let testToken;
+
+    beforeEach(async () => {
+        const { token } = await createTestUser();
+
+        testToken = token;
+    });
 
     // -----------------------------
     // GET /catways
@@ -23,7 +56,9 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
     describe('GET /catways', () => {
 
         it('retourne 200 et une liste vide si aucun catway', async () => {
-            const res = await request(app).get('/api/catways');
+            const res = await request(app)
+                .get('/api/catways')
+                .set('Authorization', `Bearer ${testToken}`);
 
             expect(res.status).to.equal(200);
             expect(res.body).to.be.an('array').that.is.empty;
@@ -35,7 +70,9 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
                 { catwayNumber: 2, type: 'long', catwayState: 'en réparation' }
             ]);
 
-            const res = await request(app).get('/api/catways');
+            const res = await request(app)
+                .get('/api/catways')
+                .set('Authorization', `Bearer ${testToken}`);
 
             expect(res.status).to.equal(200);
             expect(res.body).to.be.an('array').with.lengthOf(2);
@@ -52,18 +89,27 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
     describe('GET /catways/:id', () => {
 
         it('retourne 400 si ID invalide (ni ObjectId, ni nombre)', async () => {
-            const res = await request(app).get('/api/catways/ab123');
+            const res = await request(app)
+                .get('/api/catways/ab123')
+                .set('Authorization', `Bearer ${testToken}`);
+
             expect(res.status).to.equal(400);
         });
 
         it('retourne 404 si catway introuvable (ObjectId inexistant)', async () => {
             const fakeId = new mongoose.Types.ObjectId();
-            const res = await request(app).get(`/api/catways/${fakeId}`);
+            const res = await request(app)
+                .get(`/api/catways/${fakeId}`)
+                .set('Authorization', `Bearer ${testToken}`);
+
             expect(res.status).to.equal(404);
         });
 
         it('retourne 404 si catway introuvable (catwayNumber inexistant)', async () => {
-            const res = await request(app).get('/api/catways/999');
+            const res = await request(app)
+                .get('/api/catways/999')
+                .set('Authorization', `Bearer ${testToken}`);
+
             expect(res.status).to.equal(404);
         });
 
@@ -74,7 +120,9 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
                 catwayState: 'bon état'
             });
 
-            const res = await request(app).get(`/api/catways/${catway._id}`);
+            const res = await request(app)
+                .get(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`);
 
             expect(res.status).to.equal(200);
             expect(res.body).to.have.property('catwayNumber', 1);
@@ -87,7 +135,9 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
                 catwayState: 'bon état'
             });
 
-            const res = await request(app).get('/api/catways/7');
+            const res = await request(app)
+                .get('/api/catways/7')
+                .set('Authorization', `Bearer ${testToken}`);
 
             expect(res.status).to.equal(200);
             expect(res.body).to.have.property('catwayNumber', 7);
@@ -103,6 +153,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
         it('retourne 400 si payload invalide', async () => {
             const res = await request(app)
                 .post('/api/catways')
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({});
 
             expect(res.status).to.equal(400);
@@ -118,6 +169,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .post('/api/catways')
+                .set('Authorization', `Bearer ${testToken}`)
                 .send(payload);
 
             expect(res.status).to.equal(201);
@@ -136,6 +188,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .post('/api/catways')
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({
                     catwayNumber: 1,
                     type: 'short',
@@ -152,6 +205,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .post('/api/catways')
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({
                     catwayNumber: 2,
                     type: 'short',
@@ -180,6 +234,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .put(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({}); // payload invalide
 
             expect(res.status).to.equal(400);
@@ -190,6 +245,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .put(`/api/catways/${fakeId}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({
                     catwayNumber: 99,
                     type: 'long',
@@ -208,6 +264,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .put(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({
                     catwayNumber: 99,
                     type: 'long',
@@ -236,6 +293,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .put(`/api/catways/${catway2._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({
                     catwayNumber: 1, // duplication
                     type: 'long',
@@ -256,6 +314,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .put(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({
                     catwayNumber: 99,
                     type: 'long',
@@ -283,6 +342,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .patch(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({ type: 'medium' }); // invalide
 
             expect(res.status).to.equal(400);
@@ -293,6 +353,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .patch(`/api/catways/${fakeId}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({ type: 'long' });
 
             expect(res.status).to.equal(404);
@@ -307,6 +368,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .patch(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({ type: 'long' });
 
             expect(res.status).to.equal(200);
@@ -331,6 +393,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .patch(`/api/catways/${catway2._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({ catwayNumber: 1 }); // duplication
 
             expect(res.status).to.equal(409);
@@ -347,6 +410,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .patch(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send({ type: 'long' });
 
             expect(res.status).to.equal(500);
@@ -364,6 +428,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
         it('retourne 400 si ID invalide', async () => {
             const res = await request(app)
                 .delete('/api/catways/abc123') // ni ObjectId, ni nombre
+                .set('Authorization', `Bearer ${testToken}`)
                 .send();
 
             expect(res.status).to.equal(400);
@@ -374,6 +439,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .delete(`/api/catways/${fakeId}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send();
 
             expect(res.status).to.equal(404);
@@ -388,6 +454,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .delete(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send();
 
             expect(res.status).to.equal(204);
@@ -408,6 +475,7 @@ describe('Tests d’intégration - Niveau 2 – Routes Catways', () => {
 
             const res = await request(app)
                 .delete(`/api/catways/${catway._id}`)
+                .set('Authorization', `Bearer ${testToken}`)
                 .send();
 
             expect(res.status).to.equal(500);

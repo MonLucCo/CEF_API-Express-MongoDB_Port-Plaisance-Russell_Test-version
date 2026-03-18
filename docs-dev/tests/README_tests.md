@@ -14,7 +14,7 @@ Cette organisation permet une lecture claire, une maintenance facilitée et une 
 
 Les tests sont regroupés en trois grandes catégories, correspondant aux domaines fonctionnels du projet :
 
-### 🔐 1. Authentification
+### 1.1 Authentification
 
 Tests portant sur :
 
@@ -25,7 +25,7 @@ Tests portant sur :
 Dossier :  
 `docs-dev/tests/auth/`
 
-### 🧱 2. Modélisation
+### 1.2 Modélisation
 
 Tests portant sur :
 
@@ -39,13 +39,14 @@ Tests portant sur :
 Dossier :  
 `docs-dev/tests/modeles/`
 
-### ⚙️ 3. Fonctionnalités
+### 1.3 Fonctionnalités
 
 Tests portant sur :
 
 - les routes Catways (Phase 4)
 - les routes Reservations (Phase 5)
 - les workflows complets (CRUD)
+- la privatisation JWT des routes API Catways et Reservations (Phase 6)
 
 Dossier :  
 `docs-dev/tests/fonctions/`
@@ -56,6 +57,7 @@ Documents disponibles :
 - [catways-niveau-2-integration.md](./fonctions/catways-niveau-2-integration.md)
 - [reservations-niveau-1-unitaires.md](./fonctions/reservations-niveau-1-unitaires.md)
 - [reservations-niveau-2-integration.md](./fonctions/reservations-niveau-2-integration.md)
+- [api-niveau-2-integration.md](./fonctions//api-niveau-2-integration.md)
 
 ---
 
@@ -82,6 +84,7 @@ Objectif : tester l’interaction réelle entre Express, Mongoose et MongoDB.
 - Tests des routes Express  
 - Tests des modèles avec `save()`, `find()`, `delete()`  
 - Vérification des erreurs MongoDB (`E11000`, `CastError`)
+- Tests de la privatisation des routes de l'API (Catways et Reservations)
 
 ---
 
@@ -172,6 +175,11 @@ Les tests de niveau-3 des fonctions de l'API seront ajoutés lors des phases 6 e
 docs-dev/tests/
 │
 ├── README_tests.md              ← Vue d’ensemble (ce document)
+├── root-hooks.js                ← Définition des Hooks globaux de MOCHA et chargement `dotenv` (issue‑37)
+├── test-app.js                  ← Serveur Express dédié aux tests E2E simulés (issue‑17)
+│
+├── helpers/
+│   └── createTestUser.js        ← Helper centralisé pour créer un utilisateur + token JWT cohérent
 │
 ├── assets/                      ← Images, captures, collections Postman
 │   └── collection-e2e-local.json
@@ -187,6 +195,7 @@ docs-dev/tests/
 │   └── modeles-niveau-3-e2e.md
 │
 └── fonctions/                   ← Catégorie Fonctionnalités
+    ├── api-niveau-2-integration.md
     ├── catways-niveau-1-unitaires.md
     ├── catways-niveau-2-integration.md
     ├── reservations-niveau-1-unitaires.md
@@ -211,5 +220,9 @@ docs-dev/tests/
 - Cette documentation est versionnée et évolue au fil des issues.  
 - Les tests de niveau 3 (E2E réels) seront finalisés lors de l’issue‑22.  
 - Les tests de la catégorie Fonctionnalités seront introduits lors des phases 4 et 5.
+- La Phase 6 (issue‑37) introduit :
+  - la séparation API / Frontend,
+  - la protection JWT des routes du frontend,
+  - les tests transversaux de privatisation des routes API.
 
 ---

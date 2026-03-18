@@ -240,6 +240,33 @@ Impacts :
 
 ---
 
+### 4.5 Décision — Archivage des validations pré‑déploiement
+
+Afin de garantir la traçabilité des versions déployées, chaque version fait l’objet d’un archivage des tests automatisés et de la checklist pré‑déploiement.
+
+Les artefacts sont stockés dans :
+
+```txt
+docs-dev/tests/deploiements/<version>/
+```
+
+Contenu :
+
+- checklist pré‑déploiement
+- logs des tests unitaires
+- logs des tests d’intégration
+- logs des tests E2E simulés
+- résumé de validation
+
+Motivations :
+
+- assurer la traçabilité des versions
+- faciliter les audits internes
+- préparer l’automatisation CI/CD
+- garantir la cohérence entre version déployée et version testée
+
+---
+
 ## 5. Environnement de développement
 
 ### 5.1 Tests E2E simulés

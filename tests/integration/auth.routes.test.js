@@ -1,15 +1,40 @@
-/** 
- * Tests d’intégration – Niveau 2 – Routes d’authentification 
- * ---------------------------------------------------------- 
- * - Utilise MongoMemoryServer (base MongoDB en mémoire) 
- * - Utilise Supertest pour appeler Express
- * - Utilise Chai pour les assertions 
- * - bcrypt et JWT réels 
- * - Aucun mock → vrai test d’intégration 
+/**
+ * Tests d’intégration – Niveau 2 – Routes d’authentification (v0.2.0)
+ * ------------------------------------------------------------------
+ * Ce fichier valide le comportement complet des routes d’authentification :
+ *   - POST /auth/register
+ *   - POST /auth/login
+ *   - DELETE /auth/delete/:id
+ *
+ * Objectifs :
+ *   - Vérifier les statuts HTTP attendus (400, 401, 404, 200).
+ *   - Tester les validations, les erreurs, et les cas limites.
+ *   - Vérifier la cohérence de la suppression d’utilisateur protégée par JWT.
+ *
+ * Architecture :
+ *   - Base Mongo isolée via MongoMemoryServer (configurée dans root-hooks.js).
+ *   - Utilise Supertest pour appeler Express sans serveur HTTP réel.
+ *   - Utilise bcrypt et jsonwebtoken réels (aucun mock).
+ *   - Utilise jwtConfig.secret pour signer les tokens, garantissant une
+ *     cohérence totale avec le middleware d’authentification.
+ *
+ * Important :
+ *   - Ce fichier ne crée pas d’utilisateur global : chaque test prépare
+ *     ses propres données pour garantir l’isolation.
+ *   - Le secret JWT n’est plus modifié dans ce fichier : il est désormais
+ *     centralisé dans config/jwt.js et chargé via root-hooks.js.
+ *
+ * @module tests/integration/auth.routes.test
+ * @requires chai
+ * @requires supertest
+ * @requires mongoose
+ * @requires bcrypt
+ * @requires jsonwebtoken
+ * @requires module:src/app
+ * @requires module:src/models/catway
+ * @requires module:config/jwt
+ * @version 0.2.0
  */
-
-process.env.JWT_SECRET = 'testsecret'; // 🔐 Secret JWT pour les tests d’intégration
-
 const { expect } = require('chai');
 const request = require('supertest');
 const mongoose = require('mongoose');
@@ -18,6 +43,7 @@ const jwt = require('jsonwebtoken');
 
 const app = require('../../src/app');
 const User = require('../../src/models/user');
+const jwtConfig = require('../../config/jwt')
 
 describe('Tests d’intégration - Niveau 2 – Routes d’authentification', () => {
 
@@ -118,7 +144,7 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
 
         it('retourne 404 si utilisateur introuvable', async () => {
             const fakeId = new mongoose.Types.ObjectId();
-            const token = jwt.sign({ userId: fakeId }, process.env.JWT_SECRET);
+            const token = jwt.sign({ userId: fakeId }, jwtConfig.secret);
 
             const res = await request(app)
                 .delete(`/api/auth/delete/${fakeId}`)
@@ -134,7 +160,7 @@ describe('Tests d’intégration - Niveau 2 – Routes d’authentification', ()
                 password: await bcrypt.hash('1234', 10)
             });
 
-            const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+            const token = jwt.sign({ userId: user._id }, jwtConfig.secret);
 
             const res = await request(app)
                 .delete(`/api/auth/delete/${user._id}`)

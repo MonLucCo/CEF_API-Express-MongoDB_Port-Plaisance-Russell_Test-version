@@ -2,21 +2,21 @@
 
 Les tests d’intégration valident le fonctionnement complet des routes Express, en interaction avec Mongoose.
 
-## Objectifs
+## 1. Objectifs
 
 - Vérifier le comportement réel des routes  
 - Tester la logique Express + Mongoose  
 - Valider les middlewares (ex : JWT)  
 - Détecter les erreurs de câblage ou de configuration
 
-## Outils
+## 2. Outils
 
 - **Supertest** : requêtes HTTP simulées  
 - **MongoMemoryServer** : base MongoDB en mémoire
 
 ---
 
-## Principes
+## 3. Principes
 
 - Le serveur Express est lancé dans un environnement de test  
 - Une base MongoDB temporaire est créée en mémoire  
@@ -28,21 +28,21 @@ Les tests d’intégration valident le fonctionnement complet des routes Express
 
 ---
 
-## Scénarios testés
+## 4.Scénarios testés
 
-### 1. `POST /auth/register`
+### 4.1 `POST /auth/register`
 
 - 400 si champs manquants  
 - 400 si email déjà utilisé (erreur MongoDB `E11000`)  
 - 201 si création valide  
 
-### 2. `POST /auth/login`
+### 4.2 `POST /auth/login`
 
 - 400 si champs manquants  
 - 401 si identifiants invalides  
 - 200 + token si identifiants valides  
 
-### 3. `DELETE /auth/delete/:id` (route protégée)
+### 4.3 `DELETE /auth/delete/:id` (route protégée)
 
 - 401 si token manquant  
 - 401 si token invalide  
@@ -51,12 +51,20 @@ Les tests d’intégration valident le fonctionnement complet des routes Express
 
 ---
 
-## Exemples
+## 5. Exemples
 
-### Issue 17 : tests du middleware JWT et des routes protégées
+### 5.1 Issue 17 : tests du middleware JWT et des routes protégées
 
 **Résultats des tests :**
 
 ![alt text](../assets/img_issue-17_resultats-tests-niveau-2.png)
+
+---
+
+### 5.2 Issue 37 : tests de non-régression
+
+**Résultats des tests :**
+
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-authentification.png)
 
 ---

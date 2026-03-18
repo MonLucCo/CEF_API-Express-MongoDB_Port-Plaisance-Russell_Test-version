@@ -355,6 +355,26 @@ Documentation : [docs-dev/tests/modeles/modeles-niveau-2-integration.md](./tests
 
 ---
 
+### 3.3.3 Tests des routes de l’API (issue‑37)
+
+L’issue‑37 introduit un fichier de tests d’intégration transversal : [tests/integration/api.routes.test.js](../tests/integration/api.routes.test.js).
+
+Objectifs :
+
+- valider la protection JWT des routes Catways et Reservations,
+- garantir la non‑régression des routes protégées,
+- isoler la logique de sécurité du métier.
+
+Ce fichier utilise :
+
+- `MongoMemoryServer` (root-hooks v0.2.0),
+- `createTestUser()` pour générer un utilisateur + token JWT,
+- `jwtConfig.secret` pour garantir la cohérence de signature.
+
+Les tests métier restent dans leurs fichiers respectifs.
+
+---
+
 ## 4. Tests de la catégorie Fonctionnalité
 
 ### 4.1 Objectif

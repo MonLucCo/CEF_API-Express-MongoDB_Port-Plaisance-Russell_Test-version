@@ -173,7 +173,8 @@ docs-dev/                   ← Documentation interne versionnée
       ├── README_tests.md                      ← Vue d’ensemble des tests (Catégories et Niveaux)
       │
       ├── assets/                              ← Compléments pour les tests (images, collections Postman)
-      │   └── collection-e2e-local.json             ← Collection Postman (issue‑17)
+      │   ├── collection-e2e-local.json                   ← Collection Postman (API v0.1-dev)
+      │   └── API-Port-Russell_PreDeploy_v0.2.0-dev.json  ← Collection Postman (API v0.2.0-dev)
       │
       ├── auth/                                ← Catégorie Authentification
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
@@ -192,7 +193,7 @@ docs-dev/                   ← Documentation interne versionnée
       │   └── reservations-niveau-2-integration.md  ← Tests de niveau 2 - tests d'intégration Reservations
       │
       └── déploiements/                         ← Catégorie Déploiements
-          └── v0.2.0-dev                            ← Tests des validations pré-déploiement de la version v0.2.0-dev
+          └── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Tests des validations pré-déploiement de la version v0.2.0-dev
     
 ```
 
@@ -204,9 +205,11 @@ Les mécanismes de sécurité (JWT, hashage, bonnes pratiques Express/MongoDB) s
 
 la stratégie complète des tests est détaillée dans [docs-dev/tests-strategy.md](./tests-strategy.md) et [docs-dev/tests/README_tests.md](./tests/README_tests.md).
 
-À partir de l'issue-37 (version v0..2-dev), l'architecture sépare l'API REST (routes sous /api/…, /`<nom-projet>`/api/… sur Alwaysdata) et les pages dynamiques basées sur EJS (routes sous /).  
+À partir de l'issue-37 (version v0.2-dev), l'architecture sépare l'API REST (routes sous /api/…, /`<nom-projet>`/api/… sur Alwaysdata) et les pages dynamiques basées sur EJS (routes sous /).  
 Les pages dynamiques sont rendues via `pagesController.js` et organisées dans le dossier `views/`.
 Cette séparation garantie une architecture claire, modulaire et compatible avec Alwaysdata.
+
+À partir de la Phase 6 (issue-37), les opérations de validation des versions publiées font l'objet de pipelines de vérification (Pré-déploiement, déploiement, post-déploiement) qui sont archivées dans des dossiers spécifiques (version-pipelines-date-heure) situés dans `docs-dev/tests/deploiements/`.
 
 ---
 
@@ -1972,8 +1975,11 @@ La Phase 6 introduit la séparation complète entre :
   - Etape 2 : séparation des architectures de l'API (REST) et des Pages (EJS) - tests de non régressions de l'API
   - Etape 3 : intégration des fonctionnalités de la page d'accueil (Login, Dashboard en placeholder, Logout, sécurisation JWT)
   - Etape 4 : sécurisation JWT des routes API et tests associés
-  - Etape 5 : tests et déploiement de la version (v0.2-dev EJS + REST)
-  - Etape 6 : mise à jour post-déploiement de la version **v0.2.0-dev**
+  - Etape 5 : tests et validation pré-déploiement de la version (v0.2.0-dev EJS + REST)
+  - Etape 6 : correction de la v0.2.0-dev et création d'une version v0.2.1-dev
+  - Etape 7 : tests et validation pré-déploiement de la version (v0.2.1-dev EJS + REST)
+  - Etape 8 : déploiement et vérification post-déploiement de la version (v0.2.1-dev EJS + REST)
+  - Etape 9 : finalisation documentaire de l'issue-37
 - **Issue-38** : Création du Dashboard de l'Utilisateur
 - **Issue-39** : Création des pages listes et détails (finalisation du frontend)
 
@@ -2109,24 +2115,77 @@ Cette étape clôture la version **v0.2.0-dev** du frontend minimimal et de l'AP
 
 ---
 
-##### 2.5.1.5 Etape 5 - tests et déploiement de la version de la page d'accueil du frontend
+##### 2.5.1.5 Etape 5 - Tests de validation pré-déploiement de la version de la page d'accueil du frontend
 
-Cette cinquième étape finalise le développement et le déploiement de la version du frontend dynamique (v0.2.0-dev) et sécurise l'accès à l'API (JWT).  
+Cette cinquième étape réalise les tests de validation pré-déploiement de la version du frontend dynamique (v0.2.0-dev) et conclut sur la qualité de la vesion pour un déploiement.  
 Elle met en oeuvre la démarche d'archivage des validations pré-déploiement, réalise les validations du pré-déploiement de la version v0.2.0-dev.  
 
 1. **Travaux réalisés**
    - organisation de l'archivage des validations pré-déploiement
    - actualisation de la configuration (scripts) de la structure à déployer
+   - actualisation de la collection Postman pour la vérification pré-déploiement
    - validations pré-déploiement de la version v0.2.0-dev
-   - déploiement sur Alwaysdata de la version v0.2.0-dev
-2. **Déploiement de la version v0.2.0-dev**
-   - utilisation du script de déploiement
 
-Cette étape clôture la version **v0.2.0-dev** du frontend minimimal et de l'API sécurisés en déployant cette version sur Alwaysdata.
+2. **Rédaction du dossier de validation pré-déploiement de la version v0.2.0-dev**
+   - archivage des résultat de la validation de pré-déploiement
+   - rédaction des conclusions de la vérification
+
+3. **Résultat de la validation de pré-déploiement v0.2.0-dev**
+
+    - La validation pré‑déploiement de la version v0.2.0-dev a été réalisée à l’aide :
+      - des tests automatisés (unitaires, intégration, E2E simulés),
+      - de la collection Postman PreDeploy v0.2.0-dev,
+      - de la checklist pré‑déploiement.
+
+    - L’ensemble des tests techniques est **réussi**, à l’exception d’un point critique :
+
+      > **La route `POST /api/auth/register` est accessible sans authentification.**
+
+      Cette faille permet la création non contrôlée d’utilisateurs et constitue un risque majeur pour une API privée.
+
+      > **Décision : refus du déploiement.**
+
+    - Les artefacts de validation sont archivés dans : [docs-dev/deploiements/v0.2.0-dev/](./tests/deploiements/v0.2.0-dev_01_predeploy_2026-03-19_18-49/)
+
+    Cette étape confirme l’importance du pipeline CI/CD mis en place (script `validate-predeploy.js`, collection Postman dédiée) et justifie la création d’une version corrective **v0.2.1-dev**.
 
 ---
 
-##### 2.5.1.6 Etape 6 - finalisation documentaire post-déploiement de la version v0.2.0-dev
+##### 2.5.1.6 Etape 6 - Analyse technique et corrections de la version à déployer (v0.2.1-dev)
+
+Eléments préliminaires (à compléter commit-6) :
+
+- La validation pré‑déploiement réalisée à l’issue de la version v0.2.0-dev a mis en évidence une faille de sécurité dans l’API :
+
+  - la route POST /api/auth/register était accessible sans authentification
+  - cela permettait la création non contrôlée d’utilisateurs
+  - la version v0.2.0-dev ne peut donc pas être déployée en l’état
+
+- Corrections prévues en v0.2.1-dev :
+
+  1. **La privatisation stricte de la création d’utilisateur.**
+  2. **La séparation des routes Auth et Users :**
+     - `/api/auth/login` (authentification uniquement)
+     - `/api/users/` (création, modification, suppression)
+  3. **L’ajout de la route `PUT /api/users/:id`** pour répondre aux exigences du sujet.
+  4. **La mise à jour des tests unitaires et d’intégration Auth et User.**
+  5. **La mise à jour de la collection Postman PreDeploy.**
+
+---
+
+##### 2.5.1.7 Etape 7 - tests de validation pré-déploiement de la version (corrigée) de la page d'accueil du frontend
+
+(à compléter commit-7)
+
+---
+
+##### 2.5.1.8 Etape 8 - déploiement et validation post-déploiement de la version (corrigée) de la page d'accueil du frontend
+
+(à compléter commit-8)
+
+---
+
+##### 2.5.1.9 Etape 9 - finalisation documentaire de l'issue-37
 
 (à compléter commit-6 et PR-issue-37-dev, puis PR-dev-main)
 

@@ -169,10 +169,64 @@ Les tests de niveau-3 des fonctions de l'API seront ajoutés lors des phases 6 e
 
 ---
 
+## 2.4 Niveau 4 — Tests de pipeline (PreDeploy / Deploy / PostDeploy)
+
+À partir de l’issue‑37 (Phase 6), un **quatrième niveau de tests** est introduit pour valider les opérations liées à l’hébergement et au déploiement de l’API.
+
+Ce niveau regroupe les tests exécutés dans les trois pipelines :
+
+- **validation pré‑déploiement** (PreDeploy)  
+- **validation du déploiement** (Deploy)  
+- **validation post‑déploiement** (PostDeploy)
+
+Ces tests garantissent que :
+
+- la version testée correspond exactement à la version déployée  
+- les routes critiques sont protégées (JWT)  
+- les opérations CRUD essentielles fonctionnent en conditions réelles  
+- la base reste propre après test  
+- les régressions non détectées par les tests automatisés sont identifiées  
+- les résultats sont archivés pour assurer la traçabilité
+
+### 2.4.1 Tests PreDeploy
+
+Le pipeline PreDeploy utilise une collection Postman dédiée :
+
+- **`collection-predeploy-v0.2.0-dev.json`**  
+  (archivée dans `docs-dev/tests/assets/`)
+
+Cette collection est spécifique à chaque version et doit être mise à jour lorsque l’API évolue (ex. séparation Auth/Users en v0.2.1-dev).
+
+Elle valide :
+
+- login  
+- protection des routes Auth  
+- protection des routes Catways  
+- protection des routes Reservations  
+- cohérence du JWT  
+- création/suppression contrôlée  
+- nettoyage de la base après test  
+
+Les résultats sont archivés dans :
+
+```txt
+docs-dev/deploiements/<version>/
+```
+
+### 2.4.2 Tests Deploy et PostDeploy
+
+Ces tests seront introduits dans l'étape 8 de l’issue‑37.  
+Ils valideront respectivement :
+
+- la publication de la version sur Alwaysdata  
+- le fonctionnement réel de l’API déployée
+
+---
+
 ## 3. Arborescence documentaire
 
 ```text
-docs-dev/tests/
+docs-dev/`tests`/
 │
 ├── README_tests.md              ← Vue d’ensemble (ce document)
 ├── root-hooks.js                ← Définition des Hooks globaux de MOCHA et chargement `dotenv` (issue‑37)
@@ -182,7 +236,8 @@ docs-dev/tests/
 │   └── createTestUser.js        ← Helper centralisé pour créer un utilisateur + token JWT cohérent
 │
 ├── assets/                      ← Images, captures, collections Postman
-│   └── collection-e2e-local.json
+│   ├── collection-e2e-local.json
+│   └── API-Port-Russell_PreDeploy_v0.2.0-dev.json
 │
 ├── auth/                        ← Catégorie Authentification
 │   ├── auth-niveau-1-unitaires.md
@@ -194,12 +249,15 @@ docs-dev/tests/
 │   ├── modeles-niveau-2-integration.md
 │   └── modeles-niveau-3-e2e.md
 │
-└── fonctions/                   ← Catégorie Fonctionnalités
-    ├── api-niveau-2-integration.md
-    ├── catways-niveau-1-unitaires.md
-    ├── catways-niveau-2-integration.md
-    ├── reservations-niveau-1-unitaires.md
-    └── reservations-niveau-2-integration.md
+├── fonctions/                   ← Catégorie Fonctionnalités
+│   ├── api-niveau-2-integration.md
+│   ├── catways-niveau-1-unitaires.md
+│   ├── catways-niveau-2-integration.md
+│   ├── reservations-niveau-1-unitaires.md
+│   └── reservations-niveau-2-integration.md
+│
+└── deploiements/                  ← Catégorie Hébergement et Publication
+    └── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Archivage des validations pré-déploiement d'une version
 ```
 
 ---

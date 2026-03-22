@@ -267,6 +267,64 @@ Motivations :
 
 ---
 
+### 4.6 Décision — Faille de sécurité sur `/api/auth/register` (version v0.2.0-dev)
+
+La validation pré‑déploiement **v0.2.0-dev** a révélé que la route `POST /api/auth/register` était accessible sans authentification.
+
+Décision :
+
+- refuser le déploiement de la v0.2.0-dev
+- créer une version corrective v0.2.1-dev
+- sécuriser la route /api/auth/register
+- analyser les routes Auth/Users pour une API REST
+
+Conséquences :
+
+- mise à jour de l'architecture de l'API avec l'analyse d'une séparation stricte Auth et USERs
+- mise à jour des tests unitaire et d’intégration Auth
+- mise à jour de la collection Postman PreDeploy
+- nouvelle validation pré‑déploiement obligatoire
+
+> Notes :
+>
+> - Cette décision est tracée (ADR) car elle met en évidence que les démarches de validation de pré-déploiement sont une phase de vérification qui peut aussi bien conclure à un déploiement qu'à un refus de poursuivre.
+
+---
+
+### 4.7 Décision — Séparation Auth/Users et correction de la faille (version v0.2.1-dev)
+
+La validation pré‑déploiement v0.2.0-dev a révélé une faille de sécurité critique :  
+la route `POST /api/auth/register` était accessible sans authentification.
+
+Cette situation résulte d’une incohérence structurelle : les opérations liées au modèle User (création, suppression, modification) étaient regroupées dans `/api/auth/`, alors qu’elles relèvent d’une ressource métier distincte.
+
+#### Décision
+
+- refuser le déploiement de la v0.2.0-dev ;
+- créer une version corrective v0.2.1-dev ;
+- **séparer les routes Auth et Users** :
+  - `/api/auth/login` (authentification uniquement)
+  - `/api/users/` (création, modification, suppression)
+- privatiser toutes les routes User ;
+- ajouter la route `PUT /api/users/:id` conformément au sujet ;
+- mettre à jour les tests unitaires/d’intégration et la collection Postman PreDeploy.
+
+#### Motivations
+
+- corriger la faille de sécurité ;
+- aligner l’API avec les standards REST ;
+- respecter les fonctionnalités demandées dans le sujet (création, modification, suppression d’utilisateur) ;
+- clarifier l’architecture pour les futures versions.
+
+#### Conséquences
+
+- mise à jour des contrôleurs et routes ;
+- mise à jour des tests ;
+- mise à jour de la documentation ;
+- nouvelle validation pré‑déploiement obligatoire (v0.2.1-dev).
+
+---
+
 ## 5. Environnement de développement
 
 ### 5.1 Tests E2E simulés

@@ -9,7 +9,8 @@ La version finale lors de la livraison du projet fera l'objet d'une actualisatio
    - tests unitaires (niveau 1)
    - tests d’intégration (niveau 2)
    - tests E2E simulés (niveau 3)
-   Ces tests garantissent la stabilité technique du code.
+   - tests des pipelines de déploiement (niveau 4)
+   Ces tests garantissent la stabilité technique du code et de la version hébergée (publiée).
 
 2) **Tests opérationnels Client** (`npm run tests`)
    - tests orientés métier
@@ -26,9 +27,10 @@ Les tests concernent des éléments techniques du développement :
 
 - l'authentification d'un utilisateur
 - les modèles du projet (User, Catway et Reservation)
-- les fonctionnalités du projet.
+- les fonctionnalités du projet
+- l'hébergement et publication du projet.
 
-Chaque catégorie (authentification, modèle, fonctionnalité) fait l'objet de différents niveaux de tests et d'une organisation adaptée.
+Chaque catégorie (authentification, modèle, fonctionnalité, hébergement) fait l'objet de différents niveaux de tests et d'une organisation adaptée.
 
 👉 Détails complets : [docs-dev/tests/README_tests.md](./tests/README_tests.md)
 
@@ -416,3 +418,135 @@ Les tests fonctionnels Catways (niveau‑3) seront ajoutés ultérieurement (Pha
 - **Sinon** : stubs, spies, mocks
 - **MongoMemoryServer** : base MongoDB en mémoire
 - **Supertest** : tests d’intégration des routes Express
+
+---
+
+## 5. Tests de la catégorie Hébergement
+
+L'issue-37 (Phase 6) introduit un nouveau niveau de tests (niveau 4), dédié aux opérations de vérification liée à l'hébergement du projet (primo hébergement réalisé en version v0.1-dev lors de l'issue-10 de la Phase 1).
+
+Ces opérations de vérification distinguent les actions :
+
+- préalables au déploiement (pré-déploiement)
+- pendant le déploiement de la version à héberger (publication sur Alwaysdata)
+- après le déploiement (post-deploiement).
+
+### 5.1 Tests de validation pré‑déploiement (niveau 4)
+
+Ce niveau de tests, dédié à la **validation pré‑déploiement** d’une version avant publication sur Alwaysdata, complète les tests développeurs (niveaux 1 à 3) et constitue une étape obligatoire du pipeline CI/CD.
+
+#### 🎯 5.1.1 Objectifs
+
+- vérifier la **sécurité** de l’API (JWT, routes protégées, cohérence des statuts HTTP)  
+- valider la **cohérence fonctionnelle minimale** (login, accès protégé, CRUD critiques)  
+- garantir que la version testée correspond exactement à la version déployée  
+- détecter les régressions non couvertes par les tests automatisés  
+- assurer une **traçabilité complète** via un archivage versionné
+
+Ce niveau de tests est exécuté **manuellement** via Postman, mais intégré dans le pipeline validate‑predeploy.
+
+---
+
+#### 🧪 5.1.2 Collection Postman PreDeploy
+
+Une collection Postman dédiée est utilisée pour valider les points critiques de l’API :
+
+- **`collection-predeploy-v0.2.0-dev.json`**  
+  (archivée dans `docs-dev/tests/assets/`)
+
+Cette collection est **spécifique à chaque version** et doit être mise à jour lorsque l’API évolue (ex. séparation Auth/Users en v0.2.1-dev).
+
+##### Contenu de la collection
+
+- **01‑Auth**
+  - Login → génération du token  
+  - Register → doit être protégé  
+  - Delete → doit être protégé  
+
+- **02‑Catways**
+  - List → route protégée  
+  - Create → cohérence du token  
+  - Delete → nettoyage de la base  
+
+- **03‑Reservations**
+  - List → route protégée  
+  - Create → cohérence du token  
+  - Delete → nettoyage de la base  
+
+##### Rôle de la collection
+
+- valider la protection des routes  
+- vérifier la cohérence du JWT  
+- tester les opérations critiques en conditions réelles  
+- garantir que la base reste propre après test  
+- détecter les failles non couvertes par les tests automatisés  
+- fournir une preuve opérationnelle dans le dossier d’archivage
+
+---
+
+#### 📁 5.1.3 Archivage des résultats
+
+Chaque exécution de la collection PreDeploy est archivée dans :
+
+```txt
+docs-dev/deploiements/<version>/
+```
+
+Contenu :
+
+- checklist pré‑déploiement  
+- résumé de validation  
+- logs des tests automatisés  
+- collection Postman utilisée  
+- captures éventuelles  
+- notes techniques  
+
+Exemple :  
+`docs-dev/deploiements/v0.2.0-dev/`
+
+---
+
+#### 🔄 5.1.4 Intégration dans la stratégie globale
+
+| Niveau | Type de tests       | Objectif                                    | Outils                           |
+|--------|---------------------|---------------------------------------------|----------------------------------|
+| **1**  | Unitaires           | Logique interne isolée                      | Mocha, Chai, Sinon               |
+| **2**  | Intégration         | Pipeline Express + MongoMemoryServer        | Supertest                        |
+| **3**  | E2E simulés         | Scénarios complets en local                 | Postman + serveur dédié          |
+| **4**  | **Pré‑déploiement** | Validation sécurité + cohérence + nettoyage | **Collection Postman PreDeploy** |
+
+Le niveau 4 ne remplace pas les niveaux 1 à 3 :  
+il les complète en validant l’API **dans son état réel**, avec MongoDB Atlas et l’environnement local complet.
+
+---
+
+#### 🧭 5.1.5 Rôle dans le pipeline CI/CD
+
+Le niveau 4 est exécuté dans le pipeline :
+
+1. tests automatisés (niveaux 1–3)  
+2. exécution de la collection PreDeploy  
+3. checklist pré‑déploiement  
+4. archivage  
+5. décision : **Accord** ou **Refus**  
+6. création d’une version corrective si nécessaire  
+
+Aucune version ne peut être déployée sans validation pré‑déploiement réussie.
+
+---
+
+### 5.2 Tests de validation du déploiement et publication (niveau 4)
+
+Ce niveau de tests, dédié à la **validation du déploiement** d’une version permet la réalisation de la publication sur Alwaysdata, constitue une étape obligatoire du pipeline CI/CD.
+
+(cette section sera complétée lors de l'étape 8 de l'issue-37)
+
+---
+
+### 5.3 Tests de validation du post-déploiement (niveau 4)
+
+Ce niveau de tests, dédié à la **validation post-déploiement** d’une version permet de vérifier la publication sur Alwaysdata, constitue une étape obligatoire du pipeline CI/CD.
+
+(cette section sera complétée lors de l'étape 8 de l'issue-37)
+
+---

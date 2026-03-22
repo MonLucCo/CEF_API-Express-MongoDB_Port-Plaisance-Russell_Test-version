@@ -1,0 +1,9 @@
+=== Test : npm run test:e2e ===
+
+--- STDOUT ---
+
+> cef_api-express-mongodb_port-plaisance-russell_test-version@1.0.0 test:e2e
+> echo "Tests E2E non automatiques : utiliser Postman avec l’API locale (test-app.js) ou l’API Alwaysdata. Voir docs-dev/tests/03-niveau-3-e2e.md." && exit 0
+
+"Tests E2E non automatiques : utiliser Postman avec l'API locale (test-app.js) ou l'API Alwaysdata. Voir docs-dev/tests/03-niveau-3-e2e.md." 
+

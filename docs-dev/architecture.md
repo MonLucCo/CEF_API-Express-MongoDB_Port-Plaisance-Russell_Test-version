@@ -163,6 +163,9 @@ docs-dev/                   ← Documentation interne versionnée
   ├── tests-strategy.md        ← Stratégie de tests (unitaires, intégration, E2E) et organisation du dossier tests/
   ├── decisions-techniques.md  ← Journal des décisions techniques (ADR simplifié)
   │
+  ├── architecture/            ← Documentation de détail de l'architecture
+  │   └── api-analysis.md             ← Documentation détaillée de l'analyse de l'API
+  │
   ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
   │   └── import-donnees.md           ← Documentation import JSON (issue‑20B)
   │
@@ -2153,23 +2156,89 @@ Elle met en oeuvre la démarche d'archivage des validations pré-déploiement, r
 
 ##### 2.5.1.6 Etape 6 - Analyse technique et corrections de la version à déployer (v0.2.1-dev)
 
-Eléments préliminaires (à compléter commit-6) :
+L’étape 6 de l’issue‑37 constitue la phase d’analyse et de préparation de la version corrective **v0.2.1‑dev**, réalisée en trois sous‑étapes distinctes afin d’assurer une traçabilité fine et une cohérence avec la structure documentaire du projet :
 
-- La validation pré‑déploiement réalisée à l’issue de la version v0.2.0-dev a mis en évidence une faille de sécurité dans l’API :
+- **étape 6a** : analyse technique de la version v0.2.0-dev
+- **étape 6b** : corrections architecturales pour la version v0.2.1-dev
+- **étape 6c** : tests développeurs (niveaux 1 à 3) de la version v0.2.1-dev.
 
-  - la route POST /api/auth/register était accessible sans authentification
-  - cela permettait la création non contrôlée d’utilisateurs
-  - la version v0.2.0-dev ne peut donc pas être déployée en l’état
+---
 
-- Corrections prévues en v0.2.1-dev :
+###### 2.5.1.6.1 — Analyse technique de la version v0.2.0‑dev
 
-  1. **La privatisation stricte de la création d’utilisateur.**
-  2. **La séparation des routes Auth et Users :**
-     - `/api/auth/login` (authentification uniquement)
-     - `/api/users/` (création, modification, suppression)
-  3. **L’ajout de la route `PUT /api/users/:id`** pour répondre aux exigences du sujet.
-  4. **La mise à jour des tests unitaires et d’intégration Auth et User.**
-  5. **La mise à jour de la collection Postman PreDeploy.**
+L'analyser les résultats de la validation pré‑déploiement v0.2.0‑dev (étape 5) consiste à identifier les corrections nécessaires.
+
+Les constats principaux sont :
+
+- **Faille de sécurité critique** : la route `POST /api/auth/register` est accessible sans authentification.  
+- **Incohérence architecturale** : les opérations liées au modèle User (création, suppression, modification) sont regroupées dans `/api/auth/`, ce qui ne respecte pas les principes REST.  
+- **Non‑conformité au sujet** : le sujet impose trois opérations sur l’utilisateur (création, modification, suppression) mais ne définit aucune route, ce qui nécessite une clarification architecturale.  
+- **Besoin d’une ressource REST dédiée** : la ressource User doit être séparée de l’authentification.
+
+Afin de centraliser l’analyse technique et de faciliter la compréhension des corrections apportées, un document dédié est créé :
+
+- [docs-dev/architecture/api-analysis.md](./architecture/api-analysis.md)
+
+Ce document contient :
+
+- l’analyse détaillée de la faille de sécurité,  
+- l’analyse des routes existantes,  
+- la justification de la séparation Auth/Users,  
+- la définition de la ressource User,  
+- les impacts sur les contrôleurs, routes et tests,  
+- les implications pour la version corrective v0.2.1‑dev.
+
+Il sert de référence technique pour l'architecture de l' API.
+
+---
+
+###### 2.5.1.6.2 — Corrections architecturales prévues pour v0.2.1‑dev
+
+À la suite de l’analyse, les corrections suivantes sont décidées :
+
+1. **Séparation des routes Auth et Users**  
+   - `/api/auth/` → authentification uniquement (login).  
+   - `/api/users/` → opérations CRUD utilisateur.
+
+2. **Privatisation stricte des routes User**  
+   - création, modification et suppression d’un utilisateur nécessitent un JWT valide.
+
+3. **Ajout de la route de modification utilisateur**  
+   - `PUT /api/users/:id`.
+
+4. **Déplacement des routes existantes**  
+   - `POST /api/auth/register` → `POST /api/users`  
+   - `DELETE /api/auth/delete/:id` → `DELETE /api/users/:id`
+
+5. **Mise à jour des tests**  
+   - tests unitaires, intégration et E2E simulés doivent être adaptés à la nouvelle architecture.
+
+6. **Mise à jour de la collection Postman**  
+   - création d’une collection PreDeploy v0.2.1‑dev.
+
+Ces corrections constituent le périmètre fonctionnel de la version corrective v0.2.1‑dev.
+
+---
+
+###### 2.5.1.6.3 — Préparation des tests développeurs (niveaux 1 à 3) pour v0.2.1‑dev
+
+Cette préparation consiste à adapter les tests développeurs à la nouvelle architecture :
+
+- **Niveau 1 (unitaires)**  
+  - création d’un fichier `userController.test.js`  
+  - mise à jour des tests Auth  
+  - adaptation des stubs Mongoose
+
+- **Niveau 2 (intégration)**  
+  - création de `user.routes.test.js`  
+  - mise à jour des tests Auth  
+  - vérification de la privatisation des routes User
+
+- **Niveau 3 (E2E simulés)**  
+  - mise à jour de la collection Postman locale  
+  - mise à jour du serveur de test `test-app.js` si nécessaire
+
+Ces tests doivent être exécutés et validés avant l’étape 7 (tests de niveau 4).
 
 ---
 

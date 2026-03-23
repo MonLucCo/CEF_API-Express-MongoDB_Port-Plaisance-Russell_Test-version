@@ -162,9 +162,7 @@ exports.patchUser = async (req, res) => {
  * @route DELETE /api/users/:id
  * 
  * @returns {Object} 200 - Utilisateur supprimé
- * @returns {Object} 400 - ID utilisateur invalide
- * @returns {Object} 404 - Utilisateur introuvable
- * @returns {Object} 500 - Erreur interne du serveur
+ * @throws {Object} 500 - Erreur interne du serveur
  *
  * @example
  * router.delete('/:id', validateUserId, resolveUserIdentifier, deleteUser);

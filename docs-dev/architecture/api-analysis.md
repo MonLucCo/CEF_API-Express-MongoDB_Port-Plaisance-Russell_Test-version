@@ -92,10 +92,69 @@ PUT /api/users/:id
 ### 5.2 Contrôleurs
 
 - création de `userController.js`  
-- déplacement de register et deleteUser  
-- ajout de updateUser
+- déplacement de register (renommé createUser) et deleteUser  
+- ajout de :
+  - getUsers (liste des utilisateurs)
+  - patchUser (mise à jour partielle)
 
-### 5.3 Tests
+---
+
+## 5.3 Séparation stricte Middleware / Contrôleur (Users)
+
+La version corrective **v0.2.1‑dev** introduit une architecture Users alignée avec celle des Catways et Reservations (issue‑26), fondée sur une séparation stricte entre :
+
+- **les middlewares** : validation syntaxique, validation métier, résolution d’identifiant  
+- **les contrôleurs** : logique métier pure, sans validation ni accès direct aux paramètres bruts
+
+### 5.3.1 Motivations
+
+- éviter la duplication de logique dans les contrôleurs  
+- garantir une architecture cohérente avec les modules Catways/Reservations  
+- centraliser la validation des identifiants et des payloads  
+- renforcer la sécurité (aucune fuite d’information sur l’existence d’un utilisateur)  
+- simplifier les tests unitaires et d’intégration  
+- préparer la documentation API (Phase 8)
+
+### 5.3.2 Middlewares introduits
+
+- **validateUserId**  
+  Vérifie la validité syntaxique de l’identifiant (`ObjectId`).  
+  Ne réalise aucune opération en base.
+
+- **resolveUserIdentifier**  
+  Résout l’identifiant, récupère l’utilisateur et l’attache à `req.user`.  
+  Retourne 404 si l’utilisateur n’existe pas.
+
+- **validateUserPayload**  
+  Valide les champs obligatoires pour la création (`POST /api/users`).
+
+- **validateUserPayloadPartial**  
+  Valide les champs optionnels pour la mise à jour partielle (`PATCH /api/users/:id`).  
+  Exige au moins un champ valide.
+
+### 5.3.3 Impacts sur les contrôleurs
+
+Grâce à cette séparation stricte :
+
+- les contrôleurs Users deviennent minimalistes  
+- aucune validation n’est dupliquée  
+- aucune logique de résolution n’est présente dans les contrôleurs  
+- la logique métier est isolée et testable  
+- les réponses sont sécurisées (pas de fuite du hash bcrypt)
+
+### 5.3.4 Résultat
+
+L’architecture Users est désormais :
+
+- cohérente avec Catways/Reservations  
+- sécurisée  
+- testable  
+- conforme aux bonnes pratiques REST  
+- prête pour les tests de l’étape 6‑c (niveaux 1 → 3)
+
+---
+
+### 5.4 Tests
 
 - mise à jour des tests unitaires  
 - mise à jour des tests d’intégration  

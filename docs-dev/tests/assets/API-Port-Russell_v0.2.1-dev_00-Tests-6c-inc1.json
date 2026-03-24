@@ -1,9 +1,8 @@
 {
     "info": {
-        "name": "API-Port-Russell_PreDeploy_v0.2.0-dev",
-        "_postman_id": "predeploy-020-collection",
-        "description": "Collection Postman pour la validation pré-déploiement des versions v0.2.0-dev de l'API Port de Plaisance Russell.",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+        "name": "API-Port-Russell_v0.2.1-dev_Tests-6c-inc1",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_postman_id": "ppr-v0-2-1-dev"
     },
     "variable": [
         {
@@ -11,19 +10,23 @@
             "value": "http://localhost:3000"
         },
         {
+            "key": "base_api",
+            "value": "api"
+        },
+        {
             "key": "token",
             "value": ""
         },
         {
-            "key": "userId",
+            "key": "user_id",
             "value": ""
         },
         {
-            "key": "catwayId",
+            "key": "catway_id",
             "value": ""
         },
         {
-            "key": "reservationId",
+            "key": "reservation_id",
             "value": ""
         },
         {
@@ -33,10 +36,10 @@
     ],
     "item": [
         {
-            "name": "01-Auth",
+            "name": "0. Auth",
             "item": [
                 {
-                    "name": "01-Login",
+                    "name": "POST /auth/login",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -45,20 +48,20 @@
                                 "value": "application/json"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"1234\"\n}"
-                        },
                         "url": {
-                            "raw": "{{base_url}}/api/auth/login",
+                            "raw": "{{base_url}}/{{base_api}}/auth/login",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "api",
+                                "{{base_api}}",
                                 "auth",
                                 "login"
                             ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"1234\"\n}"
                         }
                     },
                     "event": [
@@ -66,17 +69,15 @@
                             "listen": "test",
                             "script": {
                                 "exec": [
-                                    "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
-                                    "const json = pm.response.json();",
-                                    "pm.collectionVariables.set(\"token\", json.token);",
-                                    "pm.test(\"Token présent\", () => pm.expect(json.token).to.exist);"
+                                    "let json = pm.response.json();",
+                                    "if (json.token) pm.collectionVariables.set(\"token\", json.token);"
                                 ]
                             }
                         }
                     ]
                 },
                 {
-                    "name": "02-Register (protégé ou création)",
+                    "name": "POST /auth/register (temporaire)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -89,20 +90,20 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"name\": \"TestUser_PreDeploy\",\n  \"email\": \"test_predeploy@example.com\",\n  \"password\": \"1234\"\n}"
-                        },
                         "url": {
-                            "raw": "{{base_url}}/api/auth/register",
+                            "raw": "{{base_url}}/{{base_api}}/auth/register",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "api",
+                                "{{base_api}}",
                                 "auth",
                                 "register"
                             ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"TestUser_PreDeploy\",\n  \"email\": \"test_predeploy@example.com\",\n  \"password\": \"1234\"\n}"
                         }
                     },
                     "event": [
@@ -110,21 +111,15 @@
                             "listen": "test",
                             "script": {
                                 "exec": [
-                                    "if (pm.response.code === 401 || pm.response.code === 403) {",
-                                    "  pm.test(\"Register est protégé\", () => pm.expect(pm.response.code).to.be.oneOf([401,403]));",
-                                    "} else {",
-                                    "  pm.test(\"Register autorisé (dev)\", () => pm.response.to.have.status(201));",
-                                    "  const json = pm.response.json();",
-                                    "  pm.collectionVariables.set(\"userId\", json.user._id);",
-                                    "  pm.test(\"userId créé\", () => pm.expect(json.user._id).to.exist);",
-                                    "}"
+                                    "let json = pm.response.json();",
+                                    "if (json.user) pm.collectionVariables.set(\"user_id\", json.user._id);"
                                 ]
                             }
                         }
                     ]
                 },
                 {
-                    "name": "03-Delete (protégé)",
+                    "name": "DELETE /auth/delete/:id (temporaire)",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -134,26 +129,36 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/auth/delete/{{userId}}",
+                            "raw": "{{base_url}}/{{base_api}}/auth/register",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "api",
+                                "{{base_api}}",
                                 "auth",
                                 "delete",
-                                "{{userId}}"
+                                "{{user_id}}"
                             ]
                         }
-                    }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) pm.collectionVariables.set(\"user_id\", \"\");"
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },
         {
-            "name": "02-Catways",
+            "name": "1. Users",
             "item": [
                 {
-                    "name": "01-List",
+                    "name": "GET /users",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -163,19 +168,19 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/catways",
+                            "raw": "{{base_url}}/{{base_api}}/users",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "api",
-                                "catways"
+                                "{{base_api}}",
+                                "users"
                             ]
                         }
                     }
                 },
                 {
-                    "name": "02-Create",
+                    "name": "POST /users",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -188,19 +193,19 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"catwayNumber\": 50,\n  \"type\": \"short\",\n  \"catwayState\": \"Bien pour le test\"\n}"
-                        },
                         "url": {
-                            "raw": "{{base_url}}/api/catways",
+                            "raw": "{{base_url}}/{{base_api}}/users",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "api",
-                                "catways"
+                                "{{base_api}}",
+                                "users"
                             ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John\",\n  \"email\": \"john@test.com\",\n  \"password\": \"123\"\n}"
                         }
                     },
                     "event": [
@@ -208,70 +213,17 @@
                             "listen": "test",
                             "script": {
                                 "exec": [
-                                    "const json = pm.response.json();",
-                                    "pm.collectionVariables.set(\"catwayId\", json._id);",
-                                    "pm.test(\"catwayId créé\", () => pm.expect(json._id).to.exist);"
+                                    "let json = pm.response.json();",
+                                    "if (json.user) pm.collectionVariables.set(\"user_id\", json.user.id);"
                                 ]
                             }
                         }
                     ]
                 },
                 {
-                    "name": "03-Delete",
+                    "name": "PATCH /users/:id",
                     "request": {
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/catways/{{catwayId}}",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catways",
-                                "{{catwayId}}"
-                            ]
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "name": "03-Reservations",
-            "item": [
-                {
-                    "name": "01-List",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/catways/{{catwayForReservation}}/reservations",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catways",
-                                "{{catwayForReservation}}",
-                                "reservations"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "02-Create",
-                    "request": {
-                        "method": "POST",
+                        "method": "PATCH",
                         "header": [
                             {
                                 "key": "Content-Type",
@@ -282,38 +234,25 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"checkIn\": \"2026-04-01\",\n  \"checkOut\": \"2026-04-05\",\n  \"clientName\": \"John Doe\",\n  \"boatName\": \"TestBoat\"\n}"
-                        },
                         "url": {
-                            "raw": "{{base_url}}/api/catways/{{catwayForReservation}}/reservations",
+                            "raw": "{{base_url}}/{{base_api}}/users/{{user_id}}",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "api",
-                                "catways",
-                                "{{catwayForReservation}}",
-                                "reservations"
+                                "{{base_api}}",
+                                "users",
+                                "{{user_id}}"
                             ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Name\"\n}"
                         }
-                    },
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "const json = pm.response.json();",
-                                    "pm.collectionVariables.set(\"reservationId\", json._id);",
-                                    "pm.test(\"reservationId créé\", () => pm.expect(json._id).to.exist);"
-                                ]
-                            }
-                        }
-                    ]
+                    }
                 },
                 {
-                    "name": "03-Delete",
+                    "name": "DELETE /users/:id",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -323,16 +262,80 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/catways/{{catwayForReservation}}/reservations/{{reservationId}}",
+                            "raw": "{{base_url}}/{{base_api}}/users/{{user_id}}",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "api",
+                                "{{base_api}}",
+                                "users",
+                                "{{user_id}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) pm.collectionVariables.set(\"user_id\", \"\");"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "2. Catways",
+            "item": [
+                {
+                    "name": "GET /catways",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Reservations",
+            "item": [
+                {
+                    "name": "GET /catways/:id/reservations",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catwayForReservation}}/reservations",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
                                 "catways",
                                 "{{catwayForReservation}}",
-                                "reservations",
-                                "{{reservationId}}"
+                                "reservations"
                             ]
                         }
                     }

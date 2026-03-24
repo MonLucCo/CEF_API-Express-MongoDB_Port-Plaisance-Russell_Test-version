@@ -164,7 +164,8 @@ docs-dev/                   ← Documentation interne versionnée
   ├── decisions-techniques.md  ← Journal des décisions techniques (ADR simplifié)
   │
   ├── architecture/            ← Documentation de détail de l'architecture
-  │   └── api-analysis.md             ← Documentation détaillée de l'analyse de l'API
+  │   ├── api-analysis.md             ← Documentation détaillée de l'analyse de l'API
+  │   └── collection-analysis.md      ← Documentation détaillée de l'analyse d'une collection Postman (v0.2.1-dev - incrément 2)
   │
   ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
   │   └── import-donnees.md           ← Documentation import JSON (issue‑20B)
@@ -176,8 +177,9 @@ docs-dev/                   ← Documentation interne versionnée
       ├── README_tests.md                      ← Vue d’ensemble des tests (Catégories et Niveaux)
       │
       ├── assets/                              ← Compléments pour les tests (images, collections Postman)
-      │   ├── collection-e2e-local.json                   ← Collection Postman (API v0.1-dev)
-      │   └── API-Port-Russell_PreDeploy_v0.2.0-dev.json  ← Collection Postman (API v0.2.0-dev)
+      │   ├── collection-e2e-local.json                           ← Collection Postman (API v0.1-dev)
+      │   ├── API-Port-Russell_v0.2.0-dev__01-PreDeploy.json      ← Collection Postman (API v0.2.0-dev - Pré-déploiement)
+      │   └── API-Port-Russell_v0.2.1-dev__00-Tests-6c-inc1.json  ← Collection Postman (API v0.2.1-dev - Tests techniques)
       │
       ├── auth/                                ← Catégorie Authentification
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
@@ -2160,11 +2162,14 @@ L’étape 6 de l’issue‑37 constitue la phase d’analyse et de préparation
 
 - **étape 6a** : analyse technique de la version v0.2.0-dev
 - **étape 6b** : corrections architecturales pour la version v0.2.1-dev
-- **étape 6c** : tests développeurs (niveaux 1 à 3) de la version v0.2.1-dev.
+- **étape 6c** :
+
+  - tests développeurs (niveaux 1 à 3) des fonctions nouvelles (Users)
+  - tests développeurs (niveau 4) de la version v0.2.1-dev.
 
 ---
 
-###### 2.5.1.6.1 — Analyse technique de la version v0.2.0‑dev
+###### 2.5.1.6.1 — Analyse technique de la version v0.2.0‑dev (étape 6a)
 
 L'analyser les résultats de la validation pré‑déploiement v0.2.0‑dev (étape 5) consiste à identifier les corrections nécessaires.
 
@@ -2192,7 +2197,7 @@ Il sert de référence technique pour l'architecture de l' API.
 
 ---
 
-###### 2.5.1.6.2 — Corrections architecturales prévues pour v0.2.1‑dev
+###### 2.5.1.6.2 — Corrections architecturales prévues pour v0.2.1‑dev (étape 6b)
 
 À la suite de l’analyse, les corrections suivantes sont décidées :
 
@@ -2220,9 +2225,9 @@ Ces corrections constituent le périmètre fonctionnel de la version corrective 
 
 ---
 
-###### 2.5.1.6.3 — Préparation des tests développeurs (niveaux 1 à 3) pour v0.2.1‑dev
+###### 2.5.1.6.3 — Tests développeurs (niveaux 1 à 4) pour v0.2.1‑dev (étape 6c)
 
-Cette préparation consiste à adapter les tests développeurs à la nouvelle architecture :
+Dans un premier temps, cette préparation consiste à adapter les tests développeurs à la nouvelle architecture :
 
 - **Niveau 1 (unitaires)**  
   - création d’un fichier `userController.test.js`  
@@ -2238,7 +2243,18 @@ Cette préparation consiste à adapter les tests développeurs à la nouvelle ar
   - mise à jour de la collection Postman locale  
   - mise à jour du serveur de test `test-app.js` si nécessaire
 
-Ces tests doivent être exécutés et validés avant l’étape 7 (tests de niveau 4).
+En second lieu, il s'agit de vérifier et finaliser le contenu de l'API sans régression fonctionnelle.
+Ceci se réalise en plusieurs incréments techniques pour assurer la non-régression fonctionnelle de l'API :
+
+- **Incrément 1** : ajout des fonctionnalités liées au Utilisateurs (liste, création, mise à jour et suppression)
+- **Incrément 2** : tests de niveau 4 des fonctions Users et des routes privatisées (Users, Catways et reservations)
+- **Incrément 3** : finalisation du périmètre fonctionnel de la version (v0.2.1-dev) de l'API
+- **Incrément 4** : finalisation de la documentation du projet
+
+Les tests de niveau 4 sont réalisés avec une collection Postman.  
+Afin de centraliser l’analyse technique et de faciliter la compréhension de la collection (tests de niveau 4), un document dédié est créé :
+
+- [docs-dev/architecture/collection-analysis.md](./architecture/collection-analysis.md)
 
 ---
 

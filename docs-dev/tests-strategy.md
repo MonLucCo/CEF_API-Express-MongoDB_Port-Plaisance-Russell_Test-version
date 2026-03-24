@@ -451,8 +451,7 @@ Ce niveau de tests est exécuté **manuellement** via Postman, mais intégré da
 
 Une collection Postman dédiée est utilisée pour valider les points critiques de l’API :
 
-- **`collection-predeploy-v0.2.0-dev.json`**  
-  (archivée dans `docs-dev/tests/assets/`)
+- la collection **`API-Port-Russell_v0.2.0-dev__01-PreDeploy.json`** (archivée dans `docs-dev/tests/assets/`)
 
 Cette collection est **spécifique à chaque version** et doit être mise à jour lorsque l’API évolue (ex. séparation Auth/Users en v0.2.1-dev).
 

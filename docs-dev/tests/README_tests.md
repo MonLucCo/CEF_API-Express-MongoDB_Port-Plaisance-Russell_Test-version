@@ -43,6 +43,7 @@ Dossier :
 
 Tests portant sur :
 
+- les routes Users (Phase 6)
 - les routes Catways (Phase 4)
 - les routes Reservations (Phase 5)
 - les workflows complets (CRUD)
@@ -53,6 +54,8 @@ Dossier :
 
 Documents disponibles :
 
+- [users-niveau-1-unitaires.md](./fonctions/users-niveau-1-unitaires.md)
+- [users-niveau-2-integration.md](./fonctions/users-niveau-2-integration.md)
 - [catways-niveau-1-unitaires.md](./fonctions/catways-niveau-1-unitaires.md)
 - [catways-niveau-2-integration.md](./fonctions/catways-niveau-2-integration.md)
 - [reservations-niveau-1-unitaires.md](./fonctions/reservations-niveau-1-unitaires.md)
@@ -81,10 +84,13 @@ Objectif : tester la logique interne de manière isolée.
 Objectif : tester l’interaction réelle entre Express, Mongoose et MongoDB.
 
 - Utilisation de **MongoMemoryServer**  
-- Tests des routes Express  
+- Tests des routes Express :
+  - `/api/users`
+  - `/api/catways`
+  - `/api/catways/:id/reservations`
 - Tests des modèles avec `save()`, `find()`, `delete()`  
 - Vérification des erreurs MongoDB (`E11000`, `CastError`)
-- Tests de la privatisation des routes de l'API (Catways et Reservations)
+- Tests de la privatisation des routes de l'API (Users, Catways et Reservations)
 
 ---
 
@@ -101,7 +107,7 @@ Deux environnements :
 
 ##### 2.3.1.1 Insertion de données
 
-Les tests manuels de niveau-3 de l'insertion de données sont ajoutés lors de l'issue-22, la fin de la phase 3 du projet.
+Les tests manuels de niveau-3 de l'insertion de données ont été ajoutés lors de l'issue-22, la fin de la phase 3 du projet.
 
 Cette campagne de tests manuels a été réalisée via Postman, en utilisant :
 
@@ -121,7 +127,7 @@ Résultat : conformité totale avec les statuts attendus et cohérence avec les 
 
 ##### 2.3.1.2 CRUD Catways
 
-Les tests manuels de niveau-3 du CRUD Catways sont ajoutés lors de la fin de la phase 4 du projet.  
+Les tests manuels de niveau-3 du CRUD Catways ont été ajoutés lors de la fin de la phase 4 du projet.  
 
 Cette campagne de tests manuels a été réalisée via Postman, en utilisant :
 
@@ -144,7 +150,7 @@ Résultat : conformité totale avec les statuts attendus et cohérence avec les 
 
 ##### 2.3.1.3 CRUD Reservations
 
-Les tests manuels de niveau-3 du CRUD Reservations seront ajoutés lors de la fin de la phase 5 du projet.
+Les tests manuels de niveau-3 du CRUD Reservations ont été ajoutés lors de la fin de la phase 5 du projet.
 
 Cette campagne de tests manuels a été réalisée via Postman, en utilisant :
 
@@ -158,6 +164,33 @@ Les scénarios suivants ont été validés :
 - GET /catways/:id/reservations/:idReservation : pour Catways (ObjectId et catwayNumber), pour Reservations (ObjectId)
 - POST /catways/:id/reservations : création d'une réservation d'un catway
 - DELETE /catways/:id/reservations/:idReservation : suppression définitive
+
+Résultat : conformité totale avec les statuts attendus et cohérence avec les tests automatisés.
+
+---
+
+##### 2.3.1.4 CRUD Users
+
+Les tests manuels de niveau-3 du CRUD Users ont été ajoutés lors de la phase 6 (issue-37) du projet.
+
+Cette campagne de tests manuels a été réalisée via Postman, en utilisant :
+
+- le serveur Express local (`npm run dev`)
+- la base MongoDB Atlas réelle
+- la collection Postman locale (`docs-dev/tests/assets/API-Port-Russell_v0.2.1-dev_01-PreDeploy.json`)
+
+Les scénarios suivants ont été validés :
+
+- GET /users : liste vide puis liste peuplée des utilisateurs
+- POST /users : création d'un utilisateur
+- PATCH /users/:id : actualisation (partielle) d'un utilisateur
+- DELETE /users/:id : suppression définitive d'un utilisateur
+
+Les routes historiques `/api/auth/register` et `/api/auth/delete/:id` sont désormais :
+
+- privatisées  
+- dépréciées  
+- accompagnées du header `X-Deprecated: true`
 
 Résultat : conformité totale avec les statuts attendus et cohérence avec les tests automatisés.
 
@@ -190,12 +223,12 @@ Ces tests garantissent que :
 
 ### 2.4.1 Tests PreDeploy
 
-Le pipeline PreDeploy utilise une collection Postman dédiée :
+Le pipeline PreDeploy utilise une collection Postman dédiée (archivée dans `docs-dev/tests/assets/`) :
 
 - **`collection-predeploy-v0.2.0-dev.json`**  
-  (archivée dans `docs-dev/tests/assets/`)
+- **`collection-predeploy-v0.2.1-dev.json`**  
 
-Cette collection est spécifique à chaque version et doit être mise à jour lorsque l’API évolue (ex. séparation Auth/Users en v0.2.1-dev).
+Ces collections sont spécifiques à chaque version et doivent être mises à jour lorsque l’API évolue (ex. séparation Auth/Users en v0.2.1-dev).
 
 Elle valide :
 
@@ -237,7 +270,9 @@ docs-dev/`tests`/
 │
 ├── assets/                      ← Images, captures, collections Postman
 │   ├── collection-e2e-local.json
-│   └── API-Port-Russell_PreDeploy_v0.2.0-dev.json
+│   ├── API-Port-Russell_v0.2.0-dev_01-PreDeploy.json
+│   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json
+│   └── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json
 │
 ├── auth/                        ← Catégorie Authentification
 │   ├── auth-niveau-1-unitaires.md
@@ -251,6 +286,8 @@ docs-dev/`tests`/
 │
 ├── fonctions/                   ← Catégorie Fonctionnalités
 │   ├── api-niveau-2-integration.md
+│   ├── users-niveau-1-unitaires.md
+│   ├── users-niveau-2-integration.md
 │   ├── catways-niveau-1-unitaires.md
 │   ├── catways-niveau-2-integration.md
 │   ├── reservations-niveau-1-unitaires.md
@@ -276,11 +313,13 @@ docs-dev/`tests`/
 ## 5. Notes
 
 - Cette documentation est versionnée et évolue au fil des issues.  
-- Les tests de niveau 3 (E2E réels) seront finalisés lors de l’issue‑22.  
+- Les tests de niveau 3 (E2E réels) seront finalisés lors de la phase 7.  
 - Les tests de la catégorie Fonctionnalités seront introduits lors des phases 4 et 5.
 - La Phase 6 (issue‑37) introduit :
   - la séparation API / Frontend,
   - la protection JWT des routes du frontend,
-  - les tests transversaux de privatisation des routes API.
+  - les tests transversaux de privatisation des routes API
+  - la séparation des routes Auth et Users (création)
+  - la gestion des fonction **dépréciées** de l'API.
 
 ---

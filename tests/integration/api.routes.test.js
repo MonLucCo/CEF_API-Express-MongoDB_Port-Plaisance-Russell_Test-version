@@ -144,4 +144,50 @@ describe('Tests d’intégration - Niveau 2 – Protection JWT des routes API', 
         });
     });
 
+    // ------------------------------------------------------------------
+    // 1) Tests Users
+    // ------------------------------------------------------------------
+    describe('Protection JWT – Routes Users', () => {
+
+        it('GET /api/users → 401 si aucun token', async () => {
+            const res = await request(app)
+                .get('/api/users');
+
+            expect(res.status).to.equal(401);
+        });
+
+        it('GET /api/users → 401 si token invalide', async () => {
+            const res = await request(app)
+                .get('/api/users')
+                .set('Authorization', 'Bearer invalid.token.here');
+
+            expect(res.status).to.equal(401);
+        });
+
+        it('GET /api/users → 200 si token valide', async () => {
+            const res = await request(app)
+                .get('/api/users')
+                .set('Authorization', `Bearer ${testToken}`);
+
+            expect(res.status).to.equal(200);
+        });
+
+        it('POST /api/users → 401 si aucun token', async () => {
+            const res = await request(app)
+                .post('/api/users')
+                .send({ name: "X", email: 'x@example.com', password: 'fake.password' });
+
+            expect(res.status).to.equal(401);
+        });
+
+        it('DELETE /api/users/:id → 401 si aucun token', async () => {
+            const fakeId = '65aa0f0f0f0f0f0f0f0f0f0f';
+
+            const res = await request(app)
+                .delete(`/api/users/${fakeId}`);
+
+            expect(res.status).to.equal(401);
+        });
+    });
+
 });

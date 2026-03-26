@@ -48,7 +48,8 @@ src/                        ← Dossier principal du code de l'API
   │
   ├── controllers/              ← Contrôleurs Express (logique métier)
   │   ├── api                       ← Contrôleur de l'API
-  │   │   ├── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
+  │   │   ├── authController.js         ← Contrôleur d’authentification
+  │   │   ├── userController.js         ← Contrôleur des Users
   │   │   ├── catwayController.js       ← Contrôleur des Catways
   │   │   └── reservationController.js  ← Contrôleur des Reservations
   │   │
@@ -56,18 +57,26 @@ src/                        ← Dossier principal du code de l'API
   │       └── pagesController.js        ← Contrôleur des pages du frontend
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
-  │   ├── authMiddleware.js              ← Middleware JWT (issue‑16), vérification du token et protection des routes
-  │   ├── catwayMiddleware.js            ← Middleware Catway (issue‑26), vérification de l'identifiant
-  │   ├── catwayPayloadMiddleware.js     ← Middleware Payload du Catway (issue‑27), vérification du payload (complet, partiel)
-  │   └── reservationMiddleware.js       ← Middleware des Reservations
+  │   ├── attachDeprecatedInfo.js        ← Middleware ajoutant les métadonnées de dépréciation dans la réponse
+  │   ├── deprecatedRoute.js             ← Middleware marquant une route comme dépréciée (X-Deprecated: true)
+  │   │
+  │   ├── requireAuthPage.js             ← Middleware d'authentification pour les pages EJS (JWT + redirection)
+  │   │
+  │   ├── authMiddleware.js              ← Middleware JWT (issue‑16), protection des routes API
+  │   ├── userMiddleware.js              ← Middlewares Users (issue‑37) : validateUserId, resolveUser
+  │   ├── catwayMiddleware.js            ← Middlewares Catways (issue‑26) : validateCatwayId, resolveCatwayIdentifier
+  │   ├── catwayPayloadMiddleware.js     ← Middlewares Catways (issue‑27) : validateCatwayPayload, validateCatwayPartialPayload
+  │   └── reservationMiddleware.js       ← Middlewares Reservations (issues 33–36)
   │
   ├── services/                 ← Logique métier réutilisable
   │
   └── routes/                   ← Définition des routes Express
       ├── api                       ← Routes de l'API
-      │   ├── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
-      │   ├── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
-      │   └── reservationRoutes.js      ← Routes des Reservations (GET, POST, DELETE)
+      │   ├── authRoutes.js             ← Routes Auth (POST /login) + routes dépréciées (POST /register, DELETE /delete/:id)
+      │   ├── userRoutes.js             ← Routes Users (GET, POST, PATCH, DELETE) — privatisées (issue‑37)
+      │   ├── catwayRoutes.js           ← Routes Catways (GET, POST, PUT, PATCH, DELETE)
+      │   ├── reservationRoutes.js      ← Routes Reservations (GET, POST, DELETE)
+      │   └── apiRoutes.js              ← Routeur principal API (agrégation Users, Catways, Reservations)
       │
       └── pages                     ← Routes du Frontend
           └── pagesRoutes.js            ← Routes des pages du frontend
@@ -120,18 +129,22 @@ tests/                      ← Tests Mocha/Chai/Supertest
   │
   ├── controllers/              ← Tests unitaires (niveau‑1) des contrôleurs via Mocha + Chai + Sinon
   │   ├── authController.test.js         ← Tests unitaires du contrôleur Authentification
+  │   ├── userController.test.js         ← Tests unitaires du contrôleur Users
   │   ├── catwayController.test.js       ← tests unitaires du contrôleur Catways
   │   └── reservationController.test.js  ← tests unitaires du contrôleur Reservations
   │
   ├── middlewares/              ← Tests unitaires (niveau‑1) des middlewares
+  │   ├── deprecatedMiddleware.test.js    ← Tests unitaires du middleware de Déprécation (issue‑37)
   │   ├── authMiddleware.test.js          ← Tests unitaires du middleware Authentification (issue‑16)
-  │   └── catwayMiddleware.test.js        ← tests unitaires du middleware Catways (issue-26)
-  │   └── catwayPayloadMiddleware.test.js ← tests unitaires du middleware du payload Catways (issue-27)
+  │   ├── userMiddleware.test.js          ← Tests unitaires du middleware Users (issue‑37)
+  │   ├── catwayMiddleware.test.js        ← tests unitaires du middleware Catways (issue-26)
+  │   ├── catwayPayloadMiddleware.test.js ← tests unitaires du middleware du payload Catways (issue-27)
   │   └── reservationMiddleware.test.js   ← tests unitaires du middleware Reservations (issue-31)
   │
   ├── integration/              ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
   │   ├── api.routes.test.js             ← Tests d’intégration transversaux : protection JWT des routes API
   │   ├── auth.routes.test.js            ← Tests d'intégration Authentification
+  │   ├── users.routes.test.js           ← Tests d'intégration Users
   │   ├── catways.routes.test.js         ← tests d'intégration Catways
   │   └── reservations.routes.test.js    ← tests d'intégration Reservations
   │
@@ -142,7 +155,8 @@ tests/                      ← Tests Mocha/Chai/Supertest
   │   ├── tests.mock.js             ← Helpers transverses (mockResponse, mockNext, afterEachRestore)
   │   ├── jwt.mock.js               ← Stubs JWT (verify, sign)
   │   ├── user.mock.js              ← Mocks/stubs du modèle User
-  │   └── catway.mock.js            ← Mocks/stubs du modèle Catway
+  │   ├── catway.mock.js            ← Mocks/stubs du modèle Catway
+  │   └── reservation.mock.js       ← Mocks/stubs du modèle Reservation
   │
   └── modeles/                  ← Tests des modèles (Catway, Reference, User) 
       ├── catway.unitaires.test.js          ← Tests unitaires (niveau-1) de Catway
@@ -164,8 +178,9 @@ docs-dev/                   ← Documentation interne versionnée
   ├── decisions-techniques.md  ← Journal des décisions techniques (ADR simplifié)
   │
   ├── architecture/            ← Documentation de détail de l'architecture
-  │   ├── api-analysis.md             ← Documentation détaillée de l'analyse de l'API
-  │   └── collection-analysis.md      ← Documentation détaillée de l'analyse d'une collection Postman (v0.2.1-dev - incrément 2)
+  │   ├── api-analysis.md                          ← Détail de l'analyse de l'API
+  │   ├── collection-analysis.md                   ← Détail de l'analyse d'une collection Postman (v0.2.1-dev - incrément 2)
+  │   └── suppression-depreciation-analysis.md     ← Détail de l'analyse d'une fonction obsolète (dépréciation)
   │
   ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
   │   └── import-donnees.md           ← Documentation import JSON (issue‑20B)
@@ -177,9 +192,10 @@ docs-dev/                   ← Documentation interne versionnée
       ├── README_tests.md                      ← Vue d’ensemble des tests (Catégories et Niveaux)
       │
       ├── assets/                              ← Compléments pour les tests (images, collections Postman)
-      │   ├── collection-e2e-local.json                           ← Collection Postman (API v0.1-dev)
-      │   ├── API-Port-Russell_v0.2.0-dev__01-PreDeploy.json      ← Collection Postman (API v0.2.0-dev - Pré-déploiement)
-      │   └── API-Port-Russell_v0.2.1-dev__00-Tests-6c-inc1.json  ← Collection Postman (API v0.2.1-dev - Tests techniques)
+      │   ├── collection-e2e-local.json                          ← Collection Postman (API v0.1-dev)
+      │   ├── API-Port-Russell_v0.2.0-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.0-dev - Pré-déploiement)
+      │   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json  ← Collection Postman (API v0.2.1-dev - Tests techniques)
+      │   └── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
       │
       ├── auth/                                ← Catégorie Authentification
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
@@ -192,6 +208,8 @@ docs-dev/                   ← Documentation interne versionnée
       │
       ├── fonctions/                           ← Catégorie Fonctionnalités
       │   ├── api-niveau-2-integration.md           ← Tests de niveau 2 - tests d'intégration API (Catways, Reservation)
+      │   ├── users-niveau-1-unitaires.md           ← Tests de niveau 1 - tests unitaires Users
+      │   ├── users-niveau-2-integration.md         ← Tests de niveau 2 - tests d'intégration Users
       │   ├── catways-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires Catways
       │   ├── catways-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration Catways
       │   ├── reservations-niveau-1-unitaires.md    ← Tests de niveau 1 - tests unitaires Reservations
@@ -215,6 +233,8 @@ Les pages dynamiques sont rendues via `pagesController.js` et organisées dans l
 Cette séparation garantie une architecture claire, modulaire et compatible avec Alwaysdata.
 
 À partir de la Phase 6 (issue-37), les opérations de validation des versions publiées font l'objet de pipelines de vérification (Pré-déploiement, déploiement, post-déploiement) qui sont archivées dans des dossiers spécifiques (version-pipelines-date-heure) situés dans `docs-dev/tests/deploiements/`.
+
+À partir de la Phase 6 (issue-37), la version v0.2.1-dev contient des fonctions dépréciées et une gestion de l'obsolescence des routes.
 
 ---
 
@@ -2166,6 +2186,8 @@ L’étape 6 de l’issue‑37 constitue la phase d’analyse et de préparation
 
   - tests développeurs (niveaux 1 à 3) des fonctions nouvelles (Users)
   - tests développeurs (niveau 4) de la version v0.2.1-dev.
+  - gestion des fonctions obsolètes (dépréciation des fonction Auth/register et Auth/delete)
+  - finalisation du périmètre fonctionnel de la version v0.2.1-dev.
 
 ---
 
@@ -2227,6 +2249,8 @@ Ces corrections constituent le périmètre fonctionnel de la version corrective 
 
 ###### 2.5.1.6.3 — Tests développeurs (niveaux 1 à 4) pour v0.2.1‑dev (étape 6c)
 
+**Tests développeurs :**
+
 Dans un premier temps, cette préparation consiste à adapter les tests développeurs à la nouvelle architecture :
 
 - **Niveau 1 (unitaires)**  
@@ -2255,6 +2279,61 @@ Les tests de niveau 4 sont réalisés avec une collection Postman.
 Afin de centraliser l’analyse technique et de faciliter la compréhension de la collection (tests de niveau 4), un document dédié est créé :
 
 - [docs-dev/architecture/collection-analysis.md](./architecture/collection-analysis.md)
+
+**Périmètre fonctionnel et gestion des obsolescences :**
+
+La finalisation du périmètre fonctionnel de la version v0.2.1-dev conduit à la gestion de l'obsolescence des fonctions Auth/register et Auth/delete.
+Afin de centraliser l’analyse technique et de faciliter la compréhension de la gestion des fonctions obsolètes, un document dédié est créé :
+
+- [docs-dev/architecture/suppression-depreciation-analysis.md](./architecture/suppression-depreciation-analysis.md)
+
+**Architecture finale de la version v0.2.1-dev :**
+
+L'architecture finale gère les routes :
+
+- des pages du frontend (accueil, Login/Logout et Dashboard)
+- privatisées (JWT) de l'API sauf la route de connexion.
+
+```js
+┌───────────────────────────────────────────────────────────────┐
+│                       Pages EJS (/)                           │
+└───────────────────────────────────────────────────────────────┘
+/
+├── GET /                           ← Page d’accueil (frontend)
+├── GET /login                      ← Page de connexion (frontend)
+└── GET /dashboard                  ← Privatisée + Dashboard utilisateur (frontend)
+
+┌───────────────────────────────────────────────────────────────┐
+│                       API REST (/api)                         │
+└───────────────────────────────────────────────────────────────┘
+
+/api
+│
+├── /auth                          ← Module Authentification
+│     ├── POST /auth/login                 ← Connexion (active)
+│     ├── POST /auth/register              ← Dépréciée + privatisée (v0.2.1-dev)
+│     └── DELETE /auth/delete/:id          ← Dépréciée + privatisée (v0.2.1-dev)
+│
+├── /users                         ← Module Users (remplace Auth/register & delete)
+│     ├── GET /users                       ← Privatisée + Liste des utilisateurs
+│     ├── POST /users                      ← Privatisée + Création d’un utilisateur
+│     ├── PATCH /users/:id                 ← Privatisée + Mise à jour d’un utilisateur
+│     └── DELETE /users/:id                ← Privatisée + Suppression d’un utilisateur
+│
+├── /catways                       ← Module Catways
+│     ├── GET /catways                     ← Privatisée + Liste des catways
+│     ├── GET /catways/:id                 ← Privatisée + Détail d’un catway
+│     ├── POST /catways                    ← Privatisée + Création d’un catway
+│     ├── PUT /catways/:id                 ← Privatisée + Remplacement complet
+│     ├── PATCH /catways/:id               ← Privatisée + Mise à jour partielle
+│     └── DELETE /catways/:id              ← Privatisée + Suppression d’un catway
+│
+└── /catways/:id/reservations      ← Module Reservations
+      ├── GET /catways/:id/reservations                    ← Privatisée + Liste des réservations
+      ├── GET /catways/:id/reservations/:idReservation     ← Privatisée + Détail d’une réservation
+      ├── POST /catways/:id/reservations                   ← Privatisée + Création d’une réservation
+      └── DELETE /catways/:id/reservations/:idReservation  ← Privatisée + Suppression d’une réservation
+```
 
 ---
 

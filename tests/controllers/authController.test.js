@@ -19,7 +19,7 @@ const {
     deleteUser
 } = require('../../src/controllers/api/authController');
 
-describe('authController – tests niveau 1', () => {
+describe('Controller Authentification – tests niveau 1', () => {
 
     afterEachRestore();
 

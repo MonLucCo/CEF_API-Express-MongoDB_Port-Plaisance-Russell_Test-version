@@ -348,8 +348,12 @@ Les tests transversaux et de sécurité sont centralisés dans `api.routes.test.
 
 ### 6.6 issue-37 : privatisation des routes `/api/catways` des Catways
 
-**Résultats des tests (issue-37) et non-régression :**
+**Résultats des tests (issue-37) et non-régression :** (v0.2.0-dev)
 
-![alt text](../assets/img_issue-37_resultats-tests-niveau-2-catways.png)
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-catways_inc1.png)
+
+**Résultats des tests (issue-37) et non-régression :** (v0.2.1-dev)
+
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-catways_inc3.png)
 
 ---

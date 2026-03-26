@@ -4,7 +4,7 @@ Ce document décrit les tests transversaux de protection JWT introduits dans l�
 
 ## 1. Objectifs
 
-- Vérifier que les routes Catways et Reservations sont correctement protégées.
+- Vérifier que les routes Users, Catways et Reservations sont correctement protégées.
 - Garantir la non‑régression de la sécurité JWT.
 - Tester la cohérence du secret JWT (jwtConfig.secret).
 - Valider le pipeline complet Express + MongoMemoryServer.
@@ -26,6 +26,12 @@ Ce document décrit les tests transversaux de protection JWT introduits dans l�
 - 200 si token valide
 
 ### 3.2 Routes Reservations
+
+- 401 si aucun token
+- 401 si token invalide
+- 200 si token valide
+
+### 3.3 Routes Users (à partir de la version v0.2.1-dev)
 
 - 401 si aucun token
 - 401 si token invalide
@@ -53,10 +59,14 @@ Il complète les tests métier Catways et Reservations sans les dupliquer.
 
 ## 6. Résultats
 
-### 6.1 issue-37 : privatisation des routes de l'API (Catways et Reservations)
+### 6.1 issue-37 : privatisation des routes de l'API (Catways et Reservations, puis Users)
 
-**Résultats des tests (issue-37) :**
+**Résultats des tests (issue-37) :** (version v0.2.0-dev)
 
-![alt text](../assets/img_issue-37_resultats-tests-niveau-2-api.png)
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-api_inc1.png)
+
+**Résultats des tests (issue-37) :** (version v0.2.1-dev)
+
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-api_inc3.png)
 
 ---

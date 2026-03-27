@@ -16,17 +16,17 @@
 
 ## API
 
+- [ ] Routes Users OK
 - [ ] Routes Catways OK
 - [ ] Routes Reservations OK
 - [ ] Authentification OK
 - [ ] JWT cohérent (jwtConfig.secret)
 
-## Alwaysdata
+## Préparation au déploiement
 
-- [ ] Variables d’environnement vérifiées
-- [ ] Connexion MongoDB Atlas OK
-- [ ] Déploiement Git OK
-- [ ] Redémarrage application OK
+- [ ] Fichier `.env` local cohérent avec `.env.example`
+- [ ] Connexion MongoDB Atlas locale fonctionnelle
+- [ ] Démarrage application locale (`npm run start` ou `npm run dev` ) OK
 
 ## Documentation
 

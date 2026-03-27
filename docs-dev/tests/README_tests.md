@@ -294,7 +294,8 @@ docs-dev/`tests`/
 │   └── reservations-niveau-2-integration.md
 │
 └── deploiements/                  ← Catégorie Hébergement et Publication
-    └── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Archivage des validations pré-déploiement d'une version
+    ├── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Archivage des validations pré-déploiement (v0.2.0-dev : refus)
+    └── v0.2.1-dev_01_predeploy_2026-03-26_11-35/   ← Archivage des validations pré-déploiement (v0.2.1-dev : accord)
 ```
 
 ---

@@ -1,6 +1,6 @@
 {
   "name": "cef_api-express-mongodb_port-plaisance-russell_test-version",
-  "version": "1.0.0",
+  "version": "0.2.1",
   "description": "Etablissement d'une API avec Node.js/Express et MongoDB d'une \"gestion des réservations de catway\" (petit appontement de bateau du port de plaisance Russell) selon les spécifications du CEF.",
   "main": "index.js",
   "directories": {

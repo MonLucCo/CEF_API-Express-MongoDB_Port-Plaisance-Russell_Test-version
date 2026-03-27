@@ -2272,8 +2272,7 @@ Ceci se réalise en plusieurs incréments techniques pour assurer la non-régres
 
 - **Incrément 1** : ajout des fonctionnalités liées au Utilisateurs (liste, création, mise à jour et suppression)
 - **Incrément 2** : tests de niveau 4 des fonctions Users et des routes privatisées (Users, Catways et reservations)
-- **Incrément 3** : finalisation du périmètre fonctionnel de la version (v0.2.1-dev) de l'API
-- **Incrément 4** : finalisation de la documentation du projet
+- **Incrément 3** : finalisation du périmètre fonctionnel de la version (v0.2.1-dev) de l'API et de la documentation du projet
 
 Les tests de niveau 4 sont réalisés avec une collection Postman.  
 Afin de centraliser l’analyse technique et de faciliter la compréhension de la collection (tests de niveau 4), un document dédié est créé :
@@ -2339,7 +2338,35 @@ L'architecture finale gère les routes :
 
 ##### 2.5.1.7 Etape 7 - tests de validation pré-déploiement de la version (corrigée) de la page d'accueil du frontend
 
-(à compléter commit-7)
+Cette septième étape réalise les tests de validation pré-déploiement de la version du frontend dynamique (v0.2.1-dev) et conclut sur la qualité de la vesion pour un déploiement.  
+Elle met en oeuvre la démarche d'archivage des validations pré-déploiement, réalise les validations du pré-déploiement de la version v0.2.1-dev.  
+
+1. **Travaux réalisés**
+   - organisation de l'archivage des validations pré-déploiement
+   - actualisation de la configuration (scripts) de la structure à déployer
+   - actualisation de la collection Postman pour la vérification pré-déploiement
+   - validations pré-déploiement de la version v0.2.1-dev
+
+2. **Rédaction du dossier de validation pré-déploiement de la version v0.2.1-dev**
+   - archivage des résultat de la validation de pré-déploiement
+   - rédaction des conclusions de la vérification
+
+3. **Résultat de la validation de pré-déploiement v0.2.1-dev**
+
+    - La validation pré‑déploiement de la version v0.2.0-dev a été réalisée à l’aide :
+      - des tests automatisés (unitaires, intégration, E2E simulés),
+      - de la collection Postman PreDeploy v0.2.1-dev,
+      - de la checklist pré‑déploiement.
+
+    - L’ensemble des tests techniques est **réussi**, aucun point critique constaté :
+
+      > **Les routes `Users`, `Catways` et `Reservations` sont privatisées (JWT avec la Route publique `Auth/Login`)**  
+      >
+      > **Décision : accord pour le déploiement.**
+
+    - Les artefacts de validation sont archivés dans : [docs-dev/deploiements/v0.2.1-dev/](./tests/deploiements/v0.2.1-dev_01_predeploy_2026-03-26_11-35/)
+
+    Cette étape confirme l’exploitation du pipeline CI/CD mis en place (script `validate-predeploy.js`, collection Postman dédiée) et permet d'engager les opérations de déploiement pour la publication de la version v0.2.1-dev sur Alwaysdata.
 
 ---
 

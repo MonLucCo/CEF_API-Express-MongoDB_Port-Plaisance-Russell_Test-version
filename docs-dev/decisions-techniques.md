@@ -300,7 +300,7 @@ la route `POST /api/auth/register` était accessible sans authentification.
 
 Cette situation résulte d’une incohérence structurelle : les opérations CRUD liées au modèle User (création, suppression, modification) étaient regroupées dans `/api/auth/`, alors qu’elles relèvent d’une ressource métier distincte.
 
-##### Décision
+##### 4.7.1.1 Décision
 
 - refuser le déploiement de la v0.2.0-dev ;
 - créer une version corrective v0.2.1-dev ;
@@ -311,14 +311,14 @@ Cette situation résulte d’une incohérence structurelle : les opérations CRU
 - ajouter la route `PUT /api/users/:id` conformément au sujet ;
 - mettre à jour les tests unitaires/d’intégration et la collection Postman PreDeploy.
 
-##### Motivations
+##### 4.7.1.2 Motivations
 
 - corriger la faille de sécurité ;
 - aligner l’API avec les standards REST ;
 - respecter les fonctionnalités demandées dans le sujet (création, modification, suppression d’utilisateur) ;
 - clarifier l’architecture pour les futures versions.
 
-##### Conséquences
+##### 4.7.1.3 Conséquences
 
 - mise à jour des contrôleurs et routes ;
 - mise à jour des tests ;
@@ -337,7 +337,7 @@ Dans la continuité de la séparation Auth/Users et de la correction de la faill
 sont désormais **obsolètes**.  
 Elles ont été introduites en Phase 2 (issues 12–17) avant la création du module Users, et ne correspondent plus à l’architecture REST finale.
 
-##### **Décision**
+##### 4.7.2.1 Décision
 
 - **Les routes Auth/register et Auth/delete sont conservées dans la version v0.2.1‑dev**, afin de préserver :
   - la cohérence documentaire,
@@ -348,14 +348,14 @@ Elles ont été introduites en Phase 2 (issues 12–17) avant la création du mo
   - **dépréciées** via un middleware dédié,
   - **fonctionnelles**, mais accompagnées d’un avertissement explicite.
 
-##### **Motivations**
+##### 4.7.2.2 Motivations
 
 - éviter une rupture fonctionnelle dans une version corrective ;
 - conserver la documentation et les tests historiques ;
 - préparer une suppression propre dans une version ultérieure (v0.3.0 ou v1.0.0) ;
 - introduire un mécanisme générique de gestion de dépréciation pour l’API.
 
-##### **Choix techniques**
+##### 4.7.2.3 Choix techniques
 
 - ajout d’un middleware `deprecatedRoute` appliqué aux routes Auth obsolètes ;
 - ajout d’un header HTTP `X-Deprecated: true` ;
@@ -363,7 +363,7 @@ Elles ont été introduites en Phase 2 (issues 12–17) avant la création du mo
 - maintien du comportement fonctionnel d’origine ;
 - mise à jour légère des tests (intitulés + vérification du header).
 
-##### **Conséquences**
+##### 4.7.2.4 Conséquences
 
 - l’API reste cohérente et stable en v0.2.1-dev ;
 - la documentation reste lisible et fidèle à l’historique du projet ;
@@ -374,6 +374,44 @@ Elles ont été introduites en Phase 2 (issues 12–17) avant la création du mo
 > **Voir :**  
 > `docs-dev/architecture/suppression-depreciation-analysis.md`  
 > pour l’analyse complète et la justification détaillée.
+
+---
+
+#### 4.7.3 Décision — Validation du pipeline PreDeploy de la version v0.2.1-dev et engagement du déploiement
+
+La version **v0.2.1-dev** a fait l’objet d’une validation complète via le pipeline **PreDeploy** (tests automatisés niveaux 1 à 3, tests manuels niveau 4, vérification du frontend local et cohérence des métadonnées de version).
+
+##### 4.7.3. Constats
+
+- l’ensemble des tests automatisés (unitaires, intégration, E2E simulés) sont **validés** ;  
+- les tests manuels API et frontend sont **conformes** ;  
+- la collection Postman PreDeploy v0.2.1-dev est **stabilisée** ;  
+- la gestion de l’obsolescence des routes Auth/register et Auth/delete est **fonctionnelle et documentée** ;  
+- la séparation Auth/Users est **cohérente**, **sécurisée**, et **testée** ;  
+- la documentation (architecture, tests, checklist) est **à jour** ;  
+- la version locale est alignée avec `APP_VERSION_TAG = 'v0.2.1-dev'` et `package.json version = 0.2.1`.
+
+##### 4.7.3.2 Décision
+
+Compte tenu de la réussite complète du pipeline PreDeploy :
+
+- **la version v0.2.1-dev est validée pour déploiement** ;  
+- le projet engage la phase **Deploy** sur Alwaysdata afin de remplacer la version publiée `v0.1.0-dev` par `v0.2.1-dev` ;  
+- les pipelines **Deploy** et **PostDeploy** seront exécutés conformément à la stratégie définie dans l’issue‑37.
+
+##### 4.7.3.3 Motivations
+
+- garantir la continuité du cycle CI/CD introduit en Phase 6 ;  
+- assurer que la version déployée est strictement identique à la version testée ;  
+- sécuriser la montée de version après correction de la faille Auth/register ;  
+- préparer la stabilisation du frontend minimal et des routes Users.
+
+##### 4.7.3.4 Conséquences
+
+- déclenchement du pipeline Deploy (Alwaysdata) ;  
+- mise à jour de la version publiée ;  
+- archivage du dossier `docs-dev/tests/deploiements/v0.2.1-dev_*` ;  
+- préparation du pipeline PostDeploy pour validation finale.
 
 ---
 

@@ -3,9 +3,9 @@
 
     <% if (authenticated) { %>
         <p>Vous êtes connecté.</p>
-        <a href="/dashboard">Accéder au Dashboard</a>
+        <a href="<%= BASE_URL %>/dashboard">Accéder au Dashboard</a>
         <% } else { %>
             <p>Vous n’êtes pas connecté.</p>
-            <a href="/login">Se connecter</a>
+            <a href="<%= BASE_URL %>/login">Se connecter</a>
             <% } %>
 </section>

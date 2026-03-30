@@ -225,8 +225,8 @@ Ces tests garantissent que :
 
 Le pipeline PreDeploy utilise une collection Postman dédiée (archivée dans `docs-dev/tests/assets/`) :
 
-- **`collection-predeploy-v0.2.0-dev.json`**  
-- **`collection-predeploy-v0.2.1-dev.json`**  
+- **`collection-v0.2.0-dev_01-PreDeploy.json`**  
+- **`collection-v0.2.1-dev_01-PreDeploy.json`**  
 
 Ces collections sont spécifiques à chaque version et doivent être mises à jour lorsque l’API évolue (ex. séparation Auth/Users en v0.2.1-dev).
 
@@ -254,6 +254,10 @@ Ils valideront respectivement :
 - la publication de la version sur Alwaysdata  
 - le fonctionnement réel de l’API déployée
 
+Le pipeline Deploy utilise une collection Postman dédiée (archivée dans `docs-dev/tests/assets/`) :
+
+- **`collection-v0.2.1-dev_02-PostDeploy.json`**  
+
 ---
 
 ## 3. Arborescence documentaire
@@ -272,7 +276,8 @@ docs-dev/`tests`/
 │   ├── collection-e2e-local.json
 │   ├── API-Port-Russell_v0.2.0-dev_01-PreDeploy.json
 │   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json
-│   └── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json
+│   ├── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json
+│   └── API-Port-Russell_v0.2.1-dev_02-PostDeploy.json
 │
 ├── auth/                        ← Catégorie Authentification
 │   ├── auth-niveau-1-unitaires.md
@@ -295,7 +300,11 @@ docs-dev/`tests`/
 │
 └── deploiements/                  ← Catégorie Hébergement et Publication
     ├── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Archivage des validations pré-déploiement (v0.2.0-dev : refus)
-    └── v0.2.1-dev_01_predeploy_2026-03-26_11-35/   ← Archivage des validations pré-déploiement (v0.2.1-dev : accord)
+    ├── v0.2.1-dev_01_predeploy_2026-03-26_11-35/   ← Archivage des validations pré-déploiement (v0.2.1-dev : accord)
+    ├── v0.2.1-dev_02_deploy_2026-03-29_09-01/      ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch A)
+    ├── v0.2.1-dev.a_02_deploy_2026-03-30_10-03/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch B)
+    ├── v0.2.1-dev.b_02_deploy_2026-03-30_10-34/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch C)
+    └── v0.2.1-dev.a_02_deploy_2026-03-30_20-0/     ← Archivage des validations pré-déploiement (v0.2.1-dev : accord - patch D)
 ```
 
 ---
@@ -322,5 +331,8 @@ docs-dev/`tests`/
   - les tests transversaux de privatisation des routes API
   - la séparation des routes Auth et Users (création)
   - la gestion des fonction **dépréciées** de l'API.
+- La phase 8 (issue-37) introduit :
+  - la validation partielle nécessitant un correctif (patch)
+  - la validation d'une version publiée.
 
 ---

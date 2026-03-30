@@ -6,11 +6,13 @@
  * - Montage du routeurs API (REST)
  * - Configuration du moteur de vues EJS (views/)
  * - Configuration des fichiers statiques (public/)
+ * 
+ * Prise en compte du Préfixe dans la base de l'URL (accès dans les données locales d'Express)
  *
  * @module app
  * @requires express
  * @requires path
- * @version 0.5.2
+ * @version 0.5.3
  */
 
 const express = require('express');
@@ -22,6 +24,11 @@ const pagesRoutes = require('./routes/pages/pagesRoutes');
 const apiRoutes = require('./routes/api/apiRoutes');
 
 const app = express();
+
+/* ---------------------------------------------------------
+   Configuration de la base URL des liens du frontend
+--------------------------------------------------------- */
+app.locals.BASE_URL = process.env.API_PREFIX || "/";
 
 /* ---------------------------------------------------------
    Configuration du moteur de vues (EJS)

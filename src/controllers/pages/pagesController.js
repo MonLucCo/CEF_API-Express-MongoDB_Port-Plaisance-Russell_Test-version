@@ -113,9 +113,15 @@ exports.renderLogin = (req, res) => {
  * En cas d'échec (identifiants invalides ou erreur de communication), la page de connexion est rendue à nouveau avec un 
  * message d'erreur.
  * 
- * @requires axios
+ * Prise en compte de la base de l'URL dans la requête et dans la redirection.
+ * Suppression de l'emploi de 'Axios' car la requête est interne à l'application.
+ * 
+ * Le code exploite une technique de "controller composition" afin de réaliser un patch minimal sans impact sur l'API ni 
+ * les tests. Il s'agit de faire un appel interne du contrôleur API sans réponse HTTP.
+ * 
+ * @requires axios (suppression dans le patch : instable en production)
  * @requires ms
- * @version 0.1.0
+ * @version 0.1.2
  * 
  * @see renderLogin
  * @see handleLogout
@@ -127,15 +133,32 @@ exports.renderLogin = (req, res) => {
 exports.handleLogin = async (req, res) => {
     const { email, password } = req.body;
 
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-
     try {
-        const response = await axios.post(`${baseUrl}/api/auth/login`, {
-            email,
-            password
-        });
+        const authController = require('../api/authController');
 
-        const token = response.data.token;
+        let token = null;
+
+        const fakeReq = {
+            body: { email, password }
+        };
+
+        const fakeRes = {
+            status: (code) => {
+                console.log("fakeRes.status:", code);
+                return fakeRes;
+            },
+            json: (data) => {
+                token = data.token;
+            }
+        };
+
+        await authController.login(fakeReq, fakeRes);
+
+        if (!token) {
+            return res.render('login', {
+                error: "Identifiants invalides"
+            });
+        }
 
         res.cookie('token', token, {
             httpOnly: process.env.COOKIE_HTTP_ONLY === 'true',
@@ -144,7 +167,7 @@ exports.handleLogin = async (req, res) => {
             maxAge: ms(process.env.COOKIE_MAX_AGE || '12h')
         });
 
-        res.redirect('/dashboard');
+        res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
 
     } catch (error) {
         return res.render('login', {
@@ -200,7 +223,9 @@ exports.renderDashboard = (req, res) => {
  * En supprimant le cookie du token, l'utilisateur perd son accès aux pages protégées et doit se reconnecter pour obtenir un 
  * nouveau token.
  * 
- * @version 0.1.0
+ * Prise en compte de la base de l'URL dans la redirection
+ * 
+ * @version 0.1.1
  * 
  * @see renderLogin
  * @see handleLogin
@@ -215,5 +240,5 @@ exports.handleLogout = (req, res) => {
         sameSite: process.env.COOKIE_SAME_SITE || 'lax'
     });
 
-    res.redirect('/');
+    res.redirect(`${req.app.locals.BASE_URL}/`);
 };

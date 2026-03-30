@@ -1,7 +1,7 @@
 <header class="header">
     <div class="header-left">
-        <a href="/">
-            <img src="/img/logo_complet.svg" alt="Logo Port de Plaisance Russell" class="logo">
+        <a href="<%= BASE_URL %>/">
+            <img src="img/logo_complet.svg" alt="Logo Port de Plaisance Russell" class="logo">
         </a>
     </div>
 
@@ -9,19 +9,19 @@
         <nav class="nav">
 
             <% if (currentPage !=='home' ) { %>
-                <a href="/">Accueil</a>
+                <a href="<%= BASE_URL %>/">Accueil</a>
                 <% } %>
 
                     <% if (authenticated && currentPage !=='dashboard' ) { %>
-                        <a href="/dashboard">Dashboard</a>
+                        <a href="<%= BASE_URL %>/dashboard">Dashboard</a>
                         <% } %>
 
                             <% if (!authenticated && currentPage !=='login' ) { %>
-                                <a href="/login">Connexion</a>
+                                <a href="<%= BASE_URL %>/login">Connexion</a>
                                 <% } %>
 
                                     <% if (authenticated) { %>
-                                        <a href="/logout">Déconnexion</a>
+                                        <a href="<%= BASE_URL %>/logout">Déconnexion</a>
                                         <% } %>
 
         </nav>

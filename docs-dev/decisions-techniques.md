@@ -415,6 +415,16 @@ Compte tenu de la réussite complète du pipeline PreDeploy :
 
 ---
 
+#### 4.7.4 Décision — Réalisation de correctifs réduits (patchs) pour rendre opérationnelle le v0.2.1-dev
+
+La version **v0.2.1-dev** a fait l’objet d’une validation complète via le pipeline **Deploy** (tests automatisés niveaux 1 à 3, tests manuels niveau 4, vérification du frontend local et cohérence des métadonnées de version).
+
+Les dysfonctionnement identifiés ont été identifiés et un correction réduit est mise en place. Ces corrections ne doivent pas remettre en cause les tests réalisés (niveaux 1 à 4) et ne doivent pas introduire de nouveauté dans d'architecture de l'application.
+
+La notation de la version est : `<version>.<index>` correction (ie. `v0.2.1-dev.a` pour le premier patch de la version `v0.2.1-dev`).
+
+---
+
 ## 5. Environnement de développement
 
 ### 5.1 Tests E2E simulés

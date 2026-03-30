@@ -1,7 +1,23 @@
 # Fichier .rsync-filter — Liste blanche stricte utilisée par deploy.sh - Exemple dans .rsync-filter.example
 
+# --- Inclusion du code applicatif ---
 + package.json
 + package-lock.json
 + src/
 + src/***
+
+# --- Inclusion des fichiers statiques de l'applicatif ---
++ public/
++ public/***
+
+# --- Inclusion des pages dynamique (EJS) du frontend de l'applicatif ---
++ views/
++ views/***
+
+# --- Inclusion des configurations spécifiques de l'applicatif ---
++ config/
+- config/dev/
++ config/***
+
+# --- Exclusion de tout le reste ---
 - *

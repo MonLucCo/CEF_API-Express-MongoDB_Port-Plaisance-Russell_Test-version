@@ -2338,7 +2338,7 @@ L'architecture finale gère les routes :
 
 ##### 2.5.1.7 Etape 7 - tests de validation pré-déploiement de la version (corrigée) de la page d'accueil du frontend
 
-Cette septième étape réalise les tests de validation pré-déploiement de la version du frontend dynamique (v0.2.1-dev) et conclut sur la qualité de la vesion pour un déploiement.  
+Cette septième étape réalise les tests de validation pré-déploiement de la version du frontend dynamique (v0.2.1-dev) et conclut sur la qualité de la version pour un déploiement.  
 Elle met en oeuvre la démarche d'archivage des validations pré-déploiement, réalise les validations du pré-déploiement de la version v0.2.1-dev.  
 
 1. **Travaux réalisés**
@@ -2372,7 +2372,42 @@ Elle met en oeuvre la démarche d'archivage des validations pré-déploiement, r
 
 ##### 2.5.1.8 Etape 8 - déploiement et validation post-déploiement de la version (corrigée) de la page d'accueil du frontend
 
-(à compléter commit-8)
+Cette huitième étape réalise les scripts de déploiement et les tests de validation post-déploiement de la version du frontend dynamique (v0.2.1-dev) et conclut sur la qualité de la vesion déployée.  
+Elle met en oeuvre la démarche d'archivage des validations déploiement, réalise les validations du post-déploiement de la version v0.2.1-dev.
+
+1. **Travaux réalisés**
+   - organisation de l'archivage des validations du déploiement
+   - actualisation de la configuration (scripts) de la structure à déployer
+   - actualisation de la collection Postman pour la vérification post-déploiement
+   - validations post-déploiement de la version v0.2.1-dev
+   - mise en place de patch correctifs de la version v0.2.1-dev (version v0.2.1.a-dev)
+
+2. **Rédaction du dossier de validation du déploiement de la version v0.2.1-dev**
+   - archivage des résultat de la validation de pré-déploiement
+   - rédaction des conclusions de la vérification
+
+3. **Résultat de la validation de post-déploiement v0.2.1-dev**
+
+    - La validation pré‑déploiement de la version v0.2.0-dev a été réalisée à l’aide :
+      - des tests automatisés (unitaires, intégration, E2E simulés),
+      - de la collection Postman PostDeploy v0.2.1-dev
+    - La version déployée est une version patchée qui fixe les anomalies détectées dans le rendu du FrontEnd (prise en compte de API_PREFIX pour liens et assets) :
+      - Versions publiées :
+
+        > Mise en place d'un préfixe dans l'environnement local pour reproduire le dysfonctionnement.
+        - **v0.2.1-dev.a** : fonctionnelle, mais partiellement opérationnelle (liens avec préfixe et feuille de styles)
+        - **v0.2.1-dev.b** : traces et identification du problème fonctionnel de la connexion (Login)
+        - **v0.2.1-dev.c** : complément de traces et identification du problème de connexion (Login)
+        - **v0.2.1-dev.d** : résolution de la connexion et validation fonctionnelle complète. Version opérationnelle
+  
+    - Les artefacts de validation sont archivés dans :
+      - [docs-dev/deploiements/v0.2.1-dev/](./tests/deploiements/v0.2.1-dev_02_deploy_2026-03-29_09-01/)
+      - [docs-dev/deploiements/v0.2.1-dev.a/ (version patchée)](./tests/deploiements/v0.2.1-dev.a_02_deploy_2026-03-29_19-00/)
+      - [docs-dev/deploiements/v0.2.1-dev.b/ (version patchée)](./tests/deploiements/v0.2.1-dev.b_02_deploy_2026-03-29_19-00/)
+      - [docs-dev/deploiements/v0.2.1-dev.c/ (version patchée)](./tests/deploiements/v0.2.1-dev.c_02_deploy_2026-03-29_19-00/)
+      - [docs-dev/deploiements/v0.2.1-dev.d/ (version patchée)](./tests/deploiements/v0.2.1-dev.d_02_deploy_2026-03-29_19-00/)
+
+    Cette étape confirme l’exploitation du pipeline CI/CD mis en place (script `verify-deploy.js`, collection Postman dédiée) et permet de clore les opérations de déploiement pour la publication de la version v0.2.1-dev sur Alwaysdata.
 
 ---
 

@@ -11,6 +11,7 @@
     "clean": "node scripts/clean.js",
     "reinstall": "node scripts/reinstall.js",
     "validate:predeploy": "node scripts/validate-predeploy.js",
+    "verify:deploy": "node ./scripts/verify-deploy.js",
     "test": "npm run tests:models && npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:unit": "mocha --require tests/root-hooks.js tests/controllers/**/*.test.js tests/middlewares/**/*.test.js --exit",
     "test:controllers": "mocha --require tests/root-hooks.js tests/controllers/**/*.test.js --exit",
@@ -37,6 +38,7 @@
     "deploy:help": "bash ./scripts/deploy.sh --help",
     "ssh:connect": "bash ./scripts/ssh-connect.sh",
     "ssh:site": "bash ./scripts/ssh-site-path.sh",
+    "check:wsl": "node ./scripts/check-wsl-env.js",
     "check:local": "bash ./scripts/deploy-checklist-local.sh",
     "check:site": "bash ./scripts/deploy-checklist-site.sh",
     "import:data": "node scripts/import-data.js"

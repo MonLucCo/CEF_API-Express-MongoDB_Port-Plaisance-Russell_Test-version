@@ -421,7 +421,7 @@ La version **v0.2.1-dev** a fait l’objet d’une validation complète via le p
 
 Les dysfonctionnement identifiés ont été identifiés et un correction réduit est mise en place. Ces corrections ne doivent pas remettre en cause les tests réalisés (niveaux 1 à 4) et ne doivent pas introduire de nouveauté dans d'architecture de l'application.
 
-La notation de la version est : `<version>.<index>` correction (ie. `v0.2.1-dev.a` pour le premier patch de la version `v0.2.1-dev`).
+La notation de la version avec correctifs (patchs) est : `<version>.<index>` correction (ie. `v0.2.1-dev.a` pour le premier patch de la version `v0.2.1-dev`).
 
 ---
 

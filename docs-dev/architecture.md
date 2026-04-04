@@ -83,7 +83,7 @@ src/                        ← Dossier principal du code de l'API
 
 views/
   ├── dashboard.ejs             ← Page dynamique (EJS) de l'espace utilisateur (Dashboard) du Frontend
-  ├── app.js                    ← Page dynamique (EJS) de l'accueil (Home) du Frontend
+  ├── home.ejs                  ← Page dynamique (EJS) de l'accueil (Home) du Frontend
   ├── login.ejs                 ← Page dynamique (EJS) de la connexion (Login) du Frontend
   │
   ├── home/                     ← Page d'accueil (Home) découpée en parties (partials) élémentaires

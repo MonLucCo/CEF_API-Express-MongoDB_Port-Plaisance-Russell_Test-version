@@ -6,7 +6,7 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 6](https://img.shields.io/badge/Phase%206-Frontend-green) ![Version v0.5](https://img.shields.io/badge/Release-v0.5-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.1.0--dev-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.2.0--dev-yellow)
+![Milestone Phase 6](https://img.shields.io/badge/Phase%206-Frontend-green) ![Version v0.6](https://img.shields.io/badge/Release-v0.6-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.2.1--dev.d-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.2.1--dev-yellow)
  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
 ![Statut du dépôt](https://img.shields.io/badge/Status%20dépôt-en%20développement-orange) [![Site déployé](https://img.shields.io/badge/Accès%20site-Alwaysdata-blue)](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
 
@@ -65,6 +65,20 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │       ├── api/                  ← Routes de l'API REST
 │       └── pages/                ← Routes du frontend (routesController.js)
 │
+├── views/               ← Dossier principal des pages (EJS) du frontend de l'API
+│   ├── dashboard.ejs       ← Page dynamique (EJS) de l'espace utilisateur (Dashboard)
+│   ├── home.ejs            ← Page dynamique (EJS) de l'accueil (Home)
+│   ├── login.ejs           ← Page dynamique (EJS) de la connexion (Login)
+│   │
+│   ├── home/             ← Page d'accueil (Home) découpée en parties élémentaires        
+│   ├── partials/         ← Parties (partials en include) réutilisables d'une page HTML (EJS)
+│   │
+│   ├── middlewares/        ← Middlewares Express (authentification, validation, sécurité…)        
+│   ├── services/           ← Logique métier réutilisable (accès DB, règles métier…)  
+│   └── routes/             ← Définition des routes Express     
+│       ├── api/                  ← Routes de l'API REST
+│       └── pages/                ← Routes du frontend (routesController.js)
+│
 ├── config/            ← Configuration globale (JWT, métadonnées de l'application, paramètres transversaux)
 │   ├── appData.js                ← Métadonnées globales de l’application
 │   ├── jwt.js                    ← Configuration JWT
@@ -99,6 +113,11 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── hebergement/             ← Documentation Alwaysdata & MongoDB
 │   ├── deploiement/             ← Procédures de déploiement, de validation et d'import JSON
 │   └── tests/                   ← Documentation détaillée des tests par catégorie et par niveau
+│       ├── assets/               ← Collections Postman et images
+│       ├── models/               ← Documentation des tests du modèle
+│       ├── auth/                 ← Documentation des tests d'authentification
+│       ├── fonctions/            ← Documentation des tests des fonctions
+│       └── deploiements/         ← Archives des pré-déploiements et déploiements
 │
 ├── scripts/           ← Scripts de déploiement et de vérification
 ├── logs/              ← Logs générés par les scripts (check:local, check:site…)
@@ -311,7 +330,10 @@ Le processus de validation inclut :
 - vérification distante (script : `npm run check:site`)
 - archivage des logs (résultats : `logs/deploy-checklist-*.log`)
 
-Le projet intègre une logique de **[développement continu (CI/CD)](./docs-dev/developpement-continu.md)**
+Le projet intègre une logique de **[développement continu (CI/CD)](./docs-dev/developpement-continu.md)** avec des processus (pipelines avec archivage dans `docs-dev/tests/deploiements/`) :
+
+- de validation de pré-déploiement : `npm run validate:predeploy`
+- de vérification de déploiement : `npm run verify:deploy`
 
 ---
 
@@ -319,7 +341,7 @@ Le projet intègre une logique de **[développement continu (CI/CD)](./docs-dev/
 
 - **Node.js** : version minimale recommandée `18+`  
   - version locale actuelle : `v24.12.0`  
-  - version hébergée sur Alwaysdata : `v24.13.0` (mise à jour automatique)
+  - version hébergée sur Alwaysdata : `v24.14.1` (mise à jour automatique)
   - version fixée localement via `.nvmrc` : 24
 - **NPM** : `9+`
 - **MongoDB Atlas**
@@ -426,13 +448,13 @@ Le projet utilise trois types de versions, afin de distinguer clairement :
    - Format : `vX.Y.Z-dev`  
     → version en cours de développement sur la branche `dev`.
 
-   - **Version actuelle : `v0.2.0-dev`**
+   - **Version actuelle : `v0.2.1-dev.d`**
 
 2. Version déployée (Alwaysdata)
    - Format : `vX.Y.Z-dev`  
     → version réellement en ligne, utilisée pour les tests opérationnels.
 
-   - **Version actuellement déployée : `v0.1.0-dev`**  
+   - **Version actuellement déployée : `v0.2.1-dev.d`**  
     🔗 [Accès au site déployé](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
 
 3. Versions Release (GitHub)
@@ -446,7 +468,8 @@ Le projet utilise trois types de versions, afin de distinguer clairement :
 
 - `vX.Y.Z-dev` → versions de développement  
 - `vX.Y.Z` → versions stables  
-- la version déployée peut être une version `-dev`  
+- la version déployée peut être une version `-dev`
+- une correction mineure (patch) peut être intégrée à une version (ajout de l'index de correction - ie `-dev.a`)
 - une release GitHub n’est créée qu’après validation complète d’une phase
 
 ---

@@ -5,7 +5,7 @@ const { mockJwtVerify, mockJwtVerifyError } = require('../mocks/jwt.mock');
 
 const authMiddleware = require('../../src/middlewares/authMiddleware');
 
-describe('authMiddleware – tests niveau 1', () => {
+describe('Middleware Authentification – authMiddleware (niveau-1)', () => {
 
     afterEachRestore();
 

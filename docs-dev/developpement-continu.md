@@ -5,7 +5,7 @@ Il sert d’introduction et d’orientation : les détails techniques sont fourn
 
 ---
 
-## 🎯 Objectifs du développement continu
+## 🎯 1. Objectifs du développement continu
 
 Le développement continu vise à :
 
@@ -17,11 +17,11 @@ Le développement continu vise à :
 
 ---
 
-## 🧩 Principes généraux
+## 🧩 2. Principes généraux
 
 Le workflow repose sur trois piliers :
 
-### 1. Validation locale
+### 2.1 Validation locale
 
 Avant tout déploiement, l’environnement local est vérifié :
 
@@ -34,7 +34,7 @@ Avant tout déploiement, l’environnement local est vérifié :
 
 ---
 
-### 2. Déploiement contrôlé
+### 2.2 Déploiement contrôlé
 
 Le déploiement utilise un script dédié (`npm run deploy`) basé sur `rsync`.  
 Il est suivi d’un redémarrage manuel du site Alwaysdata.
@@ -43,7 +43,7 @@ Il est suivi d’un redémarrage manuel du site Alwaysdata.
 
 ---
 
-### 3. Vérification distante
+### 2.3 Vérification distante
 
 Une fois le site redémarré :
 
@@ -56,7 +56,7 @@ Une fois le site redémarré :
 
 ---
 
-## 🗂️ Organisation documentaire
+## 🗂️ 3. Organisation documentaire
 
 Les documents détaillés sont regroupés dans :
 
@@ -77,7 +77,147 @@ Les documents détaillés sont regroupés dans :
 
 ---
 
-## 🛡️ Sécurité et bonnes pratiques
+## 🔍 4. Pipelines de validation du projet
+
+Le projet utilise trois pipelines de validation qui permettent de vérifier la qualité de séquences dliées au déploiement et à l'hébergement de l'API.  
+
+Ces pipelines concernent :
+
+- le pré-déploiement d'une version
+- le déploiement sur Alwaysdata de la version
+- le post-déploiement de la version
+
+### 🔍 4.1 Pipeline de validation pré‑déploiement (validate‑predeploy)
+
+La phase 6 (issue‑37) introduit un pipeline de validation pré‑déploiement permettant de garantir qu’aucune version ne peut être déployée sans avoir été testée, vérifiée et archivée.  
+Ce pipeline constitue désormais une étape obligatoire du développement continu.
+
+#### 🎯 4.1.1 Objectifs
+
+- détecter les régressions avant déploiement  
+- valider la sécurité (JWT, routes protégées, cohérence API)  
+- vérifier la conformité fonctionnelle minimale  
+- garantir que la version déployée correspond exactement à la version testée  
+- archiver systématiquement les résultats pour assurer la traçabilité
+
+---
+
+#### 🧪 4.1.2 Contenu du pipeline validate‑predeploy
+
+Le pipeline repose sur trois éléments :
+
+##### 4.1.2.1 Tests automatisés
+
+- tests unitaires (niveau 1)  
+- tests d’intégration (niveau 2)  
+- tests E2E simulés (niveau 3)  
+- exécution via `npm run test`
+
+##### 4.1.2.2 Tests opérationnels via Postman
+
+- collection dédiée :  
+  **`collection-predeploy-v0.2.0-dev.json`**  
+- vérification de :
+  - login  
+  - protection des routes Auth  
+  - protection des routes Catways  
+  - protection des routes Reservations  
+  - cohérence du JWT  
+  - création/suppression contrôlée (Catways, Reservations, Users)  
+  - nettoyage automatique de la base après test
+
+##### 4.1.2.3 Checklist pré‑déploiement
+
+- fichier : `checklist-validation.md`  
+- décision finale : **Accord** ou **Refus**  
+- justification obligatoire  
+- actions à mener en cas d’échec
+
+---
+
+#### 📁 4.1.3 Archivage systématique
+
+Chaque validation pré‑déploiement est archivée dans :
+
+```txt
+docs-dev/deploiements/<version>/
+```
+
+Contenu du dossier :
+
+- `checklist-validation.md`  
+- `resume-validate.md`  
+- logs des tests  
+- collection Postman utilisée  
+- captures éventuelles  
+- notes techniques
+
+Exemple :  
+`docs-dev/deploiements/v0.2.0-dev/`
+
+---
+
+#### 🔄 4.1.4 Logique des versions correctives
+
+Le pipeline peut conclure à :
+
+##### ✔ Accord de déploiement
+
+→ la version est déployée sur Alwaysdata  
+→ les artefacts sont archivés  
+→ la version devient la version déployée officielle
+
+##### ❌ Refus de déploiement
+
+→ une version corrective est créée  
+→ exemple :
+
+- v0.2.0-dev → échec
+- v0.2.1-dev → corrections  
+- nouvelle validation pré‑déploiement obligatoire
+
+##### 📌 Règle fondamentale
+
+> **Aucune version ne peut être déployée sans validation pré‑déploiement réussie.**
+
+Cette règle garantit la stabilité du projet et la cohérence entre code, documentation et version déployée.
+
+---
+
+#### 🧭 4.1.5 Intégration dans le workflow Git
+
+Le pipeline validate‑predeploy s’insère dans le workflow Git existant :
+
+1. développement sur `dev`  
+2. tests automatisés  
+3. validate‑predeploy  
+4. archivage  
+5. merge vers `main`  
+6. déploiement Alwaysdata  
+7. validation post‑déploiement  
+8. archivage final
+
+Ce processus prépare l’automatisation future via GitHub Actions.
+
+---
+
+### 🔍 4.2 Pipeline de validation du déploiement
+
+La phase 6 (issue‑37) met en oeuvre le pipeline de validation du déploiement introduit lors de l'issue-10 (Phase 1 - release v0.1).  
+
+(Cette section sera mise à jour lors de l'étape 6 de l'issue-37)
+
+---
+
+### 🔍 4.3 Pipeline de validation du post-déploiement
+
+La phase 6 (issue‑37) introduit le pipeline de validation post-déploiement.  
+
+(Cette section sera mise à jour lors de l'étape 8 de l'issue-37)
+
+---
+
+## 🛡️ 5. Sécurité et bonnes pratiques
 
 - Les scripts sensibles et les notes internes sont conservés dans `scratches/` (non versionné).  
 - Les variables d’environnement sont gérées via `.env` (non versionné).  
@@ -86,7 +226,7 @@ Les documents détaillés sont regroupés dans :
 
 ---
 
-## 🚀 Automatisation future
+## 🚀 6. Automatisation future
 
 Une intégration GitHub Actions est prévue pour :
 
@@ -99,7 +239,7 @@ Une intégration GitHub Actions est prévue pour :
 
 ---
 
-## 🧭 Vue d’ensemble
+## 🧭 7. Vue d’ensemble
 
 Le développement continu du projet repose sur :
 

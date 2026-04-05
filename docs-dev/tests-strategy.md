@@ -3,6 +3,22 @@
 **En préambule** : cette version initiale du document présente la situation des tests prévus pour ce projet. Il fait des hypothèses quant à la mise en oeuvre technique avec des options possibles.  
 La version finale lors de la livraison du projet fera l'objet d'une actualisation en ne conservant que les éléments réellement mis en place. Le préambule sera retiré pour cette finalisation.
 
+À partir de l’issue‑37, la stratégie de tests distingue deux familles complémentaires :
+
+1) **Tests développeurs** (`npm run test`)
+   - tests unitaires (niveau 1)
+   - tests d’intégration (niveau 2)
+   - tests E2E simulés (niveau 3)
+   - tests des pipelines de déploiement (niveau 4)
+   Ces tests garantissent la stabilité technique du code et de la version hébergée (publiée).
+
+2) **Tests opérationnels Client** (`npm run tests`)
+   - tests orientés métier
+   - couvrant modèle, frontend, API et fonctions Client
+   Ces tests seront développés en Phase 7.
+
+Cette séparation évite les interférences entre tests techniques et tests métier, et prépare l’automatisation future.
+
 ---
 
 ## 1. Organisation des tests
@@ -11,9 +27,10 @@ Les tests concernent des éléments techniques du développement :
 
 - l'authentification d'un utilisateur
 - les modèles du projet (User, Catway et Reservation)
-- les fonctionnalités du projet.
+- les fonctionnalités du projet
+- l'hébergement et publication du projet.
 
-Chaque catégorie (authentification, modèle, fonctionnalité) fait l'objet de différents niveaux de tests et d'une organisation adaptée.
+Chaque catégorie (authentification, modèle, fonctionnalité, hébergement) fait l'objet de différents niveaux de tests et d'une organisation adaptée.
 
 👉 Détails complets : [docs-dev/tests/README_tests.md](./tests/README_tests.md)
 
@@ -23,7 +40,16 @@ Chaque catégorie (authentification, modèle, fonctionnalité) fait l'objet de d
 
 ### 2.1 Organisation technique
 
-La stratégie de tests repose sur trois niveaux complémentaires, introduits progressivement dans les issues 15 à 17.
+La stratégie de tests repose sur trois niveaux complémentaires, introduits progressivement dans les issues 15 à 17.  
+
+À partir de la version v0.2.1-dev (issue-37), les tests Auth doivent prendre en compte :
+
+- la séparation stricte entre `/api/auth/login` (authentification) et `/api/users` (CRUD utilisateurs),
+- la dépréciation des routes historiques :
+  - `POST /api/auth/register`
+  - `DELETE /api/auth/delete/:id`
+- la présence du header `X-Deprecated: true` sur ces routes,
+- la privatisation complète des routes Users.
 
 #### 2.1.1 Niveau‑1 : Tests unitaires
 
@@ -40,7 +66,7 @@ La stratégie de tests repose sur trois niveaux complémentaires, introduits pro
   - `User.findByIdAndDelete`
 - Les tests de `deleteUser` utilisent désormais des **ObjectId valides** pour refléter le contrôle ajouté dans l’issue‑17.
 
-### 2.1.2 Niveau‑2 : Tests d’intégration
+#### 2.1.2 Niveau‑2 : Tests d’intégration
 
 - Outils : **Supertest**, **MongoMemoryServer**  
 - Objectif : tester les routes Express et leur interaction réelle avec Mongoose  
@@ -72,6 +98,8 @@ La stratégie de tests repose sur trois niveaux complémentaires, introduits pro
     - Les tests Postman (serveur local + MongoDB Atlas) servent de validation finale pour les fonctionnalités critiques du CRUD Catways (Phase 4).
   - **Tests réels (Phase-5 - Clôture)**
     - Les tests Postman (serveur local + MongoDB Atlas) servent de validation finale pour les fonctionnalités critiques du CRUD Reservations (Phase 5).
+  - **Tests simulés (Phase 6 - issue-37)**
+    - Les tests Postman (serveur local + MongoDB Atlas) servent de vérifications au pré-déploiement (v0.2.0-dev) et de validation technique pour la finalisation d'une nouvelle version (v0.2.1-dev) candidate au déploiement.
 
 ---
 
@@ -340,6 +368,48 @@ Documentation : [docs-dev/tests/modeles/modeles-niveau-2-integration.md](./tests
 
 ---
 
+#### 3.3.3 Tests du modèle User (issue‑20A et issue-37)
+
+Les tests du modèle User valident :
+
+- la validation structurelle du hash bcrypt,
+- l’unicité de l’email (`E11000`),
+- la cohérence des champs (`required`, `trim`),
+- la cohérence des timestamps.
+
+Les tests suivent la même structure que Catways et Reservations :
+
+- **niveau‑1** : validation via `validate()` sans base MongoDB,
+- **niveau‑2** : insertion réelle via MongoMemoryServer,
+- **niveau‑3** : validation indirecte via les routes `/api/users` (issue-37).
+
+Documentation associée :
+
+- `docs-dev/tests/modeles/modeles-niveau-1-unitaires.md`
+- `docs-dev/tests/modeles/modeles-niveau-2-integration.md`
+
+---
+
+#### 3.3.4 Tests des routes de l’API (issue‑37)
+
+L’issue‑37 introduit un fichier de tests d’intégration transversal : [tests/integration/api.routes.test.js](../tests/integration/api.routes.test.js).
+
+Objectifs :
+
+- valider la protection JWT des routes Catways et Reservations,
+- garantir la non‑régression des routes protégées,
+- isoler la logique de sécurité du métier.
+
+Ce fichier utilise :
+
+- `MongoMemoryServer` (root-hooks v0.2.0),
+- `createTestUser()` pour générer un utilisateur + token JWT,
+- `jwtConfig.secret` pour garantir la cohérence de signature.
+
+Les tests métier restent dans leurs fichiers respectifs.
+
+---
+
 ## 4. Tests de la catégorie Fonctionnalité
 
 ### 4.1 Objectif
@@ -362,15 +432,25 @@ Les tests fonctionnels Catways (niveau‑3) seront ajoutés ultérieurement (Pha
 
 ### 4.3 Tests fonctionnels à couvrir
 
-1. Création catway
-2. Suppression catway
-3. Liste catways
-4. Création réservation
-5. Suppression réservation
-6. Liste réservations
-7. Création utilisateur
-8. Suppression utilisateur
-9. Connexion utilisateur
+1. Création catway          (POST /api/catways                                  : privatisée JWT)
+2. Suppression catway       (DELETE /api/catways/:id                            : privatisée JWT)
+3. Modification catway :
+   1. Complète              (PUT /api/catways/:id                               : privatisée JWT)
+   2. Partielle             (PATCH /api/catways/:id                             : privatisée JWT)
+4. Liste catways            (GET /api/catways                                   : privatisée JWT)
+5. Détail d'un catway       (GET /api/catways/:id                               : privatisée JWT)
+
+6. Création réservation     (POST /api/catways/:id/reservations                 : privatisée JWT)
+7. Détail réservation       (GET /api/catways/:id/reservation/:idReservation    : privatisée JWT)
+8. Suppression réservation  (POST /api/catways/:id/reservation/:idReservation   : privatisée JWT)
+9. Liste réservations       (GET /api/catways/:id/reservations                  : privatisée JWT)
+
+10. Création utilisateur      (POST /api/users                                  : privatisée JWT)
+11. Modification utilisateur  (PATCH /api/users/:id                             : privatisée JWT)
+12. Suppression utilisateur   (DELETE /api/users/:id                            : privatisée JWT)
+13. Liste utilisateurs        (GET /api/users                                   : privatisée JWT)
+
+14. Connexion utilisateur     (POST /api/auth/login                             : publique)
 
 > Les tests seront implémentés progressivement au fil des milestones.
 
@@ -381,3 +461,190 @@ Les tests fonctionnels Catways (niveau‑3) seront ajoutés ultérieurement (Pha
 - **Sinon** : stubs, spies, mocks
 - **MongoMemoryServer** : base MongoDB en mémoire
 - **Supertest** : tests d’intégration des routes Express
+
+---
+
+## 5. Tests de la catégorie Hébergement
+
+L'issue-37 (Phase 6) introduit un nouveau niveau de tests (niveau 4), dédié aux opérations de vérification liée à l'hébergement du projet (primo hébergement réalisé en version v0.1-dev lors de l'issue-10 de la Phase 1).
+
+Ces opérations de vérification distinguent les actions :
+
+- préalables au déploiement (pré-déploiement)
+- pendant le déploiement de la version à héberger (publication sur Alwaysdata)
+- après le déploiement (post-deploiement).
+
+### 5.1 Tests de validation pré‑déploiement (niveau 4)
+
+Ce niveau de tests, dédié à la **validation pré‑déploiement** d’une version avant publication sur Alwaysdata, complète les tests développeurs (niveaux 1 à 3) et constitue une étape obligatoire du pipeline CI/CD.
+
+#### 🎯 5.1.1 Objectifs
+
+- vérifier la **sécurité** de l’API (JWT, routes protégées, cohérence des statuts HTTP)  
+- valider la **cohérence fonctionnelle minimale** (login, accès protégé, CRUD critiques)  
+- garantir que la version testée correspond exactement à la version déployée  
+- détecter les régressions non couvertes par les tests automatisés  
+- assurer une **traçabilité complète** via un archivage versionné
+
+Ce niveau de tests est exécuté **manuellement** via Postman, mais intégré dans le pipeline validate‑predeploy.
+
+---
+
+#### 🧪 5.1.2 Collections Postman PreDeploy
+
+Les collections Postman PreDeploy sont les outils de vérifications manuelles de l'API du Port de Plaisance Russel (PPR).
+
+Les sections suivantes décrivent le contenu de ces collections en fonction des versions de l'API. Il s'agit d'une démarche de montée en maturité de la validation des versions candidates au déploiement.
+
+##### 🧪 5.1.2.1 Collection Postman PreDeploy (v0.2.0-dev)
+
+Une collection Postman dédiée est utilisée pour valider les points critiques de l’API en version **v0.2.0-dev** :
+
+- la collection **`API-Port-Russell_v0.2.0-dev_01-PreDeploy.json`** (archivée dans `docs-dev/tests/assets/`)
+
+Cette collection est **spécifique à chaque version** et doit être mise à jour lorsque l’API évolue (ex. séparation Auth/Users en v0.2.1-dev).
+
+###### Contenu de la collection v0.2.0-dev
+
+- **01‑Auth**
+  - Login → génération du token  
+  - Register → doit être protégé  
+  - Delete → doit être protégé  
+
+- **02‑Catways**
+  - List → route protégée  
+  - Create → cohérence du token  
+  - Delete → nettoyage de la base  
+
+- **03‑Reservations**
+  - List → route protégée  
+  - Create → cohérence du token  
+  - Delete → nettoyage de la base  
+
+###### Rôle de la collection v0.2.0-dev
+
+- valider la protection des routes  
+- vérifier la cohérence du JWT  
+- tester les opérations critiques en conditions réelles  
+- garantir que la base reste propre après test  
+- détecter les failles non couvertes par les tests automatisés  
+- fournir une preuve opérationnelle dans le dossier d’archivage
+
+---
+
+##### 🧪 5.1.2.2 Collection Postman PreDeploy (v0.2.1-dev)
+
+Une collection Postman dédiée est utilisée pour valider les points critiques de l’API en version **v0.2.1-dev** :
+
+- la collection **`API-Port-Russell_v0.2.1-dev_01-PreDeploy.json`** (archivée dans `docs-dev/tests/assets/`)
+
+Cette collection se base sur la collection précédente de la version v0.2.0-dev et constitue une montée en maturité des outils de tests de l'API v0.2.1-dev.
+
+###### Contenu de la collection v0.2.1-dev
+
+- **00‑Auth**
+  - Login → génération du token (Public)
+  - Register → inscription d'un utilisateur (Déprécié, Privatisé)
+  - Delete → suppression d'un utilisateur (Déprécié, Privatisé)
+
+- **01‑Users** (Privatisés)
+  - List → route protégée  
+  - Create → création d'un utilisateur  
+  - Patch → actualisation d'un utilisateur
+  - Delete → suppression d'un utilisateur  
+
+- **02‑Catways** (Privatisés)
+  - List → route protégée  
+  - Create → cohérence du token  
+  - Update → mise à jour complète d'un utilisateur
+  - Patch → mise à jour partielle d'un utilisateur
+  - Delete → suppression d'un utilisateur  
+
+- **03‑Reservations** (Privatisés)
+  - List → route protégée  
+  - Create → cohérence du token  
+  - Delete → nettoyage de la base  
+
+###### Rôle de la collection v0.2.1-dev
+
+**Reprise des rôles de la v0.2.0-dev :**
+
+- valider la protection des routes  
+- vérifier la cohérence du JWT  
+- tester les opérations critiques en conditions réelles  
+- garantir que la base reste propre après test  
+- détecter les failles non couvertes par les tests automatisés  
+- fournir une preuve opérationnelle dans le dossier d’archivage
+
+**Rôles spécifique à la v0.2.1-dev :**
+
+- gérer l'obsolescence des routes
+
+---
+
+#### 📁 5.1.3 Archivage des résultats
+
+Chaque exécution de la collection PreDeploy est archivée dans :
+
+```txt
+docs-dev/deploiements/<version>/
+```
+
+Contenu :
+
+- checklist pré‑déploiement  
+- résumé de validation  
+- logs des tests automatisés  
+- collection Postman utilisée  
+- captures éventuelles  
+- notes techniques  
+
+Exemple :  
+`docs-dev/deploiements/v0.2.0-dev/`
+
+---
+
+#### 🔄 5.1.4 Intégration dans la stratégie globale
+
+| Niveau | Type de tests       | Objectif                                    | Outils                           |
+|--------|---------------------|---------------------------------------------|----------------------------------|
+| **1**  | Unitaires           | Logique interne isolée                      | Mocha, Chai, Sinon               |
+| **2**  | Intégration         | Pipeline Express + MongoMemoryServer        | Supertest                        |
+| **3**  | E2E simulés         | Scénarios complets en local                 | Postman + serveur dédié          |
+| **4**  | **Pré‑déploiement** | Validation sécurité + cohérence + nettoyage | **Collection Postman PreDeploy** |
+
+Le niveau 4 ne remplace pas les niveaux 1 à 3 :  
+il les complète en validant l’API **dans son état réel**, avec MongoDB Atlas et l’environnement local complet.
+
+---
+
+#### 🧭 5.1.5 Rôle dans le pipeline CI/CD
+
+Le niveau 4 est exécuté dans le pipeline :
+
+1. tests automatisés (niveaux 1–3)  
+2. exécution de la collection PreDeploy  
+3. checklist pré‑déploiement  
+4. archivage  
+5. décision : **Accord** ou **Refus**  
+6. création d’une version corrective si nécessaire  
+
+Aucune version ne peut être déployée sans validation pré‑déploiement réussie.
+
+---
+
+### 5.2 Tests de validation du déploiement et publication (niveau 4)
+
+Ce niveau de tests, dédié à la **validation du déploiement** d’une version permet la réalisation de la publication sur Alwaysdata, constitue une étape obligatoire du pipeline CI/CD.
+
+(cette section sera complétée lors de l'étape 8 de l'issue-37)
+
+---
+
+### 5.3 Tests de validation du post-déploiement (niveau 4)
+
+Ce niveau de tests, dédié à la **validation post-déploiement** d’une version permet de vérifier la publication sur Alwaysdata, constitue une étape obligatoire du pipeline CI/CD.
+
+(cette section sera complétée lors de l'étape 8 de l'issue-37)
+
+---

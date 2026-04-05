@@ -285,9 +285,28 @@ Ces tests valident le pipeline complet :
 
 ---
 
+### 4.7 Privatisation `/api/catways` des Catways (issue‑37)
+
+La protection JWT des routes Catways est testée dans un fichier dédié : [tests/integration/api.routes.test.js](../../../tests/integration/api.routes.test.js).
+
+Ce fichier vérifie :
+
+- 401 sans token,
+- 401 avec token invalide,
+- 200 avec token valide.
+
+Les tests métier Catways restent dans [catways.routes.test.js](../../../tests/integration/catways.routes.test.js).
+
+Les tests transversaux et de sécurité sont centralisés dans `api.routes.test.js`pour éviter la redondance et garantir la non-régression.
+
+---
+
 ## 5. Fichiers associés
 
-- Tests : `tests/integration/catways.routes.test.js`
+- Tests :
+  
+  - `tests/integration/api.routes.test.js`
+  - `tests/integration/catways.routes.test.js`
 - Modèle : `src/models/catway.js`
 - Routes : `src/routes/catwayRoutes.js`
 
@@ -303,26 +322,38 @@ Ces tests valident le pipeline complet :
 
 ### 6.2 issue-26 : route du détail d'un Catway
 
-**Résultats des tests (issue-26) et non régression :**
+**Résultats des tests (issue-26) et non-régression :**
 
 ![alt text](../assets/img_issue-26_resultats-tests-niveau-2.png)
 
 ### 6.3 issue-27 : route de création d'un Catway
 
-**Résultats des tests (issue-27) et non régression :**
+**Résultats des tests (issue-27) et non-régression :**
 
 ![alt text](../assets/img_issue-27_resultats-tests-niveau-2.png)
 
 ### 6.4 issue-28 : route de mise à jour (complète) d'un Catway
 
-**Résultats des tests (issue-28) et non régression :**
+**Résultats des tests (issue-28) et non-régression :**
 
 ![alt text](../assets/img_issue-28_resultats-tests-niveau-2.png)
 
 ### 6.5 issue-29 : route de mise à jour (partielle) d'un Catway
 
-**Résultats des tests (issue-29) et non régression :**
+**Résultats des tests (issue-29) et non-régression :**
 
 ![alt text](../assets/img_issue-29_resultats-tests-niveau-2.png)
+
+---
+
+### 6.6 issue-37 : privatisation des routes `/api/catways` des Catways
+
+**Résultats des tests (issue-37) et non-régression :** (v0.2.0-dev)
+
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-catways_inc1.png)
+
+**Résultats des tests (issue-37) et non-régression :** (v0.2.1-dev)
+
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-catways_inc3.png)
 
 ---

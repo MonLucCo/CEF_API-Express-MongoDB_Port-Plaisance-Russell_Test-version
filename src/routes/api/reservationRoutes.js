@@ -37,14 +37,14 @@ const router = express.Router();
 const {
     validateCatwayId,
     resolveCatwayIdentifier
-} = require('../middlewares/catwayMiddleware');
+} = require('../../middlewares/catwayMiddleware');
 
 // Middlewares Reservations (placeholders – implémentés dans issues 34 et 35)
 const {
     validateReservationId,
     resolveReservationIdentifier,
     validateReservationPayload
-} = require('../middlewares/reservationMiddleware');
+} = require('../../middlewares/reservationMiddleware');
 
 // Contrôleur Reservations (placeholders – implémenté issue 32)
 const {
@@ -52,7 +52,7 @@ const {
     getReservationById,
     createReservation,
     deleteReservation
-} = require('../controllers/reservationController');
+} = require('../../controllers/api/reservationController');
 
 /**
  * GET /catways/:id/reservations

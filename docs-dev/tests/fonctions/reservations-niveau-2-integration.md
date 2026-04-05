@@ -100,9 +100,28 @@ Les tests d’intégration valident le fonctionnement réel des routes Reservati
 
 ---
 
+### 4.7 Privatisation `/api/catways` des Reservations (issue‑37)
+
+La protection JWT des routes Reservations est testée dans un fichier dédié : [tests/integration/api.routes.test.js](../../../tests/integration/api.routes.test.js).
+
+Ce fichier vérifie :
+
+- 401 sans token,
+- 401 avec token invalide,
+- 200 avec token valide.
+
+Les tests métier Reservations restent dans [reservations.routes.test.js](../../../tests/integration/reservations.routes.test.js).
+
+Les tests transversaux et de sécurité sont centralisés dans `api.routes.test.js`pour éviter la redondance et garantir la non-régression.
+
+---
+
 ## 5. Fichiers associés
 
-- Tests : `tests/integration/reservations.routes.test.js`
+- Tests :
+  
+  - `tests/integration/api.routes.test.js`
+  - `tests/integration/reservations.routes.test.js`
 - Modèle : `src/models/reservation.js`
 - Routes : `src/routes/reservationRoutes.js`
 
@@ -110,26 +129,46 @@ Les tests d’intégration valident le fonctionnement réel des routes Reservati
 
 ## 6. Résultats
 
-### 6.1 issue-33 : route de la liste des reservations d'un catway
+### 6.1 issue-33 : route de la liste des réservations d'un catway
 
 **Résultats des tests (issue-33) :**
 
 ![alt text](../assets/img_issue-33_resultats-tests-niveau-2.png)
 
-### 6.2 issue-34 : route du détail d'une reservation d'un catway
+---
 
-**Résultats des tests (issue-34) et non régression :**
+### 6.2 issue-34 : route du détail d'une réservation d'un catway
+
+**Résultats des tests (issue-34) et non-régression :**
 
 ![alt text](../assets/img_issue-34_resultats-tests-niveau-2.png)
 
-### 6.3 issue-35 : route de création d'une reservation d'un catway
+---
 
-**Résultats des tests (issue-35) et non régression :**
+### 6.3 issue-35 : route de création d'une réservation d'un catway
+
+**Résultats des tests (issue-35) et non-régression :**
 
 ![alt text](../assets/img_issue-35_resultats-tests-niveau-2.png)
 
-### 6.4 issue-36 : route de suppression d'une reservation d'un catway
+---
 
-**Résultats des tests (issue-36) et non régression :**
+### 6.4 issue-36 : route de suppression d'une réservation d'un catway
+
+**Résultats des tests (issue-36) et non-régression :**
 
 ![alt text](../assets/img_issue-36_resultats-tests-niveau-2.png)
+
+---
+
+### 6.5 issue-37 : privatisation des routes `/api/catways` des réservations d'un catway
+
+**Résultats des tests (issue-37) et non-régression :** (v0.2.0-dev)
+
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-reservations_inc1.png)
+
+**Résultats des tests (issue-37) et non-régression :** (v0.2.1-dev)
+
+![alt text](../assets/img_issue-37_resultats-tests-niveau-2-reservations_inc3.png)
+
+---

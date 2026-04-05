@@ -47,23 +47,56 @@ src/                        ← Dossier principal du code de l'API
   │   └── reservation.js            ← Modèle Reservation (issue‑19)
   │
   ├── controllers/              ← Contrôleurs Express (logique métier)
-  │   ├── authController.js         ← Contrôleur d’authentification (register, login, deleteUser)
-  │   ├── catwayController.js       ← Contrôleur des Catways
-  │   └── reservationController.js  ← Contrôleur des Reservations
+  │   ├── api                       ← Contrôleur de l'API
+  │   │   ├── authController.js         ← Contrôleur d’authentification
+  │   │   ├── userController.js         ← Contrôleur des Users
+  │   │   ├── catwayController.js       ← Contrôleur des Catways
+  │   │   └── reservationController.js  ← Contrôleur des Reservations
+  │   │
+  │   └── pages                     ← Contrôleur du Frontend
+  │       └── pagesController.js        ← Contrôleur des pages du frontend
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
-  │   ├── authMiddleware.js              ← Middleware JWT (issue‑16), vérification du token et protection des routes
-  │   ├── catwayMiddleware.js            ← Middleware Catway (issue‑26), vérification de l'identifiant
-  │   ├── catwayPayloadMiddleware.js     ← Middleware Payload du Catway (issue‑27), vérification du payload (complet, partiel)
-  │   └── reservationMiddleware.js       ← Middleware des Reservations
+  │   ├── attachDeprecatedInfo.js        ← Middleware ajoutant les métadonnées de dépréciation dans la réponse
+  │   ├── deprecatedRoute.js             ← Middleware marquant une route comme dépréciée (X-Deprecated: true)
+  │   │
+  │   ├── requireAuthPage.js             ← Middleware d'authentification pour les pages EJS (JWT + redirection)
+  │   │
+  │   ├── authMiddleware.js              ← Middleware JWT (issue‑16), protection des routes API
+  │   ├── userMiddleware.js              ← Middlewares Users (issue‑37) : validateUserId, resolveUser
+  │   ├── catwayMiddleware.js            ← Middlewares Catways (issue‑26) : validateCatwayId, resolveCatwayIdentifier
+  │   ├── catwayPayloadMiddleware.js     ← Middlewares Catways (issue‑27) : validateCatwayPayload, validateCatwayPartialPayload
+  │   └── reservationMiddleware.js       ← Middlewares Reservations (issues 33–36)
   │
   ├── services/                 ← Logique métier réutilisable
   │
   └── routes/                   ← Définition des routes Express
-      ├── accueilRoutes.js          ← Route d’accueil (GET /)
-      ├── authRoutes.js             ← Routes d’authentification (POST /register, /login, DELETE /delete/:id)
-      ├── catwayRoutes.js           ← Routes des Catways (GET, POST, PUT, PATCH, DELETE)
-      └── reservationRoutes.js      ← Routes des Reservations (GET, POST, DELETE)
+      ├── api                       ← Routes de l'API
+      │   ├── authRoutes.js             ← Routes Auth (POST /login) + routes dépréciées (POST /register, DELETE /delete/:id)
+      │   ├── userRoutes.js             ← Routes Users (GET, POST, PATCH, DELETE) — privatisées (issue‑37)
+      │   ├── catwayRoutes.js           ← Routes Catways (GET, POST, PUT, PATCH, DELETE)
+      │   ├── reservationRoutes.js      ← Routes Reservations (GET, POST, DELETE)
+      │   └── apiRoutes.js              ← Routeur principal API (agrégation Users, Catways, Reservations)
+      │
+      └── pages                     ← Routes du Frontend
+          └── pagesRoutes.js            ← Routes des pages du frontend
+
+views/
+  ├── dashboard.ejs             ← Page dynamique (EJS) de l'espace utilisateur (Dashboard) du Frontend
+  ├── home.ejs                  ← Page dynamique (EJS) de l'accueil (Home) du Frontend
+  ├── login.ejs                 ← Page dynamique (EJS) de la connexion (Login) du Frontend
+  │
+  ├── home/                     ← Page d'accueil (Home) découpée en parties (partials) élémentaires
+  │   ├── _title.ejs               ← Titre de la page (titre et sous-titre)
+  │   ├── _intro.ejs               ← Présentation succincte de l'application
+  │   ├── _auth.ejs                ← Authentification de la page (identification de la connexion, bouton d'action)
+  │   ├── _notes.ejs               ← Notes de développement pour le visiteur de la page
+  │   └── _meta.ejs                ← Informations sur le projet (accès dépôt GitHub, environnement et contenu de la version)
+  │
+  └── partials/                 ← Parties (partials en include) réutilisables d'une page HTML (EJS)
+      ├── head.ejs                 ← En-tête de la page HTML (métadonnées)
+      ├── header.ejs               ← En-tête du corps de la page <body> (logo et menu de navigation)
+      └── footer.ejs               ← Pied de page de la page <body> (copyright et version)
 
 scripts/
   └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
@@ -74,33 +107,56 @@ data/                           ← Données du projet
   └── reservations.json            ← Données initiales des Réservations (données fournies)
 
 config/                     ← Configuration globale (JWT, paramètres transversaux)
+  ├── appData.js                ← Configuration des métadonnées de l'application
   ├── jwt.js                    ← Configuration JWT
   └── dev/                      ← Configuration locale de développement
       └── nodemon.json              ← Configuration nodemon (issue‑17)
 
-public/                         ← Front-end minimal
+public/                     ← Eléments statique du frontend
+  ├── css/                       ← Feuilles de style
+  │   └── main.css                  ← Feuille des styles unifiée de l'application
+  └── img/                       ← Images de l'interface utilisateur (frontend) de l'application
+      ├── favicon.svg               ← Favicon de la page
+      ├── logo.svg                  ← Logo (minimaliste) pour le port en SVG (4:1)
+      └── logo_complet.svg          ← Logo (minimaliste) pour le port de plaisance en SVG (4:1)
 
 tests/                      ← Tests Mocha/Chai/Supertest
+  ├── root-hooks.js             ← Définition des Hooks globaux de MOCHA et chargement `dotenv` (issue‑37)
   ├── test-app.js               ← Serveur Express dédié aux tests E2E simulés (issue‑17)
+  │
+  ├── helpers/
+  │   └── createTestUser.js     ← Helper centralisé pour créer un utilisateur + token JWT cohérent
   │
   ├── controllers/              ← Tests unitaires (niveau‑1) des contrôleurs via Mocha + Chai + Sinon
   │   ├── authController.test.js         ← Tests unitaires du contrôleur Authentification
-  │   └── catwayController.test.js       ← tests unitaires du contrôleur Catways
+  │   ├── userController.test.js         ← Tests unitaires du contrôleur Users
+  │   ├── catwayController.test.js       ← tests unitaires du contrôleur Catways
+  │   └── reservationController.test.js  ← tests unitaires du contrôleur Reservations
   │
   ├── middlewares/              ← Tests unitaires (niveau‑1) des middlewares
-  │   ├── authMiddleware.test.js         ← Tests unitaires du middleware Authentification (issue‑16)
-  │   └── catwayMiddleware.test.js       ← tests unitaires du middleware Catways (issue-26)
+  │   ├── deprecatedMiddleware.test.js    ← Tests unitaires du middleware de Déprécation (issue‑37)
+  │   ├── authMiddleware.test.js          ← Tests unitaires du middleware Authentification (issue‑16)
+  │   ├── userMiddleware.test.js          ← Tests unitaires du middleware Users (issue‑37)
+  │   ├── catwayMiddleware.test.js        ← tests unitaires du middleware Catways (issue-26)
+  │   ├── catwayPayloadMiddleware.test.js ← tests unitaires du middleware du payload Catways (issue-27)
+  │   └── reservationMiddleware.test.js   ← tests unitaires du middleware Reservations (issue-31)
   │
   ├── integration/              ← Tests d’intégration (niveau‑2) via Supertest + MongoMemoryServer
+  │   ├── api.routes.test.js             ← Tests d’intégration transversaux : protection JWT des routes API
   │   ├── auth.routes.test.js            ← Tests d'intégration Authentification
-  │   └── catways.routes.test.js         ← tests d'intégration des routes Catways
+  │   ├── users.routes.test.js           ← Tests d'intégration Users
+  │   ├── catways.routes.test.js         ← tests d'intégration Catways
+  │   └── reservations.routes.test.js    ← tests d'intégration Reservations
   │
   ├── e2e/                      ← Tests E2E (niveau‑3) réalisés via Postman (issue‑17)
+  │   └── auth-protection.test.js        ← tests des protections des routes du frontend et de l'API 
+  │
   ├── mocks/                    ← Mocks/stubs isolant les dépendances (ex : modèle User)
   │   ├── tests.mock.js             ← Helpers transverses (mockResponse, mockNext, afterEachRestore)
   │   ├── jwt.mock.js               ← Stubs JWT (verify, sign)
   │   ├── user.mock.js              ← Mocks/stubs du modèle User
-  │   └── catway.mock.js            ← Mocks/stubs du modèle Catway
+  │   ├── catway.mock.js            ← Mocks/stubs du modèle Catway
+  │   └── reservation.mock.js       ← Mocks/stubs du modèle Reservation
   │
   └── modeles/                  ← Tests des modèles (Catway, Reference, User) 
       ├── catway.unitaires.test.js          ← Tests unitaires (niveau-1) de Catway
@@ -121,6 +177,11 @@ docs-dev/                   ← Documentation interne versionnée
   ├── tests-strategy.md        ← Stratégie de tests (unitaires, intégration, E2E) et organisation du dossier tests/
   ├── decisions-techniques.md  ← Journal des décisions techniques (ADR simplifié)
   │
+  ├── architecture/            ← Documentation de détail de l'architecture
+  │   ├── api-analysis.md                          ← Détail de l'analyse de l'API
+  │   ├── collection-analysis.md                   ← Détail de l'analyse d'une collection Postman (v0.2.1-dev - incrément 2)
+  │   └── suppression-depreciation-analysis.md     ← Détail de l'analyse d'une fonction obsolète (dépréciation)
+  │
   ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
   │   └── import-donnees.md           ← Documentation import JSON (issue‑20B)
   │
@@ -131,20 +192,31 @@ docs-dev/                   ← Documentation interne versionnée
       ├── README_tests.md                      ← Vue d’ensemble des tests (Catégories et Niveaux)
       │
       ├── assets/                              ← Compléments pour les tests (images, collections Postman)
-      │   └── collection-e2e-local.json             ← Collection Postman (issue‑17)
+      │   ├── collection-e2e-local.json                          ← Collection Postman (API v0.1-dev)
+      │   ├── API-Port-Russell_v0.2.0-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.0-dev - Pré-déploiement)
+      │   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json  ← Collection Postman (API v0.2.1-dev - Tests techniques)
+      │   └── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
+      │
       ├── auth/                                ← Catégorie Authentification
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
       │   ├── auth-niveau-2-integration.md          ← Tests de niveau 2 - tests d'intégration
       │   └── auth-niveau-3-e2e.md                  ← Tests de niveau 1 - tests E2E
+      │
       ├── modeles/                             ← Catégorie Modélisation
       │   ├── modeles-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires
       │   └── modeles-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration
       │
-      └── fonctions/                           ← Catégorie Fonctionnalités
-          ├── catways-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires Catways
-          ├── catways-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration Catways
-          ├── reservations-niveau-1-unitaires.md    ← Tests de niveau 1 - tests unitaires Reservations
-          └── reservations-niveau-2-integration.md  ← Tests de niveau 2 - tests d'intégration Reservations
+      ├── fonctions/                           ← Catégorie Fonctionnalités
+      │   ├── api-niveau-2-integration.md           ← Tests de niveau 2 - tests d'intégration API (Catways, Reservation)
+      │   ├── users-niveau-1-unitaires.md           ← Tests de niveau 1 - tests unitaires Users
+      │   ├── users-niveau-2-integration.md         ← Tests de niveau 2 - tests d'intégration Users
+      │   ├── catways-niveau-1-unitaires.md         ← Tests de niveau 1 - tests unitaires Catways
+      │   ├── catways-niveau-2-integration.md       ← Tests de niveau 2 - tests d'intégration Catways
+      │   ├── reservations-niveau-1-unitaires.md    ← Tests de niveau 1 - tests unitaires Reservations
+      │   └── reservations-niveau-2-integration.md  ← Tests de niveau 2 - tests d'intégration Reservations
+      │
+      └── déploiements/                         ← Catégorie Déploiements
+          └── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Tests des validations pré-déploiement de la version v0.2.0-dev
     
 ```
 
@@ -155,6 +227,14 @@ Les mécanismes de sécurité (JWT, hashage, bonnes pratiques Express/MongoDB) s
 [docs-dev/securite.md](./securite.md).
 
 la stratégie complète des tests est détaillée dans [docs-dev/tests-strategy.md](./tests-strategy.md) et [docs-dev/tests/README_tests.md](./tests/README_tests.md).
+
+À partir de l'issue-37 (version v0.2-dev), l'architecture sépare l'API REST (routes sous /api/…, /`<nom-projet>`/api/… sur Alwaysdata) et les pages dynamiques basées sur EJS (routes sous /).  
+Les pages dynamiques sont rendues via `pagesController.js` et organisées dans le dossier `views/`.
+Cette séparation garantie une architecture claire, modulaire et compatible avec Alwaysdata.
+
+À partir de la Phase 6 (issue-37), les opérations de validation des versions publiées font l'objet de pipelines de vérification (Pré-déploiement, déploiement, post-déploiement) qui sont archivées dans des dossiers spécifiques (version-pipelines-date-heure) situés dans `docs-dev/tests/deploiements/`.
+
+À partir de la Phase 6 (issue-37), la version v0.2.1-dev contient des fonctions dépréciées et une gestion de l'obsolescence des routes.
 
 ---
 
@@ -202,7 +282,9 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 #### 1.3.5 Phase 6 — Front-end minimal
 
-(sera complété avec les issues lors de l'engagement de la phase)
+- Issue-37 : Création de la page d'accueil du frontend
+- Issue-38 : Création du Dashboard de l'Utilisateur
+- Issue-39 : Création des pages listes et détails (finalisation du frontend)
 
 #### 1.3.6 Phase 7 — Tests unitaires
 
@@ -1906,7 +1988,444 @@ Le contrôleur reste volontairement minimaliste, conformément à l’architectu
 
 ### 2.5 Phase 6 — Front-end minimal
 
-(sera complété avec les issues correspondantes)
+La Phase 6 introduit la séparation complète entre :
+
+- le front-end dynamique (EJS)
+- l’API REST
+
+**Progression fonctionnelle (issues 37 → 39) de la Phase 6 :**
+
+- **Issue-37** : Création de la page d'accueil du frontend
+  - Etape 1 : intégration de page dynamique (EJS)
+  - Etape 2 : séparation des architectures de l'API (REST) et des Pages (EJS) - tests de non régressions de l'API
+  - Etape 3 : intégration des fonctionnalités de la page d'accueil (Login, Dashboard en placeholder, Logout, sécurisation JWT)
+  - Etape 4 : sécurisation JWT des routes API et tests associés
+  - Etape 5 : tests et validation pré-déploiement de la version (v0.2.0-dev EJS + REST)
+  - Etape 6 : correction de la v0.2.0-dev et création d'une version v0.2.1-dev
+  - Etape 7 : tests et validation pré-déploiement de la version (v0.2.1-dev EJS + REST)
+  - Etape 8 : déploiement et vérification post-déploiement de la version (v0.2.1-dev EJS + REST)
+  - Etape 9 : finalisation documentaire de l'issue-37
+- **Issue-38** : Création du Dashboard de l'Utilisateur
+- **Issue-39** : Création des pages listes et détails (finalisation du frontend)
+
+#### 2.5.1 - Issue-37 - Création de la page d'accueil du frontend
+
+À partir de la version v0.1.2-dev, l’application adopte une séparation stricte entre :
+
+1. **Le frontend dynamique (EJS)**
+   - routes sous `/`
+   - contrôleur : `pagesController.js`
+   - routeur : `pagesRoutes.js`
+   - vues : `views/*.ejs`
+   - assets : `public/css`, `public/js`
+
+2. **L’API REST**
+   - racine locale : `/api/`
+   - racine Alwaysdata : `/port-plaisance-russell/api/`
+   - routeur principal : `apiRoutes.js`
+   - sous-routeurs : `authRoutes.js`, `catwayRoutes.js`, `reservationRoutes.js`
+
+Cette séparation garantit :
+
+- une architecture claire et modulaire
+- une compatibilité totale avec Alwaysdata
+- une évolution progressive du frontend (issues 38–39)
+- une distinction nette entre logique métier (API) et rendu (EJS)
+
+##### 2.5.1.1 Etape 1 - intégration d'une page dynamique EJS
+
+La première étape a consisté à remplacer la page statique `accueilRoutes.js` par une page dynamique (EJS). Aucune séparation des routes entre l'API et le frontend n'est mise en place.
+
+La page d'accueil avec une page EJS correspond à la version `v0.1.1-dev (EJS)` qui reste une version locale de développement. Aucun déploiement n'est réalisé car les routes de l'API ne sont pas protégées.
+
+---
+
+##### 2.5.1.2 Etape 2 - séparation des architectures de l'API et des Pages
+
+La seconde étape adopte une séparation stricte entre :
+
+1. **Le frontend dynamique (EJS)**
+   - routes sous `/`
+   - contrôleur : `pagesController.js`
+   - routeur : `pagesRoutes.js`
+   - vues : `views/*.ejs`
+   - assets : `public/css`, `public/js`
+
+2. **L’API REST**
+   - racine locale : `/api/`
+   - racine Alwaysdata : `/port-plaisance-russell/api/`
+   - routeur principal : `apiRoutes.js`
+   - sous-routeurs : `authRoutes.js`, `catwayRoutes.js`, `reservationRoutes.js`
+
+Cette séparation garantit :
+
+- une architecture claire et modulaire
+- une compatibilité totale avec Alwaysdata
+- une évolution progressive du frontend (issues 38–39)
+- une distinction nette entre logique métier (API) et rendu (EJS)
+
+La page d'accueil avec une page EJS correspond à la version `v0.1.2-dev (EJS & REST)` qui reste une version locale de développement. Aucun déploiement n'est réalisé car les routes de l'API, séparées des routes du frontend, ne sont pas protégées.
+
+---
+
+##### 2.5.1.3 Etape 3 - intégration des fonctionnalités de la page d'accueil (version v0.2.0-dev)
+
+Cette troisième étape finalise la première version du frontend dynamique (v0.2.0-dev).  
+Elle clarifie les différentes versions du projet et, techniquement, introduit une page d’accueil (minimale et opérationnelle : pas d'accès à la documentation) et une page de connexion cohérente avec l’architecture globale.
+
+1. **Travaux réalisés**
+   - refonte complète de la page d’accueil (`views/home/`)  
+   - découpage en partials pour une architecture DRY  
+   - ajout d’une section d’introduction basée sur `appData.APP_INTRODUCTION`  
+   - mise en place d’un header dynamique :
+  
+     - masquage de l’onglet correspondant à la page active  
+     - header minimal sur la page `/login`  
+   - mise en place d’un footer affichant la version de l’application  
+   - création d’une page de connexion centrée, étroite, sans footer  
+   - centralisation des métadonnées dans `config/appData.js`  
+   - mise à jour du contrôleur `pagesController.js` pour intégrer `currentPage`  
+   - mise à jour du CSS global (`public/css/main.css`)
+
+2. **Tests manuels effectués**
+   - `/` : affichage correct des sections, header dynamique, footer versionné  
+   - `/login` : header minimal, formulaire vertical, message d’erreur fonctionnel  
+   - `/dashboard` : accès protégé, header dynamique  
+   - `/logout` : suppression du cookie + redirection  
+   - navigation cohérente entre les pages  
+   - favicon présent sur toutes les pages  
+   - cohérence visuelle (header/footer, sections, couleurs)
+
+3. **Clarification des versions (déployée / développement)**
+   - À partir de la v0.2.0-dev, le projet distingue explicitement :
+
+     - la version en développement (`vX.Y.Z-dev`)
+     - la version déployée sur Alwaysdata (`vX.Y.Z-dev`)
+     - les releases GitHub (`vX.Y.Z`)
+
+   - Cette clarification permet de suivre séparément :
+     - l’avancement local,
+     - l’état du site déployé,
+     - les versions stables publiées.  
+
+Cette étape clôture la version **v0.2.0‑dev** du frontend minimal développée en local. Cette version prépare la version qui sera déployée.
+
+---
+
+##### 2.5.1.4 Etape 4 - sécurisation JWT des routes API et tests associés
+
+Cette quatrième étape sécurise l'accès à l'API (JWT), réalise les tests associés à cette sécurisation et finalise le contenu de la version v0.2.0-dev qui sépare API et Pages (frontend).  
+Elle clarifie la démarche d'archivage des validations pré-déploiement, réalise les validations du pré-déploiement de la version v0.2.0-dev.  
+
+1. **Travaux réalisés**
+   - organisation de l'archivage des validations pré-déploiement
+   - protection des routes de l'API (JWT)
+   - tests d'intégration de la privatisation des routes API :
+     - les tests d’intégration utilisent un pipeline complet :
+  
+       ```dotnetcli
+        MongoMemoryServer → Mongoose → Express → Middlewares → Contrôleurs
+       ```
+
+     - La protection JWT est testée séparément dans un fichier dédié (`api.routes.test.js`), garantissant :
+       - la non‑régression des routes protégées,
+       - la cohérence du secret JWT (via jwtConfig.secret),
+       - l’isolation totale entre les tests (root-hooks v0.2.0),
+       - la stabilité des tests groupés.
+2. **Séparation des tests : sécurité et métier**
+   - `api.routes.test.js` valide la sécurité,
+   - `catways.routes.test.js` et `reservations.routes.test.js` valident le métier.
+
+Cette étape clôture la version **v0.2.0-dev** du frontend minimimal et de l'API. Cette version établit la version qui sera à déployer.
+
+---
+
+##### 2.5.1.5 Etape 5 - Tests de validation pré-déploiement de la version de la page d'accueil du frontend
+
+Cette cinquième étape réalise les tests de validation pré-déploiement de la version du frontend dynamique (v0.2.0-dev) et conclut sur la qualité de la vesion pour un déploiement.  
+Elle met en oeuvre la démarche d'archivage des validations pré-déploiement, réalise les validations du pré-déploiement de la version v0.2.0-dev.  
+
+1. **Travaux réalisés**
+   - organisation de l'archivage des validations pré-déploiement
+   - actualisation de la configuration (scripts) de la structure à déployer
+   - actualisation de la collection Postman pour la vérification pré-déploiement
+   - validations pré-déploiement de la version v0.2.0-dev
+
+2. **Rédaction du dossier de validation pré-déploiement de la version v0.2.0-dev**
+   - archivage des résultat de la validation de pré-déploiement
+   - rédaction des conclusions de la vérification
+
+3. **Résultat de la validation de pré-déploiement v0.2.0-dev**
+
+    - La validation pré‑déploiement de la version v0.2.0-dev a été réalisée à l’aide :
+      - des tests automatisés (unitaires, intégration, E2E simulés),
+      - de la collection Postman PreDeploy v0.2.0-dev,
+      - de la checklist pré‑déploiement.
+
+    - L’ensemble des tests techniques est **réussi**, à l’exception d’un point critique :
+
+      > **La route `POST /api/auth/register` est accessible sans authentification.**
+
+      Cette faille permet la création non contrôlée d’utilisateurs et constitue un risque majeur pour une API privée.
+
+      > **Décision : refus du déploiement.**
+
+    - Les artefacts de validation sont archivés dans : [docs-dev/deploiements/v0.2.0-dev/](./tests/deploiements/v0.2.0-dev_01_predeploy_2026-03-19_18-49/)
+
+    Cette étape confirme l’importance du pipeline CI/CD mis en place (script `validate-predeploy.js`, collection Postman dédiée) et justifie la création d’une version corrective **v0.2.1-dev**.
+
+---
+
+##### 2.5.1.6 Etape 6 - Analyse technique et corrections de la version à déployer (v0.2.1-dev)
+
+L’étape 6 de l’issue‑37 constitue la phase d’analyse et de préparation de la version corrective **v0.2.1‑dev**, réalisée en trois sous‑étapes distinctes afin d’assurer une traçabilité fine et une cohérence avec la structure documentaire du projet :
+
+- **étape 6a** : analyse technique de la version v0.2.0-dev
+- **étape 6b** : corrections architecturales pour la version v0.2.1-dev
+- **étape 6c** :
+
+  - tests développeurs (niveaux 1 à 3) des fonctions nouvelles (Users)
+  - tests développeurs (niveau 4) de la version v0.2.1-dev.
+  - gestion des fonctions obsolètes (dépréciation des fonction Auth/register et Auth/delete)
+  - finalisation du périmètre fonctionnel de la version v0.2.1-dev.
+
+---
+
+###### 2.5.1.6.1 — Analyse technique de la version v0.2.0‑dev (étape 6a)
+
+L'analyser les résultats de la validation pré‑déploiement v0.2.0‑dev (étape 5) consiste à identifier les corrections nécessaires.
+
+Les constats principaux sont :
+
+- **Faille de sécurité critique** : la route `POST /api/auth/register` est accessible sans authentification.  
+- **Incohérence architecturale** : les opérations liées au modèle User (création, suppression, modification) sont regroupées dans `/api/auth/`, ce qui ne respecte pas les principes REST.  
+- **Non‑conformité au sujet** : le sujet impose trois opérations sur l’utilisateur (création, modification, suppression) mais ne définit aucune route, ce qui nécessite une clarification architecturale.  
+- **Besoin d’une ressource REST dédiée** : la ressource User doit être séparée de l’authentification.
+
+Afin de centraliser l’analyse technique et de faciliter la compréhension des corrections apportées, un document dédié est créé :
+
+- [docs-dev/architecture/api-analysis.md](./architecture/api-analysis.md)
+
+Ce document contient :
+
+- l’analyse détaillée de la faille de sécurité,  
+- l’analyse des routes existantes,  
+- la justification de la séparation Auth/Users,  
+- la définition de la ressource User,  
+- les impacts sur les contrôleurs, routes et tests,  
+- les implications pour la version corrective v0.2.1‑dev.
+
+Il sert de référence technique pour l'architecture de l' API.
+
+---
+
+###### 2.5.1.6.2 — Corrections architecturales prévues pour v0.2.1‑dev (étape 6b)
+
+À la suite de l’analyse, les corrections suivantes sont décidées :
+
+1. **Séparation des routes Auth et Users**  
+   - `/api/auth/` → authentification uniquement (login).  
+   - `/api/users/` → opérations CRUD utilisateur.
+
+2. **Privatisation stricte des routes User**  
+   - création, modification et suppression d’un utilisateur nécessitent un JWT valide.
+
+3. **Ajout de la route de modification utilisateur**  
+   - `PUT /api/users/:id`.
+
+4. **Déplacement des routes existantes**  
+   - `POST /api/auth/register` → `POST /api/users`  
+   - `DELETE /api/auth/delete/:id` → `DELETE /api/users/:id`
+
+5. **Mise à jour des tests**  
+   - tests unitaires, intégration et E2E simulés doivent être adaptés à la nouvelle architecture.
+
+6. **Mise à jour de la collection Postman**  
+   - création d’une collection PreDeploy v0.2.1‑dev.
+
+Ces corrections constituent le périmètre fonctionnel de la version corrective v0.2.1‑dev.
+
+---
+
+###### 2.5.1.6.3 — Tests développeurs (niveaux 1 à 4) pour v0.2.1‑dev (étape 6c)
+
+**Tests développeurs :**
+
+Dans un premier temps, cette préparation consiste à adapter les tests développeurs à la nouvelle architecture :
+
+- **Niveau 1 (unitaires)**  
+  - création d’un fichier `userController.test.js`  
+  - mise à jour des tests Auth  
+  - adaptation des stubs Mongoose
+
+- **Niveau 2 (intégration)**  
+  - création de `user.routes.test.js`  
+  - mise à jour des tests Auth  
+  - vérification de la privatisation des routes User
+
+- **Niveau 3 (E2E simulés)**  
+  - mise à jour de la collection Postman locale  
+  - mise à jour du serveur de test `test-app.js` si nécessaire
+
+En second lieu, il s'agit de vérifier et finaliser le contenu de l'API sans régression fonctionnelle.
+Ceci se réalise en plusieurs incréments techniques pour assurer la non-régression fonctionnelle de l'API :
+
+- **Incrément 1** : ajout des fonctionnalités liées au Utilisateurs (liste, création, mise à jour et suppression)
+- **Incrément 2** : tests de niveau 4 des fonctions Users et des routes privatisées (Users, Catways et reservations)
+- **Incrément 3** : finalisation du périmètre fonctionnel de la version (v0.2.1-dev) de l'API et de la documentation du projet
+
+Les tests de niveau 4 sont réalisés avec une collection Postman.  
+Afin de centraliser l’analyse technique et de faciliter la compréhension de la collection (tests de niveau 4), un document dédié est créé :
+
+- [docs-dev/architecture/collection-analysis.md](./architecture/collection-analysis.md)
+
+**Périmètre fonctionnel et gestion des obsolescences :**
+
+La finalisation du périmètre fonctionnel de la version v0.2.1-dev conduit à la gestion de l'obsolescence des fonctions Auth/register et Auth/delete.
+Afin de centraliser l’analyse technique et de faciliter la compréhension de la gestion des fonctions obsolètes, un document dédié est créé :
+
+- [docs-dev/architecture/suppression-depreciation-analysis.md](./architecture/suppression-depreciation-analysis.md)
+
+**Architecture finale de la version v0.2.1-dev :**
+
+L'architecture finale gère les routes :
+
+- des pages du frontend (accueil, Login/Logout et Dashboard)
+- privatisées (JWT) de l'API sauf la route de connexion.
+
+```js
+┌───────────────────────────────────────────────────────────────┐
+│                       Pages EJS (/)                           │
+└───────────────────────────────────────────────────────────────┘
+/
+├── GET /                           ← Page d’accueil (frontend)
+├── GET /login                      ← Page de connexion (frontend)
+└── GET /dashboard                  ← Privatisée + Dashboard utilisateur (frontend)
+
+┌───────────────────────────────────────────────────────────────┐
+│                       API REST (/api)                         │
+└───────────────────────────────────────────────────────────────┘
+
+/api
+│
+├── /auth                          ← Module Authentification
+│     ├── POST /auth/login                 ← Connexion (active)
+│     ├── POST /auth/register              ← Dépréciée + privatisée (v0.2.1-dev)
+│     └── DELETE /auth/delete/:id          ← Dépréciée + privatisée (v0.2.1-dev)
+│
+├── /users                         ← Module Users (remplace Auth/register & delete)
+│     ├── GET /users                       ← Privatisée + Liste des utilisateurs
+│     ├── POST /users                      ← Privatisée + Création d’un utilisateur
+│     ├── PATCH /users/:id                 ← Privatisée + Mise à jour d’un utilisateur
+│     └── DELETE /users/:id                ← Privatisée + Suppression d’un utilisateur
+│
+├── /catways                       ← Module Catways
+│     ├── GET /catways                     ← Privatisée + Liste des catways
+│     ├── GET /catways/:id                 ← Privatisée + Détail d’un catway
+│     ├── POST /catways                    ← Privatisée + Création d’un catway
+│     ├── PUT /catways/:id                 ← Privatisée + Remplacement complet
+│     ├── PATCH /catways/:id               ← Privatisée + Mise à jour partielle
+│     └── DELETE /catways/:id              ← Privatisée + Suppression d’un catway
+│
+└── /catways/:id/reservations      ← Module Reservations
+      ├── GET /catways/:id/reservations                    ← Privatisée + Liste des réservations
+      ├── GET /catways/:id/reservations/:idReservation     ← Privatisée + Détail d’une réservation
+      ├── POST /catways/:id/reservations                   ← Privatisée + Création d’une réservation
+      └── DELETE /catways/:id/reservations/:idReservation  ← Privatisée + Suppression d’une réservation
+```
+
+---
+
+##### 2.5.1.7 Etape 7 - tests de validation pré-déploiement de la version (corrigée) de la page d'accueil du frontend
+
+Cette septième étape réalise les tests de validation pré-déploiement de la version du frontend dynamique (v0.2.1-dev) et conclut sur la qualité de la version pour un déploiement.  
+Elle met en oeuvre la démarche d'archivage des validations pré-déploiement, réalise les validations du pré-déploiement de la version v0.2.1-dev.  
+
+1. **Travaux réalisés**
+   - organisation de l'archivage des validations pré-déploiement
+   - actualisation de la configuration (scripts) de la structure à déployer
+   - actualisation de la collection Postman pour la vérification pré-déploiement
+   - validations pré-déploiement de la version v0.2.1-dev
+
+2. **Rédaction du dossier de validation pré-déploiement de la version v0.2.1-dev**
+   - archivage des résultat de la validation de pré-déploiement
+   - rédaction des conclusions de la vérification
+
+3. **Résultat de la validation de pré-déploiement v0.2.1-dev**
+
+    - La validation pré‑déploiement de la version v0.2.0-dev a été réalisée à l’aide :
+      - des tests automatisés (unitaires, intégration, E2E simulés),
+      - de la collection Postman PreDeploy v0.2.1-dev,
+      - de la checklist pré‑déploiement.
+
+    - L’ensemble des tests techniques est **réussi**, aucun point critique constaté :
+
+      > **Les routes `Users`, `Catways` et `Reservations` sont privatisées (JWT avec la Route publique `Auth/Login`)**  
+      >
+      > **Décision : accord pour le déploiement.**
+
+    - Les artefacts de validation sont archivés dans : [docs-dev/deploiements/v0.2.1-dev/](./tests/deploiements/v0.2.1-dev_01_predeploy_2026-03-26_11-35/)
+
+    Cette étape confirme l’exploitation du pipeline CI/CD mis en place (script `validate-predeploy.js`, collection Postman dédiée) et permet d'engager les opérations de déploiement pour la publication de la version v0.2.1-dev sur Alwaysdata.
+
+---
+
+##### 2.5.1.8 Etape 8 - déploiement et validation post-déploiement de la version (corrigée) de la page d'accueil du frontend
+
+Cette huitième étape réalise les scripts de déploiement et les tests de validation post-déploiement de la version du frontend dynamique (v0.2.1-dev) et conclut sur la qualité de la vesion déployée.  
+Elle met en oeuvre la démarche d'archivage des validations déploiement, réalise les validations du post-déploiement de la version v0.2.1-dev.
+
+1. **Travaux réalisés**
+   - organisation de l'archivage des validations du déploiement
+   - actualisation de la configuration (scripts) de la structure à déployer
+   - actualisation de la collection Postman pour la vérification post-déploiement
+   - validations post-déploiement de la version v0.2.1-dev
+   - mise en place de patch correctifs de la version v0.2.1-dev (version v0.2.1.a-dev)
+
+2. **Rédaction du dossier de validation du déploiement de la version v0.2.1-dev**
+   - archivage des résultat de la validation de pré-déploiement
+   - rédaction des conclusions de la vérification
+
+3. **Résultat de la validation de post-déploiement v0.2.1-dev**
+
+    - La validation pré‑déploiement de la version v0.2.0-dev a été réalisée à l’aide :
+      - des tests automatisés (unitaires, intégration, E2E simulés),
+      - de la collection Postman PostDeploy v0.2.1-dev
+    - La version déployée est une version patchée qui fixe les anomalies détectées dans le rendu du FrontEnd (prise en compte de API_PREFIX pour liens et assets) :
+      - Versions publiées :
+
+        > Mise en place d'un préfixe dans l'environnement local pour reproduire le dysfonctionnement.
+        - **v0.2.1-dev.a** : fonctionnelle, mais partiellement opérationnelle (liens avec préfixe et feuille de styles)
+        - **v0.2.1-dev.b** : traces et identification du problème fonctionnel de la connexion (Login)
+        - **v0.2.1-dev.c** : complément de traces et identification du problème de connexion (Login)
+        - **v0.2.1-dev.d** : résolution de la connexion et validation fonctionnelle complète. Version opérationnelle
+  
+    - Les artefacts de validation sont archivés dans :
+      - [docs-dev/deploiements/v0.2.1-dev/](./tests/deploiements/v0.2.1-dev_02_deploy_2026-03-29_09-01/)
+      - [docs-dev/deploiements/v0.2.1-dev.a/ (version patchée)](./tests/deploiements/v0.2.1-dev.a_02_deploy_2026-03-29_19-00/)
+      - [docs-dev/deploiements/v0.2.1-dev.b/ (version patchée)](./tests/deploiements/v0.2.1-dev.b_02_deploy_2026-03-29_19-00/)
+      - [docs-dev/deploiements/v0.2.1-dev.c/ (version patchée)](./tests/deploiements/v0.2.1-dev.c_02_deploy_2026-03-29_19-00/)
+      - [docs-dev/deploiements/v0.2.1-dev.d/ (version patchée)](./tests/deploiements/v0.2.1-dev.d_02_deploy_2026-03-29_19-00/)
+
+    Cette étape confirme l’exploitation du pipeline CI/CD mis en place (script `verify-deploy.js`, collection Postman dédiée) et permet de clore les opérations de déploiement pour la publication de la version v0.2.1-dev sur Alwaysdata.
+
+---
+
+##### 2.5.1.9 Etape 9 - finalisation documentaire de l'issue-37
+
+(à compléter commit-6 et PR-issue-37-dev, puis PR-dev-main)
+
+---
+
+#### 2.5.2 - Issue-38 - Création du Dashboard de l'Utilisateur
+
+(à compléter lors de l'issue-38)
+
+---
+
+#### 2.5.3 - Issue-39 - Création des pages listes et détails (finalisation du frontend)
+
+(à compléter lors de l'issue-39)
 
 ---
 

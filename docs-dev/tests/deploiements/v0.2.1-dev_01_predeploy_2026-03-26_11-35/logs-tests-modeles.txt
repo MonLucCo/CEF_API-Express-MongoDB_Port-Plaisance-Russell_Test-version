@@ -1,0 +1,58 @@
+=== Test : npm run tests:models ===
+
+--- STDOUT ---
+
+> cef_api-express-mongodb_port-plaisance-russell_test-version@0.2.1 tests:models
+> mocha --require tests/root-hooks.js tests/models/**/*.test.js --exit
+
+[dotenv@17.3.1] injecting env (12) from .env -- tip: ⚙️  override existing env vars with { override: true }
+
+
+  Model Catway – Tests d’intégration (niveau‑2)
+    ✔ devrait enregistrer un catway valide en base (52ms)
+    ✔ devrait refuser un catwayNumber dupliqué (erreur E11000)
+    ✔ devrait refuser un type invalide (enum)
+    ✔ devrait refuser un catwayNumber < 1
+    ✔ devrait refuser un catway sans catwayState
+
+  Model Catway – Tests unitaires (niveau‑1)
+    ✔ devrait valider un catway correct
+    ✔ devrait refuser un catway sans catwayNumber
+    ✔ devrait refuser un type invalide
+    ✔ devrait refuser un catway sans catwayState
+    ✔ devrait refuser un catwayNumber inférieur à 1
+
+  Model Reservation — Tests d’intégration (niveau‑2)
+    ✔ devrait insérer une réservation valide
+    ✔ devrait refuser une réservation sans clientName
+    ✔ devrait refuser un catwayNumber < 1
+    ✔ devrait refuser un checkOut antérieur à checkIn
+    ✔ devrait trouver une réservation existante
+    ✔ devrait supprimer une réservation
+
+  Model Reservation — Tests unitaires (niveau‑1)
+    ✔ devrait valider une réservation correcte
+    ✔ devrait refuser une réservation sans catwayNumber
+    ✔ devrait refuser un catwayNumber < 1
+    ✔ devrait refuser une réservation sans clientName
+    ✔ devrait refuser une réservation sans boatName
+    ✔ devrait refuser une réservation sans checkIn
+    ✔ devrait refuser une réservation sans checkOut
+    ✔ devrait refuser un checkOut antérieur à checkIn
+
+  Model User — Tests d’intégration (niveau‑2)
+    ✔ devrait insérer un utilisateur valide
+    ✔ devrait refuser un email déjà utilisé (E11000)
+    ✔ devrait refuser un mot de passe non hashé
+
+  Model User — Tests unitaires (niveau‑1)
+    ✔ devrait valider un utilisateur correct
+    ✔ devrait refuser un utilisateur sans email
+    ✔ devrait accepter un email avec majuscules
+    ✔ devrait refuser un email invalide
+    ✔ devrait refuser un mot de passe non hashé
+
+
+  32 passing (950ms)
+
+

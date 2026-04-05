@@ -186,6 +186,245 @@ La Phase 5 dispose d’une architecture complète, modulaire et cohérente, prê
 
 ---
 
+### 4.3 Décision - Séparation stricte API REST / Frontend EJS
+
+La phase 6 introduit un frontend qui vient compléter l'API du projet. Ces deux composantes du projet seront développées avec une séparation stricte (dossiers de développement et routes des URLs) dans le développement :
+
+- l'API REST (src/routes/api/)
+- les pages dynamiques EJS (src/routes/pages/)
+
+Motivations :
+
+- préparer le front minimal (Phase 6)
+- éviter la confusion entre routes API et routes HTML
+- permettre un déploiement propre sur Alwaysdata
+- clarifier la documentation et les tests
+
+Impacts :
+
+- création de pagesRoutes.js et pagesController.js
+- suppression de accueilRoutes.js
+- mise à jour de app.js pour monter les deux familles de routes
+- séparation des familles de tests (développeurs et opérationnels Client)
+- passage en version v0.1.2-dev
+
+---
+
+### 4.4 Décision — Distinction des trois types de versions
+
+La phase 6 (dès l'issue-37) fait évoluer la version déployée. Ceci augmente le nombre de versions du projet.
+Afin de clarifier le cycle de développement et de déploiement, le projet adopte une distinction explicite entre :
+
+- **Version en développement (`vX.Y.Z-dev`)**  
+  Version locale active sur la branche `dev`.
+
+- **Version déployée (`vX.Y.Z-dev`)**  
+  Version réellement en ligne sur Alwaysdata.
+
+- **Version Release (`vX.Y.Z`)**  
+  Version stable publiée dans GitHub Releases.
+
+Motivations :
+
+- éviter la confusion entre version locale et version déployée  
+- permettre un suivi clair des releases  
+- préparer le déploiement du frontend (issue‑37 étape 4)  
+- aligner le projet avec les bonnes pratiques CI/CD
+
+Impacts :
+
+- mise à jour du README  
+- ajout de badges de version  
+- clarification dans `architecture.md`  
+- préparation des futures releases GitHub
+
+---
+
+### 4.5 Décision — Archivage des validations pré‑déploiement
+
+Afin de garantir la traçabilité des versions déployées, chaque version fait l’objet d’un archivage des tests automatisés et de la checklist pré‑déploiement.
+
+Les artefacts sont stockés dans :
+
+```txt
+docs-dev/tests/deploiements/<version>/
+```
+
+Contenu :
+
+- checklist pré‑déploiement
+- logs des tests unitaires
+- logs des tests d’intégration
+- logs des tests E2E simulés
+- résumé de validation
+
+Motivations :
+
+- assurer la traçabilité des versions
+- faciliter les audits internes
+- préparer l’automatisation CI/CD
+- garantir la cohérence entre version déployée et version testée
+
+---
+
+### 4.6 Décision — Faille de sécurité sur `/api/auth/register` (version v0.2.0-dev)
+
+La validation pré‑déploiement **v0.2.0-dev** a révélé que la route `POST /api/auth/register` était accessible sans authentification.
+
+Décision :
+
+- refuser le déploiement de la v0.2.0-dev
+- créer une version corrective v0.2.1-dev
+- sécuriser la route /api/auth/register
+- analyser les routes Auth/Users pour une API REST
+
+Conséquences :
+
+- mise à jour de l'architecture de l'API avec l'analyse d'une séparation stricte Auth et USERs
+- mise à jour des tests unitaire et d’intégration Auth
+- mise à jour de la collection Postman PreDeploy
+- nouvelle validation pré‑déploiement obligatoire
+
+> Notes :
+>
+> - Cette décision est tracée (ADR) car elle met en évidence que les démarches de validation de pré-déploiement sont une phase de vérification qui peut aussi bien conclure à un déploiement qu'à un refus de poursuivre.
+
+---
+
+### 4.7 Décision — Séparation Auth/Users et correction de la faille (version v0.2.1-dev)
+
+#### 4.7.1 Présentation
+
+La validation pré‑déploiement v0.2.0-dev a révélé une faille de sécurité critique :  
+la route `POST /api/auth/register` était accessible sans authentification.
+
+Cette situation résulte d’une incohérence structurelle : les opérations CRUD liées au modèle User (création, suppression, modification) étaient regroupées dans `/api/auth/`, alors qu’elles relèvent d’une ressource métier distincte.
+
+##### 4.7.1.1 Décision
+
+- refuser le déploiement de la v0.2.0-dev ;
+- créer une version corrective v0.2.1-dev ;
+- **séparer les routes Auth et Users** :
+  - `/api/auth/login` (authentification uniquement)
+  - `/api/users/` (création, modification, suppression)
+- privatiser toutes les routes User ;
+- ajouter la route `PUT /api/users/:id` conformément au sujet ;
+- mettre à jour les tests unitaires/d’intégration et la collection Postman PreDeploy.
+
+##### 4.7.1.2 Motivations
+
+- corriger la faille de sécurité ;
+- aligner l’API avec les standards REST ;
+- respecter les fonctionnalités demandées dans le sujet (création, modification, suppression d’utilisateur) ;
+- clarifier l’architecture pour les futures versions.
+
+##### 4.7.1.3 Conséquences
+
+- mise à jour des contrôleurs et routes ;
+- mise à jour des tests ;
+- mise à jour de la documentation ;
+- nouvelle validation pré‑déploiement obligatoire (v0.2.1-dev).
+
+---
+
+#### 4.7.2 Gestion de l’obsolescence (v0.2.1‑dev)
+
+Dans la continuité de la séparation Auth/Users et de la correction de la faille de sécurité, les routes historiques :
+
+- `POST /api/auth/register`
+- `DELETE /api/auth/delete/:id`
+
+sont désormais **obsolètes**.  
+Elles ont été introduites en Phase 2 (issues 12–17) avant la création du module Users, et ne correspondent plus à l’architecture REST finale.
+
+##### 4.7.2.1 Décision
+
+- **Les routes Auth/register et Auth/delete sont conservées dans la version v0.2.1‑dev**, afin de préserver :
+  - la cohérence documentaire,
+  - la traçabilité historique,
+  - la stabilité des tests existants.
+- Elles sont désormais :
+  - **privatisées** (JWT obligatoire),
+  - **dépréciées** via un middleware dédié,
+  - **fonctionnelles**, mais accompagnées d’un avertissement explicite.
+
+##### 4.7.2.2 Motivations
+
+- éviter une rupture fonctionnelle dans une version corrective ;
+- conserver la documentation et les tests historiques ;
+- préparer une suppression propre dans une version ultérieure (v0.3.0 ou v1.0.0) ;
+- introduire un mécanisme générique de gestion de dépréciation pour l’API.
+
+##### 4.7.2.3 Choix techniques
+
+- ajout d’un middleware `deprecatedRoute` appliqué aux routes Auth obsolètes ;
+- ajout d’un header HTTP `X-Deprecated: true` ;
+- ajout d’un bloc `deprecated` dans la réponse JSON ;
+- maintien du comportement fonctionnel d’origine ;
+- mise à jour légère des tests (intitulés + vérification du header).
+
+##### 4.7.2.4 Conséquences
+
+- l’API reste cohérente et stable en v0.2.1-dev ;
+- la documentation reste lisible et fidèle à l’historique du projet ;
+- les routes obsolètes sont clairement signalées comme telles ;
+- la suppression future sera simple et propre ;
+- un mécanisme de dépréciation réutilisable est désormais en place.
+
+> **Voir :**  
+> `docs-dev/architecture/suppression-depreciation-analysis.md`  
+> pour l’analyse complète et la justification détaillée.
+
+---
+
+#### 4.7.3 Décision — Validation du pipeline PreDeploy de la version v0.2.1-dev et engagement du déploiement
+
+La version **v0.2.1-dev** a fait l’objet d’une validation complète via le pipeline **PreDeploy** (tests automatisés niveaux 1 à 3, tests manuels niveau 4, vérification du frontend local et cohérence des métadonnées de version).
+
+##### 4.7.3. Constats
+
+- l’ensemble des tests automatisés (unitaires, intégration, E2E simulés) sont **validés** ;  
+- les tests manuels API et frontend sont **conformes** ;  
+- la collection Postman PreDeploy v0.2.1-dev est **stabilisée** ;  
+- la gestion de l’obsolescence des routes Auth/register et Auth/delete est **fonctionnelle et documentée** ;  
+- la séparation Auth/Users est **cohérente**, **sécurisée**, et **testée** ;  
+- la documentation (architecture, tests, checklist) est **à jour** ;  
+- la version locale est alignée avec `APP_VERSION_TAG = 'v0.2.1-dev'` et `package.json version = 0.2.1`.
+
+##### 4.7.3.2 Décision
+
+Compte tenu de la réussite complète du pipeline PreDeploy :
+
+- **la version v0.2.1-dev est validée pour déploiement** ;  
+- le projet engage la phase **Deploy** sur Alwaysdata afin de remplacer la version publiée `v0.1.0-dev` par `v0.2.1-dev` ;  
+- les pipelines **Deploy** et **PostDeploy** seront exécutés conformément à la stratégie définie dans l’issue‑37.
+
+##### 4.7.3.3 Motivations
+
+- garantir la continuité du cycle CI/CD introduit en Phase 6 ;  
+- assurer que la version déployée est strictement identique à la version testée ;  
+- sécuriser la montée de version après correction de la faille Auth/register ;  
+- préparer la stabilisation du frontend minimal et des routes Users.
+
+##### 4.7.3.4 Conséquences
+
+- déclenchement du pipeline Deploy (Alwaysdata) ;  
+- mise à jour de la version publiée ;  
+- archivage du dossier `docs-dev/tests/deploiements/v0.2.1-dev_*` ;  
+- préparation du pipeline PostDeploy pour validation finale.
+
+---
+
+#### 4.7.4 Décision — Réalisation de correctifs réduits (patchs) pour rendre opérationnelle le v0.2.1-dev
+
+La version **v0.2.1-dev** a fait l’objet d’une validation complète via le pipeline **Deploy** (tests automatisés niveaux 1 à 3, tests manuels niveau 4, vérification du frontend local et cohérence des métadonnées de version).
+
+Les dysfonctionnement identifiés ont été identifiés et un correction réduit est mise en place. Ces corrections ne doivent pas remettre en cause les tests réalisés (niveaux 1 à 4) et ne doivent pas introduire de nouveauté dans d'architecture de l'application.
+
+La notation de la version avec correctifs (patchs) est : `<version>.<index>` correction (ie. `v0.2.1-dev.a` pour le premier patch de la version `v0.2.1-dev`).
+
+---
+
 ## 5. Environnement de développement
 
 ### 5.1 Tests E2E simulés
@@ -202,6 +441,27 @@ Motivations :
 ### 5.2 Serveur local - Activation Nodemon
 
 Décision : ajouter une configuration nodemon locale (`config/dev/nodemon.json`) pour faciliter le développement, sans impacter le déploiement.
+
+### 5.3 Séparation des tests Développeurs et des tests Opérationnels Client
+
+L’issue‑37 (Phase 6) introduit une séparation nette entre :
+
+1) Tests développeurs (npm run test)
+   - tests unitaires (niveau 1)
+   - tests d’intégration (niveau 2)
+   - tests E2E simulés
+
+2) Tests opérationnels Client (npm run tests)
+   - tests du modèle et de la base
+   - tests du front-end
+   - tests de l’API
+   - tests des fonctions Client
+
+Motivations :
+
+- éviter les interférences entre tests techniques (développeurs) et opérationnels (Client)
+- préparer la Phase 7 (tests opérationnels)
+- clarifier le pipeline CI/CD
 
 ---
 
@@ -589,7 +849,7 @@ C’est cohérent avec les issues 33 et 34.
 Aucune validation supplémentaire n’est ajoutée :  
 tout est géré par les middlewares déjà introduits dans les issues 33–34.
 
-##### 6.10.2 Contrôleur minimaliste
+#### 6.10.2 Contrôleur minimaliste
 
 Le contrôleur ne fait que :
 
@@ -603,11 +863,11 @@ Cela garantit :
 - une testabilité maximale,  
 - une cohérence avec les autres opérations CRUD.
 
-##### 6.10.3 Cohérence métier
+#### 6.10.3 Cohérence métier
 
 La vérification d’appartenance (`reservation.catwayNumber === req.catway.catwayNumber`) reste dans `resolveReservationIdentifier`, évitant toute duplication.
 
-##### 6.10.4 Simulation d’erreur interne
+#### 6.10.4 Simulation d’erreur interne
 
 En niveau‑2, l’erreur interne est simulée via :
 
@@ -616,5 +876,37 @@ sinon.stub(Reservation, 'findByIdAndDelete').throws(...)
 ```
 
 C’est cohérent avec les issues 33–35.
+
+---
+
+## 7. Fonctionnalités applicatives (Frontend & API)
+
+### 7.1 — Frontend dynamique (EJS) et séparation REST/EJS (issue‑37)
+
+Le front-end minimal basé sur EJS, séparé de l’API REST, est développé à partir de la page statique initiale du projet.  
+
+L'issue-37 et développée en 4 étapes qui conduisent à une page d'accueil permettant d'accéder à un dahboard des utilisateurs tout en protégeant du côté serveur les routes du frontend et l'API par un jeton (JWT) lié à une connexion (Login/logout).
+
+Motivations :
+
+- fournir une page d’accueil dynamique
+- préparer le front-end complet (accueil, dahboard, documentation)
+- éviter toute confusion entre API et pages HTML
+- permettre un déploiement propre sur Alwaysdata
+
+Choix techniques :
+
+- pagesRoutes.js pour les routes HTML
+- pagesController.js pour la logique métier
+- views/accueil.ejs pour le rendu
+- variable métier “status” transmise à la vue
+- suppression de accueilRoutes.js
+
+Résultat :
+
+- architecture claire et modulaire
+- API REST totalement indépendante du front
+- Routes protégées par JWT
+- compatibilité totale avec Alwaysdata
 
 ---

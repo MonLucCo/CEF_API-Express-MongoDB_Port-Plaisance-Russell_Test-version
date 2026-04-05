@@ -12,7 +12,7 @@ const {
     getReservationById,
     createReservation,
     deleteReservation
-} = require('../../src/controllers/reservationController');
+} = require('../../src/controllers/api/reservationController');
 
 const Reservation = require('../../src/models/reservation');
 

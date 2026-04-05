@@ -1,0 +1,30 @@
+{
+    "paths": {
+        "deployRoot": "docs-dev/tests/deploiements"
+    },
+    "tests": [
+        {
+            "command": "npm run tests:models",
+            "log": "logs-tests-modeles.txt"
+        },
+        {
+            "command": "npm run test:unit",
+            "log": "logs-tests-unitaires.txt"
+        },
+        {
+            "command": "npm run test:integration",
+            "log": "logs-tests-integration.txt"
+        },
+        {
+            "command": "npm run test:e2e",
+            "log": "logs-tests-e2e.txt"
+        }
+    ],
+    "options": {
+        "askReinstall": true
+    },
+    "templates": {
+        "checklist": "scripts/templates/checklist.md",
+        "resume": "scripts/templates/resume.md"
+    }
+}

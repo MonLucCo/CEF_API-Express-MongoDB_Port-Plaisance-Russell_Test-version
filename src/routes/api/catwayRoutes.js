@@ -12,7 +12,7 @@
  * - POST /catways              → création d’un catway
  * - PUT /catways/:id           → mise à jour complète d’un catway
  * - PATCH /catways/:id         → mise à jour partielle d’un catway
- * - DELETE /catways/:id         → suppression d’un catway
+ * - DELETE /catways/:id        → suppression d’un catway
  *
  * Ce routeur est monté dans `app.js` sur le chemin `/catways` : app.use('/catways', catwayRoutes);
  * 
@@ -30,7 +30,7 @@ const router = express.Router();
 const {
     validateCatwayId,
     resolveCatwayIdentifier
-} = require('../middlewares/catwayMiddleware');
+} = require('../../middlewares/catwayMiddleware');
 
 const {
     getAllCatways,
@@ -39,12 +39,12 @@ const {
     updateCatway,
     patchCatway,
     deleteCatway
-} = require('../controllers/catwayController');
+} = require('../../controllers/api/catwayController');
 
 const {
     validateCatwayPayload,
     validateCatwayPartialPayload
-} = require('../middlewares/catwayPayloadMiddleware');
+} = require('../../middlewares/catwayPayloadMiddleware');
 
 /**
  * GET /catways

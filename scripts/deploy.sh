@@ -62,11 +62,14 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
   echo "  --dry-run        Simulation du déploiement"
   echo "  --sync-preview   Aperçu des fichiers transférés (via .rsync-filter)"
   echo "  --check          Test de connexion SSH"
+  echo "  --deploy         Lance le déploiement réel (sans demande de confirmation)"
   echo "  --help, -h       Affiche cette aide"
   echo ""
   echo "Filtrage utilisé : fichier .rsync-filter.rules situé dans scripts/"
   echo ""
-  echo "Note : le redémarrage du site Alwaysdata doit être effectué manuellement."
+  echo "Note : "
+  echo "  - si aucune option n''est demandée, le déploiement nécessitera une confirmation."
+  echo "  - le redémarrage du site Alwaysdata doit être effectué manuellement."
   echo ""
   exit 0
 fi
@@ -120,10 +123,14 @@ fi
 # ============================================
 #  Déploiement réel
 # ============================================
-read -p "Confirmer le déploiement vers Alwaysdata (Y/n) : " confirm
-if [[ "$confirm" != "Y" && "$confirm" != "y" ]]; then
-  log "Déploiement annulé"
-  exit 0
+if [ "$1" == "--deploy" ]; then
+  log "Déploiement confirmé"
+else
+  read -p "Confirmer le déploiement vers Alwaysdata (Y/n) : " confirm
+  if [[ "$confirm" != "Y" && "$confirm" != "y" ]]; then
+    log "Déploiement annulé"
+    exit 0
+  fi
 fi
 
 log "Déploiement en cours..."

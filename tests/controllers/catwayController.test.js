@@ -16,7 +16,7 @@ const {
     updateCatway,
     patchCatway,
     deleteCatway
-} = require('../../src/controllers/catwayController');
+} = require('../../src/controllers/api/catwayController');
 
 // ----------------------------- 
 // GET ALL CATWAYS

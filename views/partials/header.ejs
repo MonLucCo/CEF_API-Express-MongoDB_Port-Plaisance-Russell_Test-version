@@ -1,0 +1,29 @@
+<header class="header">
+    <div class="header-left">
+        <a href="<%= BASE_URL %>/">
+            <img src="img/logo_complet.svg" alt="Logo Port de Plaisance Russell" class="logo">
+        </a>
+    </div>
+
+    <% if (currentPage !=='login' ) { %>
+        <nav class="nav">
+
+            <% if (currentPage !=='home' ) { %>
+                <a href="<%= BASE_URL %>/">Accueil</a>
+                <% } %>
+
+                    <% if (authenticated && currentPage !=='dashboard' ) { %>
+                        <a href="<%= BASE_URL %>/dashboard">Dashboard</a>
+                        <% } %>
+
+                            <% if (!authenticated && currentPage !=='login' ) { %>
+                                <a href="<%= BASE_URL %>/login">Connexion</a>
+                                <% } %>
+
+                                    <% if (authenticated) { %>
+                                        <a href="<%= BASE_URL %>/logout">Déconnexion</a>
+                                        <% } %>
+
+        </nav>
+        <% } %>
+</header>

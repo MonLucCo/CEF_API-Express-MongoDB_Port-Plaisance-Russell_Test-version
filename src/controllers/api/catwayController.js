@@ -26,7 +26,7 @@
  * @version 0.8.0
  */
 
-const Catway = require('../models/catway');
+const Catway = require('../../models/catway');
 
 /**
  * @function getAllCatways

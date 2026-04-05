@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: "Dashboard" }) %>
+</head>
+
+<body>
+
+    <%- include('partials/header', { authenticated: true }) %>
+
+        <main class="container">
+            <h1>Dashboard</h1>
+
+            <section>
+                <h2>Bienvenue</h2>
+                <p>Votre ID utilisateur est : <%= userId %>
+                </p>
+                <p>Cette page sera enrichie dans les issues 38 et 39.</p>
+            </section>
+        </main>
+
+        <%- include('partials/footer', { version: version_tag }) %>
+
+</body>
+
+</html>

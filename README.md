@@ -6,7 +6,7 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 6](https://img.shields.io/badge/Phase%206-Frontend-green) ![Version v0.6](https://img.shields.io/badge/Release-v0.6-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.2.1--dev.d-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.2.1--dev-yellow)
+![Milestone Phase 6](https://img.shields.io/badge/Phase%206-Frontend-green) ![Version v0.6.1](https://img.shields.io/badge/Release-v0.6.1-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.2.1--dev.d-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.2.1--dev-yellow)
  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
 ![Statut du dépôt](https://img.shields.io/badge/Status%20dépôt-en%20développement-orange) [![Site déployé](https://img.shields.io/badge/Accès%20site-Alwaysdata-blue)](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
 
@@ -461,7 +461,7 @@ Le projet utilise trois types de versions, afin de distinguer clairement :
    - Format : `vX.Y.Z`  
     → versions stables publiées dans GitHub Releases.
 
-   - **Dernière release : `v0.5`**  
+   - **Dernière release : `v0.6.1`**  
     🔗 [Releases du dépôt](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/releases)
 
 **Politique des versions :**

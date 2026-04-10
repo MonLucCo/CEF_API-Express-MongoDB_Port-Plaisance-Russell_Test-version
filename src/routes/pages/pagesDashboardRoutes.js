@@ -9,7 +9,6 @@ router.get('/', pagesDashboardController.renderDashboard);
 router.post('/users/create', pagesDashboardController.createUserFromDashboard);
 router.post('/users/update', pagesDashboardController.updateUserFromDashboard);
 router.post('/users/delete', pagesDashboardController.deleteUserFromDashboard);
-router.get('/users/details', pagesDashboardController.detailUserFromDashboard);
 router.get('/users/list', pagesDashboardController.listUsersFromDashboard);
 
 // Actions catways
@@ -26,6 +25,6 @@ router.get('/reservations/details', pagesDashboardController.detailReservationFr
 router.get('/reservations/list', pagesDashboardController.listReservationsFromDashboard);
 
 // Documentation API
-router.get('/docs/api', pagesDashboardController.renderApiDocsFromDashboard);
+// router.get('/docs/api', pagesDashboardController.renderApiDocsFromDashboard);    // Placeholder pour l'issue-39
 
 module.exports = router;

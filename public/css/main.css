@@ -384,3 +384,75 @@ a:hover {
         text-align: center;
     }
 }
+
+/* ============================
+   Tables (users-list, etc.)
+   ============================ */
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+thead {
+    background: #005580;
+    color: white;
+}
+
+thead th {
+    padding: 0.8rem;
+    text-align: left;
+    font-size: 1rem;
+}
+
+tbody tr:nth-child(even) {
+    background: #f5f7fa;
+}
+
+tbody tr:hover {
+    background: #e8f2f8;
+}
+
+tbody td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.95rem;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ============================
+   Boutons de retour et de navigation
+   ============================ */
+
+.btn-back {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.6rem 1.2rem;
+    background: #005580;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-back:hover {
+    background: #003f5c;
+}
+
+.btn-back:active {
+    transform: translateY(1px);
+}

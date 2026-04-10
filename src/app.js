@@ -36,6 +36,13 @@ const app = express();
 app.locals.BASE_URL = process.env.API_PREFIX || "/";
 
 /* ---------------------------------------------------------
+   Configuration de l'application URL des liens du frontend
+--------------------------------------------------------- */
+app.locals.APP_URL = process.env.PORT
+   ? `${process.env.PROTOCOL}://${process.env.DOMAIN}:${process.env.PORT}${app.locals.BASE_URL}`
+   : `${process.env.PROTOCOL}://${process.env.DOMAIN}${app.locals.BASE_URL}`;
+
+/* ---------------------------------------------------------
    Configuration du moteur de vues (EJS)
 --------------------------------------------------------- */
 app.set('views', path.join(__dirname, '../views'));

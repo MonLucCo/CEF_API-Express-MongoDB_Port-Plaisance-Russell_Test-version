@@ -21,7 +21,8 @@ const appData = require('../../../config/appData');
  */
 exports.renderDashboard = (req, res) => {
     res.render('dashboard', {
-        userId: req.userId,
+        BASE_URL: req.app.locals.BASE_URL,
+        // userId: req.userId,
         currentPage: 'dashboard',
         version_tag: appData.APP_VERSION_TAG,
         success: req.flash('success'),
@@ -32,6 +33,7 @@ exports.renderDashboard = (req, res) => {
 /**
  * @function createUserFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -44,17 +46,54 @@ exports.renderDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la création 
  * d'utilisateur n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de création d'utilisateur à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour créer un nouvel utilisateur dans la base de données. 
+ * Après la création, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers le 
+ * dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.createUserFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de création d'utilisateur à partir du dashboard
-    req.flash('error', "Create user not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.createUserFromDashboard = async (req, res) => {
+    try {
+        const apiUrl = `${req.app.locals.APP_URL}/api/users`;
+
+        const response = await fetch(
+            apiUrl,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: req.body.password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            req.flash('error', data.error || "Erreur lors de la création");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        req.flash('success', "Utilisateur créé avec succès");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors de la création");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function updateUserFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -67,17 +106,55 @@ exports.createUserFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la mise à jour 
  * d'utilisateur n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de mise à jour d'un utilisateur à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour modifier l'utilisateur dans la base de données. 
+ * Après la mise à jour, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers le 
+ * dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.updateUserFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de mise à jour d'utilisateur à partir du dashboard
-    req.flash('error', "Update user not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.updateUserFromDashboard = async (req, res) => {
+    try {
+        const id = req.body.id;
+        const apiUrl = `${req.app.locals.APP_URL}/api/users/${id}`;
+
+        const response = await fetch(
+            apiUrl,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    name: req.body.name || undefined,
+                    email: req.body.email || undefined,
+                    password: req.body.password || undefined
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            req.flash('error', data.error || "Erreur lors de la mise à jour");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        req.flash('success', "Utilisateur mis à jour avec succès");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors de la mise à jour");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function deleteUserFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -90,40 +167,50 @@ exports.updateUserFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la suppression 
  * d'utilisateur n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de suppression d'un utilisateur à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour supprimer l'utilisateur dans la base de données. 
+ * Après la suppression, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers le 
+ * dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.deleteUserFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de suppression d'utilisateur à partir du dashboard
-    req.flash('error', "Delete user not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
-}
+exports.deleteUserFromDashboard = async (req, res) => {
+    try {
+        const id = req.body.id;
+        const apiUrl = `${req.app.locals.APP_URL}/api/users/${id}`;
 
-/**
- * @function detailUserFromDashboard
- * @memberof module:controllers/pagesDashboardController
- * @param {*} req 
- * @param {*} res
- * @return {void}
- * 
- * @description Gère la visualisation des détails d'un utilisateur à partir du dashboard. Cette fonction est appelée 
- * lorsque l'administrateur soumet le formulaire de détail d'utilisateur dans le dashboard. La logique de détail 
- * d'utilisateur doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
- * Après la suppression, un message flash est ajouté pour informer l'utilisateur.
- * 
- * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la visualisation 
- * des détails d'un utilisateur n'est pas encore implémentée, et redirige vers le dashboard.
- * 
- * @version 0.1.0
- */
-exports.detailUserFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de détail d'utilisateur à partir du dashboard
-    req.flash('error', "Detail user not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        const response = await fetch(
+            apiUrl,
+            {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include"
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            req.flash('error', data.error || "Erreur lors de la suppression");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        req.flash('success', "Utilisateur supprimé avec succès");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors de la suppression");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function listUsersFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -136,12 +223,47 @@ exports.detailUserFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la liste 
  * des utilisateurs n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de détail d'un utilisateur à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour visualiser les détails de l'utilisateur dans la base de données. 
+ * Après la visualisation, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers 
+ * le dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.listUsersFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de liste des utilisateurs à partir du dashboard
-    req.flash('error', "List users not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.listUsersFromDashboard = async (req, res) => {
+    try {
+        const apiUrl = `${req.app.locals.APP_URL}/api/users`;
+
+        const response = await fetch(
+            apiUrl,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include"
+            }
+        );
+
+        const users = await response.json();
+
+        if (!response.ok) {
+            req.flash('error', users.error || "Erreur lors du chargement de la liste");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        res.render('users-list', {
+            BASE_URL: req.app.locals.BASE_URL,
+            users,
+            currentPage: 'users',
+            version_tag: appData.APP_VERSION_TAG
+        });
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors du chargement de la liste");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**

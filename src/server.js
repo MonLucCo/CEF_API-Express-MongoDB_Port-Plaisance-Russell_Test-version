@@ -30,7 +30,8 @@ const express = require('express');
 const app = require('./app');
 const { initClientDBConnection, disconnectClientDBConnection } = require('./db/mongo');
 
-const IP = process.env.IP || '0.0.0.0';
+const PROTOCOL = process.env.PROTOCOL || 'http';
+const DOMAIN = process.env.DOMAIN || 'localhost';
 const PORT = process.env.PORT || 3000;
 const PREFIX = process.env.API_PREFIX || '/';
 
@@ -57,8 +58,8 @@ async function startServer() {
     }
 
     try {
-        const server = expressApp.listen(PORT, IP, () => {
-            console.log(`🚀 Serveur démarré sur http://${IP}:${PORT}${PREFIX}`);
+        const server = expressApp.listen(PORT, DOMAIN, () => {
+            console.log(`🚀 Serveur démarré sur ${PROTOCOL}://${DOMAIN}:${PORT}${PREFIX}`);
         });
 
         server.on('error', (err) => {

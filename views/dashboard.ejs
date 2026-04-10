@@ -58,6 +58,7 @@
                                             <input type="text" name="id" placeholder="ID utilisateur" required>
                                             <input type="text" name="name" placeholder="Nouveau nom">
                                             <input type="email" name="email" placeholder="Nouvel email">
+                                            <input type="password" name="password" placeholder="Nouveau mot de passe">
                                             <button type="submit">Modifier</button>
                                         </form>
                                     </details>
@@ -74,11 +75,10 @@
 
                                     <details class="dashboard-subblock">
                                         <summary>
-                                            <h3>Afficher un utilisateur</h3>
+                                            <h3>Afficher tous les utilisateurs</h3>
                                         </summary>
-                                        <form method="GET" action="<%= BASE_URL %>/dashboard/users/details">
-                                            <input type="text" name="id" placeholder="ID utilisateur" required>
-                                            <button type="submit">Afficher</button>
+                                        <form method="GET" action="<%= BASE_URL %>/dashboard/users/list">
+                                            <button type="submit">Afficher tous</button>
                                         </form>
                                     </details>
                                 </section>
@@ -186,12 +186,20 @@
                             <nav class="dashboard-nav">
                                 <a href="<%= BASE_URL %>/dashboard/catways/list">Liste des catways</a>
                                 <a href="<%= BASE_URL %>/dashboard/reservations/list">Liste des réservations</a>
-                                <a href="<%= BASE_URL %>/dashboard/docs/api">Documentation API</a>
+
+                                <!-- Placeholder pour l'issue-39 -->
+                                <!-- <a href="<%= BASE_URL %>/dashboard/docs/api">Documentation API</a> -->
                             </nav>
 
         </main>
 
         <%- include('partials/footer', { version: version_tag }) %>
+
+            <script>
+                setTimeout(() => {
+                    document.querySelectorAll('.flash').forEach(el => el.remove());
+                }, 6000);
+            </script>
 
 </body>
 

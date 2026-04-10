@@ -92,6 +92,9 @@ body {
 
 /* Sections */
 section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     background: white;
     padding: 1.5rem;
     border-radius: 8px;
@@ -188,4 +191,196 @@ a:hover {
     margin-top: 1rem;
     font-size: 0.85rem;
     color: #666;
+}
+
+/* ============================
+   Dashboard — Structure générale
+   ============================ */
+
+.dashboard {
+    margin-top: 2rem;
+}
+
+.dashboard-intro {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    color: #444;
+}
+
+/* ============================
+   Dashboard — Blocs dépliables
+   ============================ */
+
+.dashboard-block {
+    margin-bottom: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    background: #fafafa;
+}
+
+.dashboard-block summary {
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0.5rem 0;
+}
+
+.dashboard-block summary:hover {
+    color: #0077cc;
+}
+
+.dashboard-block section {
+    margin: 1rem 0;
+    padding-left: 1rem;
+    border-left: 3px solid #ddd;
+}
+
+.dashboard-block summary h2 {
+    display: inline;
+    font-size: 1.3rem;
+    margin: 0;
+    padding: 0;
+}
+
+.dashboard-block h3 {
+    margin-bottom: 0.5rem;
+}
+
+/* ============================
+   Dashboard — Sous-Blocs dépliables (formulaire individuel)
+   ============================ */
+
+.dashboard-subblock {
+    margin: 0.8rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 4px solid #005580;
+    border-radius: 4px;
+    background: #ffffff;
+}
+
+.dashboard-subblock summary {
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.3rem 0;
+}
+
+.dashboard-subblock summary:hover {
+    color: #005fa3;
+}
+
+.dashboard-block summary h3 {
+    display: inline;
+    font-size: 1.1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.dashboard-subblock form {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ============================
+   Dashboard — Formulaires
+   ============================ */
+
+.dashboard-block form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: 420px;
+}
+
+.dashboard-block input,
+.dashboard-block button {
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+.dashboard-block button {
+    background: #0077cc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.dashboard-block button:hover {
+    background: #005fa3;
+}
+
+
+/* ============================
+   Dashboard — messages de succès et d'erreur
+   ============================ */
+
+.flash {
+    padding: 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+.flash-success {
+    background: #ddffdd;
+    color: #0a0;
+}
+
+.flash-error {
+    background: #ffdddd;
+    color: #a00;
+}
+
+/* ============================
+   Dashboard — Navigation
+   ============================ */
+
+.dashboard-nav {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.dashboard-nav a {
+    padding: 0.5rem 1rem;
+    background: #eee;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+}
+
+.dashboard-nav a:hover {
+    background: #ddd;
+}
+
+/* ============================
+   Responsive
+   ============================ */
+
+@media (max-width: 600px) {
+
+    .dashboard-block {
+        padding: 0.5rem;
+    }
+
+    .dashboard-block form {
+        max-width: 100%;
+    }
+
+    .dashboard-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dashboard-nav a {
+        text-align: center;
+    }
 }

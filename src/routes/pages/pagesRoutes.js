@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pagesController = require('../../controllers/pages/pagesController');
 const requireAuthPage = require('../../middlewares/requireAuthPages');
+const pagesDashboardRoutes = require('./pagesDashboardRoutes');
 /**
  * Routes des pages de l'application.
  *
@@ -14,18 +15,19 @@ const requireAuthPage = require('../../middlewares/requireAuthPages');
  * - GET /login                 → page de connexion (login.ejs)
  * - POST /login                → traitement de la connexion (génération du JWT)
  * - POST /logout               → traitement de la déconnexion
- * - GET /dashboard             → page du dashboard (dashboard.ejs)
+ * - USE /dashboard             → routes du dashboard (pagesDashboardRoutes.js)
  * 
  * Sécurité :
- * - La route GET /dashboard est protégée par le middleware `requireAuthPage`, qui redirige vers /login si l'utilisateur n'est pas 
+ * - Les routes USE /dashboard sont protégées par le middleware `requireAuthPage`, qui redirige vers /login si l'utilisateur n'est pas 
  * authentifié.
  * - Les autres routes sont publiques et ne nécessitent pas d'authentification.
  * 
  * @module routes/pagesRoutes
  * @requires express
- * @requires controllers/pagesController
  * @requires middlewares/requireAuthPages
- * @version 0.1.0
+ * @requires controllers/pagesController
+ * @requires routes/pages/pagesDashboardRoutes
+ * @version 0.2.0
  * 
  * Note : les fonctionnalités spécifiques du dashboard seront développées dans les versions ultérieures. En version 0.1.0, le 
  * dashboard est un placeholder qui affiche simplement l'identifiant utilisateur extrait du token JWT.
@@ -43,7 +45,7 @@ const requireAuthPage = require('../../middlewares/requireAuthPages');
  * 
  * @see views/accueil.ejs
  * @see views/login.ejs
- * @see views/dashboard.ejs
+ * @see routes/pages/pagesDashboardRoutes.js
  * @see routes/api/authRoutes
  * @see middlewares/requireAuthPages
  * @see config/jwt
@@ -60,6 +62,6 @@ router.post('/login', pagesController.handleLogin);
 router.get('/logout', pagesController.handleLogout);
 
 // Dashboard (protégé par le middleware d'authentification)
-router.get('/dashboard', requireAuthPage, pagesController.renderDashboard);
+router.use('/dashboard', requireAuthPage, pagesDashboardRoutes);
 
 module.exports = router;

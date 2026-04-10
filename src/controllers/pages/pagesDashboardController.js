@@ -1,0 +1,376 @@
+const appData = require('../../../config/appData');
+
+/**
+ * Rendu du dashboard utilisateur.
+ * @function renderDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Affiche la page du dashboard pour les utilisateurs authentifiés. Cette page est protégée par le 
+ * middleware `requireAuthPage`.
+ * Le dashboard affiche des informations personnalisées basées sur `req.userId`, qui est défini par le middleware 
+ * d'authentification.
+ * En version 0.2.0, le dashboard affiche les fonctions de gestion des utilisateurs, des catways et des réservations, 
+ * ainsi que la documentation de l'API.
+ * Un système de messages flash est utilisé pour afficher des notifications de succès ou d'erreur après les actions 
+ * effectuées depuis le dashboard.
+ * 
+ * @version 0.2.0
+ */
+exports.renderDashboard = (req, res) => {
+    res.render('dashboard', {
+        userId: req.userId,
+        currentPage: 'dashboard',
+        version_tag: appData.APP_VERSION_TAG,
+        success: req.flash('success'),
+        error: req.flash('error')
+    });    // Rendu de la vue EJS avec les données de l'utilisateur connecté, de la page courante, de la version et des messages flash pour les notifications de succès ou d'erreur.
+};
+
+/**
+ * @function createUserFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la création d'un utilisateur à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de création d'utilisateur dans le dashboard. La logique de création 
+ * d'utilisateur doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la création, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la création 
+ * d'utilisateur n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.createUserFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de création d'utilisateur à partir du dashboard
+    req.flash('error', "Create user not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function updateUserFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la mise à jour d'un utilisateur à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de mise à jour d'utilisateur dans le dashboard. La logique de mise à jour 
+ * d'utilisateur doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la mise à jour, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la mise à jour 
+ * d'utilisateur n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.updateUserFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de mise à jour d'utilisateur à partir du dashboard
+    req.flash('error', "Update user not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function deleteUserFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la suppression d'un utilisateur à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de suppression d'utilisateur dans le dashboard. La logique de suppression 
+ * d'utilisateur doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la suppression, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la suppression 
+ * d'utilisateur n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.deleteUserFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de suppression d'utilisateur à partir du dashboard
+    req.flash('error', "Delete user not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function detailUserFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la visualisation des détails d'un utilisateur à partir du dashboard. Cette fonction est appelée 
+ * lorsque l'administrateur soumet le formulaire de détail d'utilisateur dans le dashboard. La logique de détail 
+ * d'utilisateur doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la suppression, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la visualisation 
+ * des détails d'un utilisateur n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.detailUserFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de détail d'utilisateur à partir du dashboard
+    req.flash('error', "Detail user not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function listUsersFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la liste des utilisateurs à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de liste d'utilisateurs dans le dashboard. La logique de liste 
+ * d'utilisateurs doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la liste des utilisateurs, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la liste 
+ * des utilisateurs n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.listUsersFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de liste des utilisateurs à partir du dashboard
+    req.flash('error', "List users not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function createCatwayFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la création d'un catway à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de création de catway dans le dashboard. La logique de création 
+ * de catway doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la création, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la création 
+ * de catway n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.createCatwayFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de création de catway à partir du dashboard
+    req.flash('error', "Create catway not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function updateCatwayFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la mise à jour d'un catway à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de mise à jour de catway dans le dashboard. La logique de mise à jour 
+ * de catway doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la mise à jour, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la mise à jour 
+ * de catway n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.updateCatwayFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de mise à jour de catway à partir du dashboard
+    req.flash('error', "Update catway not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function deleteCatwayFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la suppression d'un catway à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de suppression de catway dans le dashboard. La logique de suppression 
+ * de catway doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la suppression, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la suppression 
+ * de catway n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.deleteCatwayFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de suppression de catway à partir du dashboard
+    req.flash('error', "Delete catway not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function detailCatwayFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la visualisation des détails d'un catway à partir du dashboard. Cette fonction est appelée 
+ * lorsque l'administrateur soumet le formulaire de détail de catway dans le dashboard. La logique de détail 
+ * de catway doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la suppression, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la visualisation 
+ * des détails d'un catway n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.detailCatwayFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de détail de catway à partir du dashboard
+    req.flash('error', "Detail catway not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function listCatwaysFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la liste des catways à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de liste de catways dans le dashboard. La logique de liste 
+ * de catways doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la liste des catways, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la liste 
+ * des catways n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.listCatwaysFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de liste des catways à partir du dashboard
+    req.flash('error', "List catways not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function createReservationFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la création d'une réservation à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de création de réservation dans le dashboard. La logique de création 
+ * de réservation doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la création, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la création 
+ * de réservation n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.createReservationFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de création de réservation à partir du dashboard
+    req.flash('error', "Create reservation not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function deleteReservationFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la suppression d'une réservation à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de suppression de réservation dans le dashboard. La logique de suppression 
+ * de réservation doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la suppression, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la suppression 
+ * de réservation n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.deleteReservationFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de suppression de réservation à partir du dashboard
+    req.flash('error', "Delete reservation not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function detailReservationFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la visualisation des détails d'une réservation à partir du dashboard. Cette fonction est appelée 
+ * lorsque l'administrateur soumet le formulaire de détail de réservation dans le dashboard. La logique de détail 
+ * de réservation doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la suppression, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la visualisation 
+ * des détails d'une réservation n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.detailReservationFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de détail de réservation à partir du dashboard
+    req.flash('error', "Detail reservation not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function listReservationsFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la liste des réservations à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de liste de réservations dans le dashboard. La logique de liste 
+ * de réservations doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la liste des réservations, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la liste 
+ * des réservations n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ */
+exports.listReservationsFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de liste des réservations à partir du dashboard
+    req.flash('error', "List reservations not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}
+
+/**
+ * @function detailReservationFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Affiche la documentation de l'API à partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur clique sur le lien de documentation de l'API dans le dashboard. La logique de rendu de la 
+ * documentation de l'API doit être implémentée dans cette fonction, en utilisant les données nécessaires pour
+ * afficher la documentation de manière claire et informative. Après le rendu, un message flash est ajouté pour 
+ * informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la documentation
+ * de l'API n'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * @version 0.1.0
+ **/
+exports.renderApiDocsFromDashboard = (req, res) => {
+    // TODO : implémenter la logique de rendu de la documentation API à partir du dashboard
+    req.flash('error', "API docs not implemented");
+    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+}

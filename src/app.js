@@ -8,11 +8,16 @@
  * - Configuration des fichiers statiques (public/)
  * 
  * Prise en compte du Préfixe dans la base de l'URL (accès dans les données locales d'Express)
+ * 
+ * Prise en compte des messages flash pour les notifications de succès ou d'erreur (utilisés dans le dashboard)
  *
  * @module app
  * @requires express
  * @requires path
- * @version 0.5.3
+ * @requires cookie-parser
+ * @requires express-session
+ * @requires connect-flash
+ * @version 0.5.4
  */
 
 const express = require('express');
@@ -47,6 +52,20 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+/* ---------------------------------------------------------
+   Sessions + Flash messages
+--------------------------------------------------------- */
+const session = require('express-session');
+const flash = require('connect-flash');
+
+app.use(session({
+   secret: 'flash-secret',
+   resave: false,
+   saveUninitialized: true
+}));
+
+app.use(flash());
 
 /* ---------------------------------------------------------
    Routes Pages (EJS)

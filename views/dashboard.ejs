@@ -98,7 +98,14 @@
                                         </summary>
                                         <form method="POST" action="<%= BASE_URL %>/dashboard/catways/create">
                                             <input type="number" name="catwayNumber" placeholder="Numéro" required>
-                                            <input type="text" name="type" placeholder="Type (short/long)" required>
+                                            <select name="type" required>
+                                                <option value="" disabled selected>-- Choisir un type --</option>
+                                                <% catwayTypes.forEach(t=> { %>
+                                                    <option value="<%= t %>">
+                                                        <%= t %>
+                                                    </option>
+                                                    <% }) %>
+                                            </select>
                                             <input type="text" name="catwayState" placeholder="État" required>
                                             <button type="submit">Créer</button>
                                         </form>
@@ -106,7 +113,7 @@
 
                                     <details class="dashboard-subblock">
                                         <summary>
-                                            <h3>Modifier un catway</h3>
+                                            <h3>Modifier l'état d'un catway</h3>
                                         </summary>
                                         <form method="POST" action="<%= BASE_URL %>/dashboard/catways/update">
                                             <input type="text" name="id" placeholder="ID catway" required>

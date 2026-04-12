@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: "Détails du catway" }) %>
+</head>
+
+<body>
+
+    <%- include('partials/header', { authenticated: true }) %>
+
+        <main class="container">
+            <h1>Détails du catway</h1>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Champ</th>
+                            <th>Valeur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ID</td>
+                            <td>
+                                <%= catway._id %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Numéro</td>
+                            <td>
+                                <%= catway.catwayNumber %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Type</td>
+                            <td>
+                                <%= catway.type %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>État</td>
+                            <td>
+                                <%= catway.catwayState %>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="<%= BASE_URL %>/dashboard" class="btn-back">← Retour au dashboard</a>
+        </main>
+
+        <%- include('partials/footer', { version: version_tag }) %>
+
+</body>
+
+</html>

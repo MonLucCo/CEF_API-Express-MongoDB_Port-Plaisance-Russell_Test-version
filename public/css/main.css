@@ -298,9 +298,14 @@ a:hover {
 }
 
 .dashboard-block input,
+.dashboard-block select,
 .dashboard-block button {
     padding: 0.5rem;
     font-size: 1rem;
+}
+
+.dashboard-block select option[disabled] {
+    color: #777;
 }
 
 .dashboard-block button {
@@ -389,36 +394,48 @@ a:hover {
    Tables (users-list, etc.)
    ============================ */
 
-.table-container {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1.5rem;
-    background: white;
+.table-wrapper {
+    border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-thead {
+/* Header */
+.table-header {
+    width: 100%;
+    border-collapse: collapse;
     background: #005580;
     color: white;
 }
 
-thead th {
+.table-header th {
     padding: 0.8rem;
     text-align: left;
     font-size: 1rem;
 }
 
-tbody tr:nth-child(even) {
+/* Body scrollable */
+.table-body-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table-body {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-body td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.95rem;
+}
+
+.table-body tr:nth-child(even) {
     background: #f5f7fa;
 }
 
-tbody tr:hover {
+.table-body tr:hover {
     background: #e8f2f8;
 }
 

@@ -2,7 +2,7 @@
 <html lang="fr">
 
 <head>
-    <%- include('partials/head', { title: "Liste des utilisateurs" }) %>
+    <%- include('partials/head', { title: "Liste des catways" }) %>
 </head>
 
 <body>
@@ -10,22 +10,24 @@
     <%- include('partials/header', { authenticated: true }) %>
 
         <main class="container">
-            <h1>Liste des utilisateurs</h1>
+            <h1>Liste des catways</h1>
 
             <div class="table-wrapper">
 
                 <!-- Header fixe -->
                 <table class="table-header">
                     <colgroup>
-                        <col style="width: 34%">
-                        <col style="width: 33%">
-                        <col style="width: 33%">
+                        <col style="width: 35%">
+                        <col style="width: 15%">
+                        <col style="width: 15%">
+                        <col style="width: 30%">
                     </colgroup>
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nom</th>
-                            <th>Email</th>
+                            <th>Numéro</th>
+                            <th>Type</th>
+                            <th>État</th>
                         </tr>
                     </thead>
                 </table>
@@ -34,21 +36,25 @@
                 <div class="table-body-wrapper">
                     <table class="table-body">
                         <colgroup>
-                            <col style="width: 34%">
-                            <col style="width: 33%">
-                            <col style="width: 33%">
+                            <col style="width: 35%">
+                            <col style="width: 15%">
+                            <col style="width: 15%">
+                            <col style="width: 30%">
                         </colgroup>
                         <tbody>
-                            <% users.forEach(u=> { %>
+                            <% catways.forEach(c=> { %>
                                 <tr>
                                     <td>
-                                        <%= u._id %>
+                                        <%= c._id %>
                                     </td>
                                     <td>
-                                        <%= u.name %>
+                                        <%= c.catwayNumber %>
                                     </td>
                                     <td>
-                                        <%= u.email %>
+                                        <%= c.type %>
+                                    </td>
+                                    <td>
+                                        <%= c.catwayState %>
                                     </td>
                                 </tr>
                                 <% }) %>
@@ -59,7 +65,6 @@
             </div>
 
             <a href="<%= BASE_URL %>/dashboard" class="btn-back">← Retour au dashboard</a>
-
         </main>
 
         <%- include('partials/footer', { version: version_tag }) %>

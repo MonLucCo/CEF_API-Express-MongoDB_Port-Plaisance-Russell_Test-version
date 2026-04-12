@@ -20,9 +20,11 @@ const appData = require('../../../config/appData');
  * @version 0.2.0
  */
 exports.renderDashboard = (req, res) => {
+    const catwayTypes = ['short', 'long'];
+
     res.render('dashboard', {
         BASE_URL: req.app.locals.BASE_URL,
-        // userId: req.userId,
+        catwayTypes,
         currentPage: 'dashboard',
         version_tag: appData.APP_VERSION_TAG,
         success: req.flash('success'),
@@ -223,7 +225,7 @@ exports.deleteUserFromDashboard = async (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la liste 
  * des utilisateurs n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * En version 0.2.0, cette fonction implémente la logique de détail d'un utilisateur à partir du dashboard, en 
+ * En version 0.2.0, cette fonction implémente la logique de la liste des utilisateurs à partir du dashboard, en 
  * utilisant les données envoyées dans `req.body` pour visualiser les détails de l'utilisateur dans la base de données. 
  * Après la visualisation, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers 
  * le dashboard est effectuée.
@@ -269,6 +271,7 @@ exports.listUsersFromDashboard = async (req, res) => {
 /**
  * @function createCatwayFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -281,17 +284,52 @@ exports.listUsersFromDashboard = async (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la création 
  * de catway n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de création d'un catway à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour créer un nouvel utilisateur dans la base de données. 
+ * Après la création, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers le 
+ * dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.createCatwayFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de création de catway à partir du dashboard
-    req.flash('error', "Create catway not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.createCatwayFromDashboard = async (req, res) => {
+    try {
+        const response = await fetch(
+            `${req.app.locals.APP_URL}/api/catways`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    catwayNumber: parseInt(req.body.catwayNumber, 10),
+                    type: req.body.type,
+                    catwayState: req.body.catwayState
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            req.flash('error', data.error || "Erreur lors de la création du catway");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        req.flash('success', "Catway créé avec succès");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors de la création du catway");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function updateCatwayFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -304,17 +342,53 @@ exports.createCatwayFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la mise à jour 
  * de catway n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de mise à jour de l'état d'un catway à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour modifier le catway dans la base de données. 
+ * Après la mise à jour, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers le 
+ * dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.updateCatwayFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de mise à jour de catway à partir du dashboard
-    req.flash('error', "Update catway not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.updateCatwayFromDashboard = async (req, res) => {
+    try {
+        const id = req.body.id;
+        const apiUrl = `${req.app.locals.APP_URL}/api/catways/${id}`;
+
+        const response = await fetch(
+            apiUrl,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    catwayState: req.body.catwayState
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            req.flash('error', data.error || "Erreur lors de la mise à jour du catway");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        req.flash('success', "Catway mis à jour avec succès");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors de la mise à jour du catway");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function deleteCatwayFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -327,17 +401,49 @@ exports.updateCatwayFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la suppression 
  * de catway n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de suppression d'un catway à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour supprimer le catway dans la base de données. 
+ * Après la suppression, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers le 
+ * dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.deleteCatwayFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de suppression de catway à partir du dashboard
-    req.flash('error', "Delete catway not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.deleteCatwayFromDashboard = async (req, res) => {
+    try {
+        const id = req.body.id;
+        const apiUrl = `${req.app.locals.APP_URL}/api/catways/${id}`;
+
+        const response = await fetch(
+            apiUrl,
+            {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include",
+                body: JSON.stringify({})
+            }
+        );
+
+        if (!response.ok) {
+            req.flash('error', data.error || "Erreur lors de la suppression du catway");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        req.flash('success', "Catway supprimé avec succès");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors de la suppression du catway (test)");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function detailCatwayFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -350,17 +456,60 @@ exports.deleteCatwayFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la visualisation 
  * des détails d'un catway n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de détail d'un catway à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour visualiser les détails du catway dans la base de données. 
+ * Après la visualisation, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers 
+ * le dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.detailCatwayFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de détail de catway à partir du dashboard
-    req.flash('error', "Detail catway not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.detailCatwayFromDashboard = async (req, res) => {
+    try {
+        const id = req.query.id;
+
+        if (!id) {
+            req.flash('error', "ID catway manquant");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        const apiUrl = `${req.app.locals.APP_URL}/api/catways/${id}`;
+
+        const response = await fetch(
+            apiUrl,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include"
+            }
+        );
+
+        const catway = await response.json();
+
+        if (!response.ok) {
+            req.flash('error', catway.error || "Catway introuvable");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        res.render('catway-details', {
+            BASE_URL: req.app.locals.BASE_URL,
+            catway,
+            currentPage: 'catways',
+            version_tag: appData.APP_VERSION_TAG
+        });
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors du chargement du catway");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function listCatwaysFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -373,12 +522,47 @@ exports.detailCatwayFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la liste 
  * des catways n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de la liste des catways à partir du dashboard, en 
+ * utilisant les données envoyées dans `req.body` pour récupérer la liste des catways depuis la base de données. 
+ * Après la récupération, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers 
+ * le dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.listCatwaysFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de liste des catways à partir du dashboard
-    req.flash('error', "List catways not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.listCatwaysFromDashboard = async (req, res) => {
+    try {
+        const apiUrl = `${req.app.locals.APP_URL}/api/catways`;
+
+        const response = await fetch(
+            apiUrl,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include"
+            }
+        );
+
+        const catways = await response.json();
+
+        if (!response.ok) {
+            req.flash('error', catways.error || "Erreur lors du chargement de la liste des catways");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        res.render('catways-list', {
+            BASE_URL: req.app.locals.BASE_URL,
+            catways,
+            currentPage: 'catways',
+            version_tag: appData.APP_VERSION_TAG
+        });
+
+    } catch (error) {
+        req.flash('error', "Erreur interne lors du chargement de la liste des catways");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**

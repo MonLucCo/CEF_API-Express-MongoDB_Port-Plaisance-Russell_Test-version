@@ -2,7 +2,7 @@
 <html lang="fr">
 
 <head>
-    <%- include('partials/head', { title: "Liste des catways" }) %>
+    <%- include('partials/head', { title: "Liste des réservations" }) %>
 </head>
 
 <body>
@@ -10,24 +10,28 @@
     <%- include('partials/header', { authenticated: true }) %>
 
         <main class="container">
-            <h1>Liste des catways</h1>
+            <h1>Liste des réservations</h1>
 
             <div class="table-wrapper">
 
                 <!-- Header fixe -->
                 <table class="table-header">
                     <colgroup>
-                        <col style="width: 35%">
+                        <col style="width: 25%">
+                        <col style="width: 10%">
                         <col style="width: 15%">
                         <col style="width: 15%">
-                        <col style="width: 30%">
+                        <col style="width: 15%">
+                        <col style="width: 15%">
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Numéro</th>
-                            <th>Type</th>
-                            <th>État</th>
+                            <th>ID Réservation</th>
+                            <th>Catway</th>
+                            <th>Client</th>
+                            <th>Bateau</th>
+                            <th>Arrivée</th>
+                            <th>Départ</th>
                         </tr>
                     </thead>
                 </table>
@@ -36,33 +40,41 @@
                 <div class="table-body-wrapper">
                     <table class="table-body">
                         <colgroup>
-                            <col style="width: 35%">
+                            <col style="width: 25%">
+                            <col style="width: 10%">
                             <col style="width: 15%">
                             <col style="width: 15%">
-                            <col style="width: 30%">
+                            <col style="width: 15%">
+                            <col style="width: 15%">
                         </colgroup>
                         <tbody>
-                            <% if (catways && catways.length> 0) { %>
-                                <% catways.forEach(c=> { %>
+                            <% if (reservations && reservations.length> 0) { %>
+                                <% reservations.forEach(r=> { %>
                                     <tr>
                                         <td>
-                                            <%= c._id %>
+                                            <%= r._id %>
                                         </td>
                                         <td>
-                                            <%= c.catwayNumber %>
+                                            <%= r.catwayNumber %>
                                         </td>
                                         <td>
-                                            <%= c.type %>
+                                            <%= r.clientName %>
                                         </td>
                                         <td>
-                                            <%= c.catwayState %>
+                                            <%= r.boatName %>
+                                        </td>
+                                        <td>
+                                            <%= r.checkIn %>
+                                        </td>
+                                        <td>
+                                            <%= r.checkOut %>
                                         </td>
                                     </tr>
                                     <% }) %>
                                         <% } else { %>
                                             <tr>
-                                                <td colspan="4" class="table-empty">
-                                                    Aucun catway trouvé.
+                                                <td colspan="6" class="table-empty">
+                                                    Aucune réservation trouvée.
                                                 </td>
                                             </tr>
                                             <% } %>

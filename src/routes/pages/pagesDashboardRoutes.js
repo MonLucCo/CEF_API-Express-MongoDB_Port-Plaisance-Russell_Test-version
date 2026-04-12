@@ -22,7 +22,8 @@ router.get('/catways/list', pagesDashboardController.listCatwaysFromDashboard);
 router.post('/reservations/create', pagesDashboardController.createReservationFromDashboard);
 router.post('/reservations/delete', pagesDashboardController.deleteReservationFromDashboard);
 router.get('/reservations/details', pagesDashboardController.detailReservationFromDashboard);
-router.get('/reservations/list', pagesDashboardController.listReservationsFromDashboard);
+router.get('/reservations/catway', pagesDashboardController.listReservationsFromDashboard);
+router.get('/reservations/list', pagesDashboardController.listAllReservationsFromDashboard);
 
 // Documentation API
 // router.get('/docs/api', pagesDashboardController.renderApiDocsFromDashboard);    // Placeholder pour l'issue-39

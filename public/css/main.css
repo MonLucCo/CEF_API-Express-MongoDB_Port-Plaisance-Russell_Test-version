@@ -439,6 +439,13 @@ a:hover {
     background: #e8f2f8;
 }
 
+.table-empty {
+    text-align: center;
+    padding: 1rem;
+    color: #666;
+    font-style: italic;
+}
+
 tbody td {
     padding: 0.8rem;
     border-bottom: 1px solid #ddd;

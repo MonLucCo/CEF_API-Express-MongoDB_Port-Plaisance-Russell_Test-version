@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: "Détails de la réservation" }) %>
+</head>
+
+<body>
+
+    <%- include('partials/header', { authenticated: true }) %>
+
+        <main class="container">
+            <h1>Détails de la réservation</h1>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Champ</th>
+                            <th>Valeur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ID</td>
+                            <td>
+                                <%= reservation._id %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Catway</td>
+                            <td>
+                                <%= reservation.catwayNumber %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Client</td>
+                            <td>
+                                <%= reservation.clientName %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Bateau</td>
+                            <td>
+                                <%= reservation.boatName %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Arrivée</td>
+                            <td>
+                                <%= reservation.checkIn %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Départ</td>
+                            <td>
+                                <%= reservation.checkOut %>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="<%= BASE_URL %>/dashboard" class="btn-back">← Retour au dashboard</a>
+        </main>
+
+        <%- include('partials/footer', { version: version_tag }) %>
+
+</body>
+
+</html>

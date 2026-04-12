@@ -1,6 +1,34 @@
 const appData = require('../../../config/appData');
 
 /**
+ * Nettoie une chaîne de caractères pour l'utiliser comme identifiant (ex: nom d'utilisateur, email).
+ * @function cleanIdentifier
+ * @memberof module:controllers/pagesDashboardController
+ * @param {string} value - La chaîne à nettoyer.
+ * @return {string|null} La chaîne nettoyée, ou null si la valeur est vide ou nulle.
+ * 
+ * @description Cette fonction prend une chaîne de caractères en entrée et effectue les opérations suivantes :
+ * - Si la valeur est vide ou nulle, elle retourne null.
+ * - Sinon, elle supprime les espaces au début et à la fin de la chaîne, ainsi que les espaces multiples à l'intérieur de la chaîne.
+ * 
+ * En version 0.1.0, cette fonction implémente la logique de nettoyage décrite ci-dessus, pour garantir que les identifiants
+ * utilisés dans le dashboard sont correctement formatés et ne contiennent pas d'espaces indésirables.
+ * 
+ * @version 0.1.0
+ **/
+function cleanIdentifier(value) {
+    if (!value) return null;
+
+    // Supprime espaces début/fin
+    let v = value.trim();
+
+    // Supprime espaces multiples internes
+    v = v.replace(/\s+/g, "");
+
+    return v;
+}
+
+/**
  * Rendu du dashboard utilisateur.
  * @function renderDashboard
  * @memberof module:controllers/pagesDashboardController
@@ -117,7 +145,7 @@ exports.createUserFromDashboard = async (req, res) => {
  */
 exports.updateUserFromDashboard = async (req, res) => {
     try {
-        const id = req.body.id;
+        const id = cleanIdentifier(req.body.id);
         const apiUrl = `${req.app.locals.APP_URL}/api/users/${id}`;
 
         const response = await fetch(
@@ -178,7 +206,7 @@ exports.updateUserFromDashboard = async (req, res) => {
  */
 exports.deleteUserFromDashboard = async (req, res) => {
     try {
-        const id = req.body.id;
+        const id = cleanIdentifier(req.body.id);
         const apiUrl = `${req.app.locals.APP_URL}/api/users/${id}`;
 
         const response = await fetch(
@@ -351,7 +379,7 @@ exports.createCatwayFromDashboard = async (req, res) => {
  */
 exports.updateCatwayFromDashboard = async (req, res) => {
     try {
-        const id = req.body.id;
+        const id = cleanIdentifier(req.body.id);
         const apiUrl = `${req.app.locals.APP_URL}/api/catways/${id}`;
 
         const response = await fetch(
@@ -410,7 +438,7 @@ exports.updateCatwayFromDashboard = async (req, res) => {
  */
 exports.deleteCatwayFromDashboard = async (req, res) => {
     try {
-        const id = req.body.id;
+        const id = cleanIdentifier(req.body.id);
         const apiUrl = `${req.app.locals.APP_URL}/api/catways/${id}`;
 
         const response = await fetch(
@@ -465,7 +493,7 @@ exports.deleteCatwayFromDashboard = async (req, res) => {
  */
 exports.detailCatwayFromDashboard = async (req, res) => {
     try {
-        const id = req.query.id;
+        const id = cleanIdentifier(req.query.id);
 
         if (!id) {
             req.flash('error', "ID catway manquant");
@@ -568,6 +596,7 @@ exports.listCatwaysFromDashboard = async (req, res) => {
 /**
  * @function createReservationFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -580,17 +609,54 @@ exports.listCatwaysFromDashboard = async (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la création 
  * de réservation n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de création d'une réservation d'un catway à partir du dashboard, 
+ * en utilisant les données envoyées dans `req.body` pour créer un nouvel utilisateur dans la base de données. 
+ * Après la création, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers le 
+ * dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.createReservationFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de création de réservation à partir du dashboard
-    req.flash('error', "Create reservation not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.createReservationFromDashboard = async (req, res) => {
+    try {
+        const catwayId = cleanIdentifier(req.body.catwayId);
+
+        const apiUrl = `${req.app.locals.APP_URL}/api/catways/${catwayId}/reservations`;
+
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Cookie": req.headers.cookie ?? ""
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                clientName: req.body.clientName,
+                boatName: req.body.boatName,
+                checkIn: req.body.checkIn,
+                checkOut: req.body.checkOut
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            req.flash("error", data.error || "Erreur lors de la création de la réservation");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        req.flash("success", "Réservation créée avec succès");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+
+    } catch (err) {
+        req.flash("error", "Erreur interne lors de la création de la réservation");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function deleteReservationFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -603,17 +669,47 @@ exports.createReservationFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la suppression 
  * de réservation n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de suppression d'une réservation d'un catway à partir du dashboard, 
+ * en utilisant les données envoyées dans `req.body` pour supprimer le catway dans la base de données. 
+ * Après la suppression, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers le 
+ * dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.deleteReservationFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de suppression de réservation à partir du dashboard
-    req.flash('error', "Delete reservation not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.deleteReservationFromDashboard = async (req, res) => {
+    try {
+        const catwayId = cleanIdentifier(req.body.catwayId);
+        const reservationId = cleanIdentifier(req.body.reservationId);
+
+        const apiUrl = `${req.app.locals.APP_URL}/api/catways/${catwayId}/reservations/${reservationId}`;
+
+        const response = await fetch(apiUrl, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Cookie": req.headers.cookie ?? ""
+            },
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            req.flash("error", data.error || "Erreur lors de la suppression de la réservation");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        req.flash("success", "Réservation supprimée avec succès");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+
+    } catch (err) {
+        req.flash("error", "Erreur interne lors de la suppression de la réservation");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function detailReservationFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
@@ -626,35 +722,192 @@ exports.deleteReservationFromDashboard = (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la visualisation 
  * des détails d'une réservation n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de détail d'une réservation d'un catway à partir du dashboard, 
+ * en utilisant les données envoyées dans `req.body` pour visualiser les détails du catway dans la base de données. 
+ * Après la visualisation, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers 
+ * le dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.detailReservationFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de détail de réservation à partir du dashboard
-    req.flash('error', "Detail reservation not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.detailReservationFromDashboard = async (req, res) => {
+    try {
+        const catwayId = cleanIdentifier(req.query.catwayId);
+        const reservationId = cleanIdentifier(req.query.reservationId);
+
+        if (!catwayId || !reservationId) {
+            req.flash("error", "Paramètres manquants");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        const apiUrl = `${req.app.locals.APP_URL}/api/catways/${catwayId}/reservations/${reservationId}`;
+
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Cookie": req.headers.cookie ?? ""
+            },
+            credentials: "include"
+        });
+
+        const reservation = await response.json();
+
+        if (!response.ok) {
+            req.flash("error", reservation.error || "Réservation introuvable");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        res.render("reservation-details", {
+            BASE_URL: req.app.locals.BASE_URL,
+            reservation,
+            currentPage: "reservations",
+            version_tag: appData.APP_VERSION_TAG
+        });
+
+    } catch (err) {
+        req.flash("error", "Erreur interne lors du chargement de la réservation");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**
  * @function listReservationsFromDashboard
  * @memberof module:controllers/pagesDashboardController
+ * @async
+ * @param {*} req 
+ * @param {*} res
+ * @return {void}
+ * 
+ * @description Gère la liste des réservations d'un catwayà partir du dashboard. Cette fonction est appelée lorsque 
+ * l'administrateur soumet le formulaire de liste de réservations dans le dashboard. La logique de liste 
+ * de réservations doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
+ * Après la liste des réservations, un message flash est ajouté pour informer l'utilisateur.
+ * 
+ * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la liste 
+ * des réservations d'un catwayn'est pas encore implémentée, et redirige vers le dashboard.
+ * 
+ * En version 0.2.0, cette fonction implémente la logique de liste des réservations d'un catway à partir du dashboard, 
+ * en utilisant les données envoyées dans `req.body` pour visualiser les détails du catway dans la base de données. 
+ * Après la visualisation, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers 
+ * le dashboard est effectuée.
+ * 
+ * @version 0.2.0
+ */
+exports.listReservationsFromDashboard = async (req, res) => {
+    try {
+        const catwayId = cleanIdentifier(req.query.catwayId);
+
+        if (!catwayId) {
+            req.flash("error", "ID catway manquant");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        const apiUrl = `${req.app.locals.APP_URL}/api/catways/${catwayId}/reservations`;
+
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Cookie": req.headers.cookie ?? ""
+            },
+            credentials: "include"
+        });
+
+        const reservations = await response.json();
+
+        if (!response.ok) {
+            req.flash("error", reservations.error || "Erreur lors du chargement des réservations");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        res.render("reservations-list", {
+            BASE_URL: req.app.locals.BASE_URL,
+            reservations,
+            currentPage: "reservations",
+            version_tag: appData.APP_VERSION_TAG
+        });
+
+    } catch (err) {
+        req.flash("error", "Erreur interne lors du chargement des réservations");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
+}
+
+/**
+ * @function listAllReservationsFromDashboard
+ * @memberof module:controllers/pagesDashboardController
+ * @async
  * @param {*} req 
  * @param {*} res
  * @return {void}
  * 
  * @description Gère la liste des réservations à partir du dashboard. Cette fonction est appelée lorsque 
- * l'administrateur soumet le formulaire de liste de réservations dans le dashboard. La logique de liste 
+ * l'administrateur soumet le formulaire de liste des réservations dans le dashboard. La logique de liste 
  * de réservations doit être implémentée dans cette fonction, en utilisant les données envoyées dans `req.body`. 
  * Après la liste des réservations, un message flash est ajouté pour informer l'utilisateur.
  * 
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la liste 
  * des réservations n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction implémente la logique de liste des réservations des catways du port à partir du dashboard, 
+ * en utilisant les données envoyées dans `req.body` pour visualiser les détails du catway dans la base de données. 
+ * Après la visualisation, un message flash de succès est ajouté pour informer l'utilisateur, et une redirection vers 
+ * le dashboard est effectuée.
+ * 
+ * @version 0.2.0
  */
-exports.listReservationsFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de liste des réservations à partir du dashboard
-    req.flash('error', "List reservations not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+exports.listAllReservationsFromDashboard = async (req, res) => {
+    try {
+        const base = req.app.locals.APP_URL;
+
+        // 1. Récupérer tous les catways
+        const catwaysResponse = await fetch(`${base}/api/catways`, {
+            headers: {
+                "Content-Type": "application/json",
+                "Cookie": req.headers.cookie ?? ""
+            },
+            credentials: "include"
+        });
+
+        const catways = await catwaysResponse.json();
+
+        if (!catwaysResponse.ok) {
+            req.flash("error", catways.error || "Erreur lors du chargement des catways");
+            return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+        }
+
+        let allReservations = [];
+
+        // 2. Récupérer les réservations de chaque catway
+        for (const c of catways) {
+            const resvResponse = await fetch(`${base}/api/catways/${c._id}/reservations`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cookie": req.headers.cookie ?? ""
+                },
+                credentials: "include"
+            });
+
+            const reservations = await resvResponse.json();
+
+            if (resvResponse.ok) {
+                reservations.forEach(r => r.catwayNumber = c.catwayNumber);
+                allReservations.push(...reservations);
+            }
+        }
+
+        // 3. Affichage
+        res.render("reservations-list", {
+            BASE_URL: req.app.locals.BASE_URL,
+            reservations: allReservations,
+            currentPage: "reservations",
+            version_tag: appData.APP_VERSION_TAG
+        });
+
+    } catch (err) {
+        req.flash("error", "Erreur interne lors du chargement des réservations");
+        return res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    }
 }
 
 /**

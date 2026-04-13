@@ -54,7 +54,8 @@ src/                        ← Dossier principal du code de l'API
   │   │   └── reservationController.js  ← Contrôleur des Reservations
   │   │
   │   └── pages                     ← Contrôleur du Frontend
-  │       └── pagesController.js        ← Contrôleur des pages du frontend
+  │       ├── pagesController.js           ← Contrôleur des pages du frontend (non protégées)
+  │       └── pagesDashboardController.js  ← Contrôleur des pages du dashboard du frontend (accès protégé)
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
   │   ├── attachDeprecatedInfo.js        ← Middleware ajoutant les métadonnées de dépréciation dans la réponse
@@ -68,7 +69,8 @@ src/                        ← Dossier principal du code de l'API
   │   ├── catwayPayloadMiddleware.js     ← Middlewares Catways (issue‑27) : validateCatwayPayload, validateCatwayPartialPayload
   │   └── reservationMiddleware.js       ← Middlewares Reservations (issues 33–36)
   │
-  ├── services/                 ← Logique métier réutilisable
+  ├── utils/                    ← Fonctions (non métier) réutilisables
+  │   └── jwt.js                        ← Fonctions utilitaires pour la génération et la vérification des JSON Web Tokens (JWT)
   │
   └── routes/                   ← Définition des routes Express
       ├── api                       ← Routes de l'API
@@ -79,12 +81,18 @@ src/                        ← Dossier principal du code de l'API
       │   └── apiRoutes.js              ← Routeur principal API (agrégation Users, Catways, Reservations)
       │
       └── pages                     ← Routes du Frontend
-          └── pagesRoutes.js            ← Routes des pages du frontend
+          ├── pagesRoutes.js            ← Routes des pages du frontend (routes de premier niveau)
+          └── pagesDashboardRoutes.js   ← Routes des pages du dashboard du frontend (routes du dashboard)
 
-views/
-  ├── dashboard.ejs             ← Page dynamique (EJS) de l'espace utilisateur (Dashboard) du Frontend
-  ├── home.ejs                  ← Page dynamique (EJS) de l'accueil (Home) du Frontend
-  ├── login.ejs                 ← Page dynamique (EJS) de la connexion (Login) du Frontend
+views/                          ← Page dynamique (EJS) du Frontend
+  ├── dashboard.ejs                    ← Page de l'espace utilisateur (Dashboard)
+  ├── home.ejs                         ← Page de l'accueil (Home)
+  ├── login.ejs                        ← Page de la connexion (Login)
+  ├── catways-details.ejs              ← Page des détails d'un catway (vue Dashboard)
+  ├── catways-list.ejs                 ← Page de la liste des catways (vue Dashboard)
+  ├── reservations-details.ejs         ← Page des détails d'une réservation (vue Dashboard)
+  ├── reservations-list.ejs            ← Page de la liste des réservations (vue Dashboard)
+  ├── users-list.ejs                   ← Page de la liste des utilisateurs (vue Dashboard)
   │
   ├── home/                     ← Page d'accueil (Home) découpée en parties (partials) élémentaires
   │   ├── _title.ejs               ← Titre de la page (titre et sous-titre)
@@ -98,8 +106,34 @@ views/
       ├── header.ejs               ← En-tête du corps de la page <body> (logo et menu de navigation)
       └── footer.ejs               ← Pied de page de la page <body> (copyright et version)
 
-scripts/
-  └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
+scripts/                        ← Scripts opérationnels du projet (déploiement, maintenance, outils internes)
+  ├── config/                      ← Configuration des pipelines de pré‑déploiement
+  │   └── predeploy.config.json        ← Configuration centralisée du script validate-predeploy.js
+  │
+  ├── templates/                   ← Modèles Markdown utilisés pour les checklists et résumés de déploiement
+  │   ├── checklist.md                 ← Modèle générique de checklist
+  │   ├── checklist-deploy.md          ← Modèle de checklist spécifique au déploiement
+  │   ├── resume.md                    ← Modèle générique de résumé
+  │   └── resume-deploy.md             ← Modèle de résumé spécifique au déploiement
+  │
+  ├── .rsync-filter.example        ← Exemple de configuration rsync (non utilisé en production)
+  ├── .rsync-filter.rules          ← Règles rsync utilisées par les scripts de déploiement
+  │
+  ├── check-wsl-env.js             ← Vérification de l’environnement WSL (compatibilité Windows/Linux)
+  ├── clean.js                     ← Nettoyage local (node_modules, caches, artefacts)
+  ├── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
+  ├── reinstall.js                 ← Réinstallation complète de l’environnement Node (sécurisé)
+  ├── validate-predeploy.js        ← Pipeline de pré‑déploiement (vérifications techniques)
+  ├── verify-deploy.js             ← Vérification post‑déploiement (Alwaysdata)
+  │
+  ├── deploy.sh                    ← Script principal de déploiement Alwaysdata
+  ├── deploy-checklist-local.sh    ← Génération locale de la checklist de déploiement
+  ├── deploy-checklist-site.sh     ← Génération de la checklist depuis Alwaysdata
+  ├── ssh-connect.sh               ← Connexion SSH automatisée à Alwaysdata
+  ├── ssh-site-path.sh             ← Résolution automatique du chemin distant Alwaysdata
+  │
+  ├── deploy-config.json           ← Configuration du déploiement (serveur, chemins, options)
+  └── ssh-config.json              ← Configuration SSH (hôte, utilisateur, port)
 
 data/                           ← Données du projet
   ├── users.json                   ← Données initiales des Utilisateurs
@@ -2006,6 +2040,11 @@ La Phase 6 introduit la séparation complète entre :
   - Etape 8 : déploiement et vérification post-déploiement de la version (v0.2.1-dev EJS + REST)
   - Etape 9 : finalisation documentaire de l'issue-37
 - **Issue-38** : Création du Dashboard de l'Utilisateur
+  - Etape 1 : mise en place de l'architecture du dashboard (routes, contrôleurs, gestion unifiée JWT, messages tilisateurs)
+  - Etape 2 : intégrations des fonctions de gestion des utilisateurs (création, modification, suppression, liste)
+  - Etape 3 : intégrations des fonctions de gestion des catways (création, modification, suppression, détails, liste)
+  - Etape 4 : intégrations des fonctions de gestion des réservations (création, modification, suppression, détails, liste)
+  - Etape 5 : mise à jour de la documentation de développement du projet
 - **Issue-39** : Création des pages listes et détails (finalisation du frontend)
 
 #### 2.5.1 - Issue-37 - Création de la page d'accueil du frontend
@@ -2411,15 +2450,134 @@ Elle met en oeuvre la démarche d'archivage des validations déploiement, réali
 
 ---
 
-##### 2.5.1.9 Etape 9 - finalisation documentaire de l'issue-37
+##### 2.5.1.9 Etape 9 - Mise à jour documentaire issue‑37 et publication de la version v0.2.1‑dev
 
-(à compléter commit-6 et PR-issue-37-dev, puis PR-dev-main)
+L’issue‑37 (Phase 6) a introduit plusieurs évolutions majeures dans l’architecture du projet, nécessitant une mise à jour documentaire transversale.  
+Cette section récapitule les impacts documentaires et les ajustements réalisés lors de la stabilisation et du déploiement de la version **v0.2.1‑dev**.
+
+###### 2.5.1.9.1 Séparation complète API REST / Frontend EJS
+
+L’architecture a été mise à jour pour refléter la séparation stricte entre :
+
+- les routes API (`src/routes/api/…`),
+- les routes des pages publiques (`src/routes/pages/pagesRoutes.js`),
+- les routes du dashboard (`src/routes/pages/pagesDashboardRoutes.js`).
+
+Cette séparation est désormais intégrée dans :
+
+- la section 1.2 (arborescence du projet),
+- la section 4.3 des décisions techniques,
+- la documentation interne `docs-dev/architecture/`.
+
+###### 2.5.1.9.2 Introduction des pipelines PreDeploy / Deploy / PostDeploy
+
+L’issue‑37 a introduit un cycle de validation complet avant publication d’une version.  
+Les pipelines sont désormais documentés dans :
+
+- `docs-dev/tests/deploiements/<version>/`,
+- `scripts/` (scripts de validation, déploiement, vérification),
+- `decisions-techniques.md` (sections 4.7.3 et 4.7.4).
+
+La documentation d’architecture a été mise à jour pour refléter :
+
+- l’existence des pipelines,
+- leur rôle dans la validation des versions,
+- leur archivage systématique.
+
+###### 2.5.1.9.3 Gestion de l’obsolescence des routes Auth
+
+La version v0.2.1‑dev introduit :
+
+- un mécanisme générique de dépréciation (`deprecatedRoute`, `attachDeprecatedInfo`),
+- la privatisation et la dépréciation des anciennes routes Auth/register et Auth/delete,
+- la mise à jour des tests unitaires et d’intégration.
+
+Ces éléments sont désormais intégrés dans :
+
+- la section 1.2 (middlewares),
+- la section 4.7.2 des décisions techniques,
+- la documentation interne `docs-dev/architecture/suppression-depreciation-analysis.md`.
+
+###### 2.5.1.9.4 Mise à jour des métadonnées de version
+
+La documentation a été ajustée pour refléter :
+
+- `APP_VERSION_TAG = 'v0.2.1-dev'`,
+- la distinction entre version locale, version déployée et version release,
+- l’introduction des patchs (`v0.2.1-dev.a`, `v0.2.1-dev.b`, …).
+
+Ces éléments sont intégrés dans :
+
+- la section 4.4 des décisions techniques,
+- `config/appData.js`,
+- les pages du frontend (footer, dashboard).
+
+###### 2.5.1.9.5 Stabilisation du frontend minimal
+
+L’issue‑37 a introduit :
+
+- la page d’accueil (Home),
+- la page de connexion (Login),
+- la structure du Dashboard,
+- les partials EJS réutilisables.
+
+La documentation d’architecture a été mise à jour pour inclure :
+
+- la structure complète du dossier `views/`,
+- la séparation Home / Dashboard,
+- les partials et leur rôle.
+
+###### 2.5.1.9.6 Conclusion
+
+Cette mise à jour documentaire consolide l’ensemble des évolutions introduites en Phase 6 et garantit que l’architecture décrite dans `architecture.md` reflète fidèlement :
+
+- la structure réelle du projet,
+- les mécanismes de sécurité,
+- les pipelines de validation,
+- la séparation API/Frontend,
+- la gestion de l’obsolescence,
+- la version v0.2.1‑dev et ses patchs.
+
+Elle constitue la base stable pour les phases suivantes (issue‑38, issue‑39, issue‑40).
 
 ---
 
 #### 2.5.2 - Issue-38 - Création du Dashboard de l'Utilisateur
 
-(à compléter lors de l'issue-38)
+L’issue‑38 étend le Dashboard utilisateur en plusieurs étapes, en s’appuyant exclusivement sur l’API REST sécurisée.
+  
+À chaque étape, la version du Dashboard du frontend est opérationnelle et fait l'objet d'une validation fonctionnelle manuelle.  
+
+- **Étape 1 : architecture du dashboard**
+  - séparation des routes spécifiques au Dashboard dans un fichier spécifique (`pagesDashboardRoutes.js`). Ces routes sont privatisée (en-tête) dans les routes de premier niveau des pages du frontend (`pagesRoutes.js`)
+  - mise en place d’un système de messages flash (succès / erreur) pour toutes les actions
+  - mise en place du contrôleur (`pagesDashboardController.js`) pour toutes les fonctions du dashboard en version _placeholder_ (v0.1.0) pour vérification de l'interface utilisateur
+
+- **Étape 2 et 3 : intégration Users et Catways**
+  - ajout des actions depuis le Dashboard :
+    - création, mise à jour, suppression d’un utilisateur
+    - création, mise à jour, détails, suppression d’un catway
+  - utilisation systématique de l’API (`/api/users`, `/api/catways/...`) via `fetch` côté contrôleur `pagesDashboardController.js`
+
+- **Étape 4 : intégration complète des Reservations dans le Dashboard**
+  - ajout des fonctions :
+    - création d’une réservation pour un catway
+    - suppression d’une réservation
+    - visualisation du détail d’une réservation
+    - liste des réservations (vue dédiée `reservations-list.ejs`)
+  - réutilisation de l’identifiant hybride côté API (catwayId / reservationId) et nettoyage des identifiants côté Dashboard (`cleanIdentifier`)
+  - homogénéisation des vues de détail (`catway-details.ejs`, `reservation-details.ejs`) et des listes (`catways-list.ejs`, `reservations-list.ejs`)
+
+- **Étape 5 : documentation de l’issue‑38**
+  - mise à jour de `docs-dev/architecture.md` pour décrire :
+    - le rôle de `pagesDashboardController.js`
+    - les nouvelles vues Dashboard (listes et détails)
+    - l’intégration des fonctions Reservations dans le frontend
+  - mise à jour de `docs-dev/decisions-techniques.md` (sections 4.7.5 et 4.7.6) pour tracer :
+    - le choix de ne pas ajouter de route API globale pour la liste des réservations du port
+    - la mise en place d’une première version de la documentation JSDoc (v0.1.0) pour valider la page de documentation du Dashboard
+
+À l’issue de l’issue‑38, le Dashboard offre un accès complet aux fonctions Users, Catways et Reservations, tout en respectant la séparation stricte API / frontend et la cohérence documentaire.
 
 ---
 

@@ -425,6 +425,70 @@ La notation de la version avec correctifs (patchs) est : `<version>.<index>` cor
 
 ---
 
+### 4.8 Décision — Pas de route API globale pour la liste des réservations du port
+
+#### 4.8.1 Présentation
+
+Lors de l’intégration des Reservations dans le Dashboard (issue‑38), la question d’une route API dédiée à la liste globale des réservations du port s’est posée.
+
+Plutôt que d’introduire un endpoint supplémentaire (ex. `GET /api/reservations`), le choix a été fait de **s’appuyer sur les routes existantes imbriquées sous les catways** et de construire les vues côté Dashboard.
+
+#### 4.8.2 Motivations
+
+- éviter de multiplier les endpoints sans besoin métier explicite
+- conserver une architecture REST centrée sur la ressource principale `Catway`
+- limiter la surface d’attaque de l’API
+- garder la documentation et les tests focalisés sur les routes déjà prévues en Phase 5
+
+#### 4.8.3 Choix techniques
+
+- conserver les routes existantes :
+  - `GET /api/catways/:id/reservations`
+  - `GET /api/catways/:id/reservations/:reservationId`
+  - `POST /api/catways/:id/reservations`
+  - `DELETE /api/catways/:id/reservations/:reservationId`
+- construire les vues Dashboard (`reservations-list.ejs`, `reservation-details.ejs`) à partir des données retournées par ces routes
+- laisser ouverte la possibilité d’ajouter plus tard une route globale si un besoin métier clair apparaît (ex. reporting global)
+
+#### 4.8.4 Conséquences
+
+- architecture API plus simple et cohérente avec la Phase 5
+- Dashboard capable d’exposer les réservations sans nouvelle route API
+- documentation centrée sur les routes imbriquées Catways/Reservations
+- possibilité d’évolution ultérieure sans rupture
+
+---
+
+### 4.9 Décision — Documentation JSDoc v0.1.0 pour la page de documentation du Dashboard
+
+#### 4.9.1 Présentation
+
+La Phase 6 introduit une page de documentation accessible depuis le Dashboard.  
+Pour valider cette page et le flux de génération/consultation de la documentation, une **première version JSDoc v0.1.0** est mise en place.
+
+#### 4.9.2 Motivations
+
+- disposer rapidement d’une documentation technique consultable depuis le Dashboard
+- valider le pipeline de génération JSDoc (structure, emplacement, intégration)
+- éviter de bloquer le frontend en attendant une couverture documentaire exhaustive
+- préparer la Phase 8 (Documentation API) sur une base déjà opérationnelle
+
+#### 4.9.3 Choix techniques
+
+- génération de la documentation JSDoc dans le dossier `docs/`
+- versionnement explicite de la documentation : **v0.1.0**
+- intégration d’un lien / d’une page dédiée dans le Dashboard pour accéder à cette documentation
+- enrichissement progressif de la JSDoc dans les phases suivantes, sans changer le mécanisme d’accès
+
+#### 4.9.4 Conséquences
+
+- la page de documentation du Dashboard est fonctionnelle dès la Phase 6
+- la JSDoc devient un artefact versionné du projet
+- la Phase 8 peut se concentrer sur la complétude et la qualité du contenu, plutôt que sur l’infrastructure
+- la cohérence entre code, documentation et Dashboard est renforcée
+
+---
+
 ## 5. Environnement de développement
 
 ### 5.1 Tests E2E simulés

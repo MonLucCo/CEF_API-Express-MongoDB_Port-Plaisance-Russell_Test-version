@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: "Liste des catways" }) %>
+</head>
+
+<body>
+
+    <%- include('partials/header', { authenticated: true }) %>
+
+        <main class="container">
+            <h1>Liste des catways</h1>
+
+            <div class="table-wrapper">
+
+                <!-- Header fixe -->
+                <table class="table-header">
+                    <colgroup>
+                        <col style="width: 35%">
+                        <col style="width: 15%">
+                        <col style="width: 15%">
+                        <col style="width: 30%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Numéro</th>
+                            <th>Type</th>
+                            <th>État</th>
+                        </tr>
+                    </thead>
+                </table>
+
+                <!-- Body scrollable -->
+                <div class="table-body-wrapper">
+                    <table class="table-body">
+                        <colgroup>
+                            <col style="width: 35%">
+                            <col style="width: 15%">
+                            <col style="width: 15%">
+                            <col style="width: 30%">
+                        </colgroup>
+                        <tbody>
+                            <% if (catways && catways.length> 0) { %>
+                                <% catways.forEach(c=> { %>
+                                    <tr>
+                                        <td>
+                                            <%= c._id %>
+                                        </td>
+                                        <td>
+                                            <%= c.catwayNumber %>
+                                        </td>
+                                        <td>
+                                            <%= c.type %>
+                                        </td>
+                                        <td>
+                                            <%= c.catwayState %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="4" class="table-empty">
+                                                    Aucun catway trouvé.
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <a href="<%= BASE_URL %>/dashboard" class="btn-back">← Retour au dashboard</a>
+        </main>
+
+        <%- include('partials/footer', { version: version_tag }) %>
+
+</body>
+
+</html>

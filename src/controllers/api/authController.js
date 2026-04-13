@@ -1,21 +1,19 @@
 /**
- * Contrôleur d'authentification – version avec hashage bcrypt et token JWT.
+ * Contrôleur d'authentification – version avec hashage bcrypt et token JWT (commun Pages et API).
  * Gère les opérations register, login et delete sur le modèle User.  
  * Ne contient pas de middleware.
  *
  * @module controllers/authController
  * @requires models/user
  * @requires bcrypt
- * @requires jsonwebtoken
- * @requires config/jwt
+ * @requires generateToken (src/utils/jwt)
  * @requires mongoose
- * @version 0.4.0
+ * @version 0.5.0
  */
 
 const User = require('../../models/user');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const jwtConfig = require('../../../config/jwt');
+const { generateToken } = require('../../utils/jwt');
 const { default: mongoose } = require('mongoose');
 
 /**
@@ -77,8 +75,10 @@ const register = async (req, res) => {
  * @returns {Object} 400 - Champs requis manquants
  * @returns {Object} 401 - Identifiants invalides
  * @returns {Object} 500 - Erreur interne du serveur
- * 
- * @version 0.2.0
+ *
+ * @requires generateToken (src/utils/jwt)
+ * @requires mongoose 
+ * @version 0.3.0
  */
 const login = async (req, res) => {
     try {
@@ -100,12 +100,8 @@ const login = async (req, res) => {
             return res.status(401).json({ error: "Identifiants invalides" });
         }
 
-        // Génération du token JWT
-        const token = jwt.sign(
-            { userId: user._id },
-            jwtConfig.secret,
-            { expiresIn: jwtConfig.expiresIn }
-        );
+        // Génération du token JWT (commun Pages et API)
+        const token = generateToken(user);
 
         // Réponse avec retour du token
         res.status(200).json({ token });

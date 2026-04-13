@@ -1,5 +1,5 @@
 module.exports = {
-    APP_VERSION_TAG: "v0.2.1-dev.d",
+    APP_VERSION_TAG: "v0.3.0-dev",
     APP_VERSION_CONTENT: "(EJS & REST) (Login + Logout + JWT + Dashboard placeholder)",
     APP_TITLE: "API Port de Plaisance Russell",
     APP_SUBTITLE: "Bienvenue sur l'interface utilisateur du port de plaisance de Russell !",

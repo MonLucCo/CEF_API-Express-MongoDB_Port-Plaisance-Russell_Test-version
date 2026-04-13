@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/api/reservationController.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/api/reservationController.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file reservationController.js
+ * @description Contrôleur des Reservations de l’API Port de Plaisance Russell.
+ *
+ * Les middlewares Catways et Reservations seront utilisés dans les issues 33 → 36.
+ * 
+ * Version issue‑32 : création du module et des quatre fonctions placeholders pour les routes de réservation.
+ * Version issue‑33 : implémentation de la fonction getReservationsByCatway pour récupérer les réservations d’un catway.
+ * Version issue‑34 : implémentation de la fonction getReservationById pour récupérer le détail d’une réservation.
+ * Version issue‑35 : implémentation de la fonction createReservation pour créer une réservation.
+ * Version issue‑36 : implémentation de la fonction deleteReservation pour supprimer une réservation.
+ * 
+ * Routes gérées par ce contrôleur :
+ * - issue‑33 : GET /catways/:id/reservations   
+ * - issue‑34 : GET /catways/:id/reservations/:idReservation
+ * - issue‑35 : POST /catways/:id/reservations
+ * - issue‑36 : DELETE /catways/:id/reservations/:idReservation
+ *
+ * @module controllers/reservationController
+ * @requires ../models/reservation
+ * @requires ../middlewares/reservationMiddleware
+ *
+ * @see module:middlewares/catwayMiddleware.validateCatwayId
+ * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
+ * @see module:middlewares/reservationMiddleware.validateReservationId
+ * @see module:middlewares/reservationMiddleware.resolveReservationIdentifier
+ * @version 0.5.0
+ */
+
+const Reservation = require('../../models/reservation');
+
+/**
+ * GET /catways/:id/reservations
+ * @function getReservationsByCatway
+ * @async
+ * @description Récupère la liste des réservations associées à un catway.
+ *
+ * @param {Object} req - Objet Request Express (req.catway défini par resolveCatwayIdentifier)
+ * @param {Object} res - Objet Response Express
+ * @returns {Object} 200 - Liste des réservations
+ * @throws {Object} 500 - Erreur interne lors de la récupération des réservations
+ *
+ * @requires ../models/reservation
+ * @version 0.2.0
+ */
+exports.getReservationsByCatway = async (req, res) => {
+    try {
+        const reservations = await Reservation.find({ catwayNumber: req.catway.catwayNumber });
+        return res.status(200).json(reservations);
+    } catch (error) {
+        return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+};
+
+/**
+ * GET /catways/:id/reservations/:idReservation
+ * @function getReservationById
+ * @description Renvoie le détail d’une réservation d’un catway.
+ *
+ * @param {Object} req - Express Request (req.catway et req.reservation définis par les middlewares)
+ * @param {Object} res - Express Response
+ * @returns {Object} 200 - Détail de la réservation
+ * @throws {Object} 500 - Erreur interne
+ *
+ * @requires ../models/reservation
+ *
+ * @see module:middlewares/catwayMiddleware.validateCatwayId
+ * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
+ * @see module:middlewares/reservationMiddleware.validateReservationId
+ * @see module:middlewares/reservationMiddleware.resolveReservationIdentifier
+ * 
+ * @version 0.2.0
+ */
+exports.getReservationById = (req, res) => {
+    try {
+        return res.status(200).json(req.reservation);
+    } catch (error) {
+        return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+};
+
+/**
+ * POST /catways/:id/reservations
+ * @function createReservation
+ * @async
+ * @description Crée une réservation pour un catway.
+ *
+ * Règles métier (issue‑35) :
+ * - Le payload est validé par validateReservationPayload
+ * - Le catwayNumber est injecté automatiquement depuis req.catway
+ * - Le contrôleur ne fait aucune validation métier supplémentaire
+ * - En cas de succès : 201 + réservation créée
+ * - En cas d’erreur MongoDB : 500
+ *
+ * @param {Object} req - Objet Request Express (req.catway défini par resolveCatwayIdentifier)
+ * @param {Object} res - Objet Response Express
+ * @returns {Object} 201 - Réservation créée
+ * @throws {Object} 500 - Erreur interne
+ *
+ * @requires ../models/reservation
+ *
+ * @version 0.2.0
+ */
+exports.createReservation = async (req, res) => {
+    try {
+        const { clientName, boatName, checkIn, checkOut } = req.body;
+
+        // Injection automatique du catwayNumber
+        const reservationData = {
+            clientName,
+            boatName,
+            checkIn,
+            checkOut,
+            catwayNumber: req.catway.catwayNumber
+        };
+
+        const newReservation = await Reservation.create(reservationData);
+
+        return res.status(201).json(newReservation);
+
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Erreur interne du serveur'
+        });
+    }
+};
+
+/**
+ * DELETE /catways/:id/reservations/:idReservation
+ * @function deleteReservation
+ * @async
+ * @description Supprime une réservation associée à un catway.
+ *
+ * Règles métier (issue‑36) :
+ * - La réservation est déjà validée et chargée par resolveReservationIdentifier
+ * - Le contrôleur supprime simplement la réservation
+ * - En cas de succès : 200 + message de confirmation
+ * - En cas d’erreur MongoDB : 500
+ *
+ * @param {Object} req - Objet Request Express (req.reservation défini par resolveReservationIdentifier)
+ * @param {Object} res - Objet Response Express
+ * @returns {Object} 200 - Message de confirmation
+ * @throws {Object} 500 - Erreur interne
+ *
+ * @requires ../models/reservation
+ *
+ * @version 0.2.0
+ */
+exports.deleteReservation = async (req, res) => {
+    try {
+        await Reservation.findByIdAndDelete(req.reservation._id);
+
+        return res.status(200).json({
+            message: 'Réservation supprimée avec succès'
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Erreur interne du serveur'
+        });
+    }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-apiRoutes.html">apiRoutes</a></li><li><a href="module-app.html">app</a></li><li><a href="module-controllers_authController.html">controllers/authController</a></li><li><a href="module-controllers_catwayController.html">controllers/catwayController</a></li><li><a href="module-controllers_pagesController.html">controllers/pagesController</a></li><li><a href="module-controllers_reservationController.html">controllers/reservationController</a></li><li><a href="module-controllers_userController.html">controllers/userController</a></li><li><a href="module-middlewares_catwayMiddleware.html">middlewares/catwayMiddleware</a></li><li><a href="module-middlewares_catwayPayloadMiddleware.html">middlewares/catwayPayloadMiddleware</a></li><li><a href="module-middlewares_requireAuthPages.html">middlewares/requireAuthPages</a></li><li><a href="module-middlewares_reservationMiddleware.html">middlewares/reservationMiddleware</a></li><li><a href="module-middlewares_userMiddleware.html">middlewares/userMiddleware</a></li><li><a href="module-models_user.html">models/user</a></li><li><a href="module-routes_authRoutes.html">routes/authRoutes</a></li><li><a href="module-routes_catwayRoutes.html">routes/catwayRoutes</a></li><li><a href="module-routes_pagesRoutes.html">routes/pagesRoutes</a></li><li><a href="module-routes_reservationRoutes.html">routes/reservationRoutes</a></li><li><a href="module-routes_userRoutes.html">routes/userRoutes</a></li><li><a href="module-utils_jwt.html">utils/jwt</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#boatName">boatName</a></li><li><a href="global.html#catwayNumber">catwayNumber</a></li><li><a href="global.html#catwayState">catwayState</a></li><li><a href="global.html#checkIn">checkIn</a></li><li><a href="global.html#checkOut">checkOut</a></li><li><a href="global.html#clientName">clientName</a></li><li><a href="global.html#disconnectClientDBConnection">disconnectClientDBConnection</a></li><li><a href="global.html#initClientDBConnection">initClientDBConnection</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#normalizeMongoError">normalizeMongoError</a></li><li><a href="global.html#startServer">startServer</a></li><li><a href="global.html#type">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Apr 13 2026 18:33:59 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

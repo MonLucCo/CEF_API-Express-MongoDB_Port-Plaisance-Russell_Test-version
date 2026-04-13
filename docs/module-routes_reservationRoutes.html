@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: routes/reservationRoutes</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: routes/reservationRoutes</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Définition des routes Reservations de l’API Port de Plaisance Russell.Ce module regroupe l’ensemble des endpoints liés aux réservations associées aux catways.Il intègre les middlewares :- Catway : de validation et de résolution d’identifiant (issue‑26)- Reservation :   - de validation d’identifiant de réservation (issue‑34),   - de résolution d’identifiant de réservation (issue‑34),  - de validation de payload de réservation (issue 35)Les fonction de middleware des réservations sont des placeholders.Elles seront implémentées dans les issues 34 et 35.Les fonctions de contrôleur sont des placeholders.Elles seront implémentées dans les issues 33 → 36.Routes disponibles :- GET /catways/:id/reservations                    → liste des réservations d’un catway- GET /catways/:id/reservations/:idReservation     → détail d’une réservation (catways : identifiant hybride)- POST /catways/:id/reservations                   → création d’une réservation- DELETE /catways/:id/reservations/:idReservation  → suppression d’une réservationCe routeur est monté dans `app.js` sur le chemin `/catways` : app.use('/catways', reservationRoutes);</div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.1.0</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes_api_reservationRoutes.js.html">routes/api/reservationRoutes.js</a>, <a href="routes_api_reservationRoutes.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+        <h3 class="subsection-title">Requires</h3>
+
+        <ul>
+            <li>module:express</li>
+        
+            <li><a href="module-middlewares_catwayMiddleware.html">module:middlewares/catwayMiddleware</a></li>
+        
+            <li><a href="module-middlewares_reservationMiddleware.html">module:middlewares/reservationMiddleware</a></li>
+        </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-apiRoutes.html">apiRoutes</a></li><li><a href="module-app.html">app</a></li><li><a href="module-controllers_authController.html">controllers/authController</a></li><li><a href="module-controllers_catwayController.html">controllers/catwayController</a></li><li><a href="module-controllers_pagesController.html">controllers/pagesController</a></li><li><a href="module-controllers_reservationController.html">controllers/reservationController</a></li><li><a href="module-controllers_userController.html">controllers/userController</a></li><li><a href="module-middlewares_catwayMiddleware.html">middlewares/catwayMiddleware</a></li><li><a href="module-middlewares_catwayPayloadMiddleware.html">middlewares/catwayPayloadMiddleware</a></li><li><a href="module-middlewares_requireAuthPages.html">middlewares/requireAuthPages</a></li><li><a href="module-middlewares_reservationMiddleware.html">middlewares/reservationMiddleware</a></li><li><a href="module-middlewares_userMiddleware.html">middlewares/userMiddleware</a></li><li><a href="module-models_user.html">models/user</a></li><li><a href="module-routes_authRoutes.html">routes/authRoutes</a></li><li><a href="module-routes_catwayRoutes.html">routes/catwayRoutes</a></li><li><a href="module-routes_pagesRoutes.html">routes/pagesRoutes</a></li><li><a href="module-routes_reservationRoutes.html">routes/reservationRoutes</a></li><li><a href="module-routes_userRoutes.html">routes/userRoutes</a></li><li><a href="module-utils_jwt.html">utils/jwt</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#boatName">boatName</a></li><li><a href="global.html#catwayNumber">catwayNumber</a></li><li><a href="global.html#catwayState">catwayState</a></li><li><a href="global.html#checkIn">checkIn</a></li><li><a href="global.html#checkOut">checkOut</a></li><li><a href="global.html#clientName">clientName</a></li><li><a href="global.html#disconnectClientDBConnection">disconnectClientDBConnection</a></li><li><a href="global.html#initClientDBConnection">initClientDBConnection</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#normalizeMongoError">normalizeMongoError</a></li><li><a href="global.html#startServer">startServer</a></li><li><a href="global.html#type">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Apr 13 2026 18:33:59 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

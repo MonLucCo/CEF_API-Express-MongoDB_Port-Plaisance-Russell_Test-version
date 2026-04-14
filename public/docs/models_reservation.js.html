@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/reservation.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/reservation.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @description Modèle Mongoose représentant une réservation d’un catway
+ * du port de plaisance Russell.
+ *
+ * Une réservation associe un client, un bateau et une période de séjour
+ * à un catway existant.
+ *
+ * @module models/reservation
+ * @requires mongoose
+ * @version 1.0.0
+ *
+ * @typedef Reservation
+ * @property {number} catwayNumber - Numéro du catway réservé (>= 1).
+ * @property {string} clientName - Nom du client effectuant la réservation.
+ * @property {string} boatName - Nom du bateau amarré.
+ * @property {Date} checkIn - Date de début de réservation.
+ * @property {Date} checkOut - Date de fin de réservation (doit être > checkIn).
+ * @property {Date} createdAt - Date de création (générée automatiquement).
+ * @property {Date} updatedAt - Date de mise à jour (générée automatiquement).
+ *
+ * @see docs-dev/architecture.md
+ * @see docs-dev/tests-strategy.md
+ */
+
+const mongoose = require('mongoose');
+
+const reservationSchema = new mongoose.Schema(
+    {
+        /**
+         * Numéro du catway réservé.
+         * Exemple : 1, 2, 3...
+         */
+        catwayNumber: {
+            type: Number,
+            required: [true, 'Le numéro du catway est requis.'],
+            min: [1, 'Le numéro du catway doit être supérieur ou égal à 1.'],
+        },
+
+        /**
+         * Nom du client effectuant la réservation.
+         * Exemple : "Thomas Martin"
+         */
+        clientName: {
+            type: String,
+            required: [true, 'Le nom du client est requis.'],
+            trim: true,
+        },
+
+        /**
+         * Nom du bateau amarré.
+         * Exemple : "Carolina"
+         */
+        boatName: {
+            type: String,
+            required: [true, 'Le nom du bateau est requis.'],
+            trim: true,
+        },
+
+        /**
+         * Date de début de réservation.
+         * Exemple : "2022-05-21T06:00:00Z"
+         */
+        checkIn: {
+            type: Date,
+            required: [true, 'La date de début de réservation est requise.'],
+        },
+
+        /**
+         * Date de fin de réservation.
+         * Exemple : "2022-10-27T06:00:00Z"
+         */
+        checkOut: {
+            type: Date,
+            required: [true, 'La date de fin de réservation est requise.'],
+            validate: {
+                validator: function (value) {
+                    return this.checkIn &amp;&amp; value > this.checkIn;
+                },
+                message: 'La date de fin doit être postérieure à la date de début.',
+            },
+        },
+    },
+    {
+        // Ajout automatique des champs createdAt et updatedAt
+        timestamps: true,
+        // Suppression du champ __v généré par Mongoose
+        versionKey: false,
+    }
+);
+
+module.exports = mongoose.model('Reservation', reservationSchema);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-apiRoutes.html">apiRoutes</a></li><li><a href="module-app.html">app</a></li><li><a href="module-controllers_authController.html">controllers/authController</a></li><li><a href="module-controllers_catwayController.html">controllers/catwayController</a></li><li><a href="module-controllers_pagesController.html">controllers/pagesController</a></li><li><a href="module-controllers_reservationController.html">controllers/reservationController</a></li><li><a href="module-controllers_userController.html">controllers/userController</a></li><li><a href="module-middlewares_catwayMiddleware.html">middlewares/catwayMiddleware</a></li><li><a href="module-middlewares_catwayPayloadMiddleware.html">middlewares/catwayPayloadMiddleware</a></li><li><a href="module-middlewares_requireAuthPages.html">middlewares/requireAuthPages</a></li><li><a href="module-middlewares_reservationMiddleware.html">middlewares/reservationMiddleware</a></li><li><a href="module-middlewares_userMiddleware.html">middlewares/userMiddleware</a></li><li><a href="module-models_user.html">models/user</a></li><li><a href="module-routes_authRoutes.html">routes/authRoutes</a></li><li><a href="module-routes_catwayRoutes.html">routes/catwayRoutes</a></li><li><a href="module-routes_pagesRoutes.html">routes/pagesRoutes</a></li><li><a href="module-routes_reservationRoutes.html">routes/reservationRoutes</a></li><li><a href="module-routes_userRoutes.html">routes/userRoutes</a></li><li><a href="module-utils_jwt.html">utils/jwt</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#boatName">boatName</a></li><li><a href="global.html#catwayNumber">catwayNumber</a></li><li><a href="global.html#catwayState">catwayState</a></li><li><a href="global.html#checkIn">checkIn</a></li><li><a href="global.html#checkOut">checkOut</a></li><li><a href="global.html#clientName">clientName</a></li><li><a href="global.html#disconnectClientDBConnection">disconnectClientDBConnection</a></li><li><a href="global.html#initClientDBConnection">initClientDBConnection</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#normalizeMongoError">normalizeMongoError</a></li><li><a href="global.html#startServer">startServer</a></li><li><a href="global.html#type">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Apr 13 2026 18:33:59 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/api/authController.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/api/authController.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Contrôleur d'authentification – version avec hashage bcrypt et token JWT (commun Pages et API).
+ * Gère les opérations register, login et delete sur le modèle User.  
+ * Ne contient pas de middleware.
+ *
+ * @module controllers/authController
+ * @requires models/user
+ * @requires bcrypt
+ * @requires generateToken (src/utils/jwt)
+ * @requires mongoose
+ * @version 0.5.0
+ */
+
+const User = require('../../models/user');
+const bcrypt = require('bcrypt');
+const { generateToken } = require('../../utils/jwt');
+const { default: mongoose } = require('mongoose');
+
+/**
+ * Inscription d'un utilisateur (avec hashage du mot de passe)
+ * 
+ * @function register
+ * @memberof module:controllers/authController
+ * @route POST /api/auth/register
+ * @returns {Object} 201 - Utilisateur créé
+ * @returns {Object} 400 - Champs manquants, validation Mongoose ou email déjà utilisé
+ * @returns {Object} 500 - Erreur interne du serveur
+ * 
+ * @version 0.3.0
+ */
+const register = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ error: "Champs requis manquants" });
+        }
+
+        // Hashage du mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        res.status(201).json({ message: "Utilisateur créé", user });
+
+    } catch (error) {
+        // Gestion des erreurs de duplication d'email (section "Error handling")
+        if (error.code === 11000) {
+            return res.status(400).json({ error: "Email déjà utilisé" });
+        }
+        // Gestion des erreurs de validation Mongoose (section "Error handling")
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ error: error.message });
+        }
+        // Gestion des erreurs. En version 1.0.0, devient : res.status(500).json({ error: "Erreur interne du serveur" });
+        res.status(500).json({ error: error.message });
+    }
+};
+
+/**
+ * Connexion d'un utilisateur - vérification du mot de passe et génération d'un token JWT.
+ * 
+ * @function login
+ * @memberof module:controllers/authController
+ * @description
+ * Vérifie les identifiants, valide le mot de passe via comparePassword,
+ * puis génère un token JWT signé contenant l'identifiant utilisateur.
+ * 
+ * @route POST /api/auth/login
+ * @returns {Object} 200 - { token: string }
+ * @returns {Object} 400 - Champs requis manquants
+ * @returns {Object} 401 - Identifiants invalides
+ * @returns {Object} 500 - Erreur interne du serveur
+ *
+ * @requires generateToken (src/utils/jwt)
+ * @requires mongoose 
+ * @version 0.3.0
+ */
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email et mot de passe requis" });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(401).json({ error: "Identifiants invalides" });
+        }
+
+        // Vérification du mot de passe
+        const isValid = await user.comparePassword(password);
+        if (!isValid) {
+            return res.status(401).json({ error: "Identifiants invalides" });
+        }
+
+        // Génération du token JWT (commun Pages et API)
+        const token = generateToken(user);
+
+        // Réponse avec retour du token
+        res.status(200).json({ token });
+
+    } catch (error) {
+        // Gestion des erreurs. En version 1.0.0, devient : res.status(500).json({ error: "Erreur interne du serveur" });
+        res.status(500).json({ error: error.message });
+    }
+};
+
+/**
+ * Suppression d'un utilisateur par ID
+ * 
+ * @function deleteUser
+ * @memberof module:controllers/authController
+ * @route DELETE /api/auth/user/:id
+ * @returns {Object} 200 - Utilisateur supprimé
+ * @returns {Object} 400 - ID utilisateur invalide
+ * @returns {Object} 404 - Utilisateur introuvable
+ * @returns {Object} 500 - Erreur interne du serveur
+ * 
+ * @version 0.2.0
+ */
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "ID utilisateur invalide" });
+        }
+
+        const deleted = await User.findByIdAndDelete(id);
+
+        if (!deleted) {
+            return res.status(404).json({ error: "Utilisateur introuvable" });
+        }
+
+        res.status(200).json({ message: "Utilisateur supprimé" });
+    } catch (error) {
+        // Gestion des erreurs. En version 1.0.0, devient : res.status(500).json({ error: "Erreur interne du serveur" });
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { register, login, deleteUser };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-apiRoutes.html">apiRoutes</a></li><li><a href="module-app.html">app</a></li><li><a href="module-controllers_authController.html">controllers/authController</a></li><li><a href="module-controllers_catwayController.html">controllers/catwayController</a></li><li><a href="module-controllers_pagesController.html">controllers/pagesController</a></li><li><a href="module-controllers_reservationController.html">controllers/reservationController</a></li><li><a href="module-controllers_userController.html">controllers/userController</a></li><li><a href="module-middlewares_catwayMiddleware.html">middlewares/catwayMiddleware</a></li><li><a href="module-middlewares_catwayPayloadMiddleware.html">middlewares/catwayPayloadMiddleware</a></li><li><a href="module-middlewares_requireAuthPages.html">middlewares/requireAuthPages</a></li><li><a href="module-middlewares_reservationMiddleware.html">middlewares/reservationMiddleware</a></li><li><a href="module-middlewares_userMiddleware.html">middlewares/userMiddleware</a></li><li><a href="module-models_user.html">models/user</a></li><li><a href="module-routes_authRoutes.html">routes/authRoutes</a></li><li><a href="module-routes_catwayRoutes.html">routes/catwayRoutes</a></li><li><a href="module-routes_pagesRoutes.html">routes/pagesRoutes</a></li><li><a href="module-routes_reservationRoutes.html">routes/reservationRoutes</a></li><li><a href="module-routes_userRoutes.html">routes/userRoutes</a></li><li><a href="module-utils_jwt.html">utils/jwt</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#boatName">boatName</a></li><li><a href="global.html#catwayNumber">catwayNumber</a></li><li><a href="global.html#catwayState">catwayState</a></li><li><a href="global.html#checkIn">checkIn</a></li><li><a href="global.html#checkOut">checkOut</a></li><li><a href="global.html#clientName">clientName</a></li><li><a href="global.html#disconnectClientDBConnection">disconnectClientDBConnection</a></li><li><a href="global.html#initClientDBConnection">initClientDBConnection</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#normalizeMongoError">normalizeMongoError</a></li><li><a href="global.html#startServer">startServer</a></li><li><a href="global.html#type">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Apr 13 2026 18:33:59 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

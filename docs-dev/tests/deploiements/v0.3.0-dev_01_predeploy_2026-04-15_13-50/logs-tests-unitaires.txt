@@ -1,0 +1,168 @@
+=== Test : npm run test:unit ===
+
+--- STDOUT ---
+
+> cef_api-express-mongodb_port-plaisance-russell_test-version@0.2.1 test:unit
+> mocha --require tests/root-hooks.js tests/controllers/**/*.test.js tests/middlewares/**/*.test.js --exit
+
+◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+
+
+  Controller Authentification – tests niveau 1
+    login()
+      ✔ retourne 400 si champs manquants
+      ✔ retourne 401 si utilisateur inexistant
+      ✔ retourne 401 si mot de passe incorrect
+      ✔ retourne 200 et un token si identifiants valides
+      ✔ retourne 500 en cas d’erreur interne
+    register()
+      ✔ retourne 400 si champs manquants
+      ✔ retourne 400 si ValidationError (51ms)
+      ✔ retourne 201 si création valide (50ms)
+      ✔ retourne 500 en cas d’erreur interne (51ms)
+    deleteUser()
+      ✔ retourne 400 si l'ID est invalide
+      ✔ retourne 404 si l'utilisateur est introuvable
+      ✔ retourne 200 si la suppression est valide
+      ✔ retourne 500 en cas d’erreur interne
+
+  Controller Catways — getAllCatways (niveau‑1)
+    ✔ devrait renvoyer 200 et la liste des catways
+    ✔ devrait renvoyer 500 en cas d’erreur interne
+
+  Controller Catways — getCatwayById (niveau‑1)
+    ✔ retourne 200 si catway trouvé et attaché par les middlewares
+
+  Controller Catways — createCatway (niveau‑1)
+    ✔ retourne 201 si le catway est créé
+    ✔ retourne 409 si catwayNumber existe déjà (E11000)
+    ✔ retourne 500 si une erreur interne survient
+
+  Controller Catways — updateCatway (niveau‑1)
+    ✔ retourne 200 si la mise à jour réussit
+    ✔ retourne 409 si catwayNumber existe déjà (E11000)
+    ✔ retourne 500 si une erreur interne survient
+
+  Controller Catways – patchCatway (niveau‑1)
+    ✔ retourne 200 si la mise à jour partielle réussit
+    ✔ retourne 409 si catwayNumber existe déjà (E11000)
+    ✔ retourne 500 si une erreur interne survient
+
+  Controller Catways – deleteCatway (niveau‑1)
+    ✔ retourne 204 si la suppression réussit
+    ✔ retourne 500 si une erreur interne survient
+
+  Controller Reservations — getReservationsByCatway (niveau‑1)
+    ✔ devrait renvoyer 200 et la liste des réservations
+    ✔ devrait renvoyer 500 en cas d’erreur interne
+
+  Controller Reservations — getReservationById (niveau-1)
+    ✔ 200 — renvoie la réservation depuis req.reservation
+    ✔ 500 — erreur interne simulée
+
+  Controller Reservations — createReservation (niveau‑1)
+    ✔ 201 — crée une réservation et renvoie l’objet créé
+    ✔ 500 — erreur interne simulée
+
+  Controller Reservations — deleteReservation (niveau‑1)
+    ✔ 200 — supprime la réservation et renvoie un message de confirmation
+    ✔ 500 — erreur interne simulée
+
+  Contrôleur Users - getUsers (Niveau 1)
+    ✔ getUsers → 200 renvoie la liste des utilisateurs
+    ✔ getUsers → 500 en cas d’erreur interne
+
+  Contrôleur Users - createUser (Niveau 1)
+    ✔ createUser → 201 hash le mot de passe et renvoie un user sans hash
+    ✔ createUser → 400 si email déjà utilisé (E11000)
+    ✔ createUser → 400 si ValidationError Mongoose
+    ✔ createUser → 500 en cas d’erreur interne
+
+  Contrôleur Users - patchUser (Niveau 1)
+    ✔ patchUser → 200 met à jour partiellement un utilisateur
+    ✔ patchUser → 409 si email déjà existant
+    ✔ patchUser → 500 si erreur interne lors du save()
+
+  Contrôleur Users - deleteUser (Niveau 1)
+    ✔ deleteUser → 200 supprime un utilisateur
+    ✔ deleteUser → 500 si erreur interne
+
+  Middleware Authentification – authMiddleware (niveau-1)
+    ✔ retourne 401 si aucun token n’est fourni
+    ✔ retourne 401 si le token est invalide
+    ✔ retourne 401 si le token est expiré
+    ✔ appelle next() si le token est valide
+    ✔ retourne 500 en cas d’erreur interne
+
+  Middleware Catways — validateCatwayId (niveau‑1)
+    ✔ retourne 400  si id invalide (ni un ObjectId ni un nombre)
+    ✔ laisse passer un ObjectId valide
+    ✔ laisse passer un catwayNumber valide
+
+  Middleware Catways — resolveCatwayIdentifier (niveau‑1)
+    ✔ attache le catway trouvé via ObjectId
+    ✔ attache le catway trouvé via catwayNumber
+    ✔ retourne 404 si catway introuvable
+    ✔ retourne 500 si erreur interne
+    ✔ n’appelle pas findOne si ObjectId valide
+
+  Middleware Catways — validateCatwayPayload (niveau‑1)
+    ✔ retourne 400 si un champ requis est manquant
+    ✔ retourne 400 si catwayNumber n’est pas un entier positif
+    ✔ retourne 400 si type est invalide
+    ✔ retourne 400 si catwayState est vide
+    ✔ laisse passer un payload valide
+
+  Middleware Catways – validateCatwayPartialPayload (niveau‑1)
+    ✔ retourne 400 si aucun champ n’est fourni
+    ✔ retourne 400 si catwayNumber est invalide
+    ✔ retourne 400 si type est invalide
+    ✔ retourne 400 si catwayState est vide
+    ✔ laisse passer un payload partiel valide
+
+  Middlewares Deprecated (Niveau-1)
+    Middlewares Deprecated - deprecatedRoute (niveau-1)
+      ✔ doit ajouter le header X-Deprecated: true
+    Middlewares Deprecated - attachDeprecatedInfo (niveau-1)
+      ✔ doit ajouter le bloc deprecated dans la réponse JSON
+      ✔ ne doit rien ajouter si la route n’est pas dépréciée
+
+  Middleware Reservations — validateReservationId (niveau‑1)
+    ✔ 400 — identifiant invalide
+    ✔ next() — identifiant valide
+
+  Middleware Reservations — resolveReservationIdentifier (niveau‑1)
+    ✔ 404 — réservation introuvable
+    ✔ 404 — réservation non associée à ce catway
+    ✔ next() — réservation trouvée et cohérente
+    ✔ 500 — erreur interne simulée
+
+  Middleware Reservations — validateReservationPayload (niveau‑1)
+    ✔ 400 — catwayNumber ne doit pas être fourni dans le payload
+    ✔ 400 — champs obligatoires manquants
+    ✔ 400 — dates invalides
+    ✔ 400 — checkIn doit être strictement inférieur à checkOut
+    ✔ next() — payload valide
+
+  Middleware Users — validateUserId (niveau‑1)
+    ✔ next() — si identifiant valide
+    ✔ 400 - si id invalide
+
+  Middleware Users — resolveUserIdentifier (niveau‑1)
+    ✔ next() - attache req.user
+    ✔ 404 - si utilisateur introuvable
+    ✔ 500 - si erreur interne
+
+  Middleware Users — validateUserPayload (niveau‑1)
+    ✔ next() - si payload valide
+    ✔ 400 - si champs manquants
+
+  Middleware Users — validateUserPayloadPartial (niveau‑1)
+    ✔ next() - si payload partiel valide
+    ✔ validateUserPayloadPartial → 400 si aucun champ
+    ✔ validateUserPayloadPartial → 400 si name n’est pas une string
+
+
+  93 passing (2s)
+
+

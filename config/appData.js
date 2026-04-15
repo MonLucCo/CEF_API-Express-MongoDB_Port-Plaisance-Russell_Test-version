@@ -16,5 +16,5 @@ module.exports = {
     ],
     APP_GITHUB: "https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version",
     APP_ENVIRONMENT: process.env.NODE_ENV || "développement",
-    APP_JSDOC_TAG: "v0.1.0-doc"
+    APP_DOC_API_TAG: "v0.1.0-doc"
 };

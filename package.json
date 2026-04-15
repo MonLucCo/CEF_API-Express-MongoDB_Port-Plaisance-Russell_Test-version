@@ -9,6 +9,8 @@
   },
   "scripts": {
     "docs": "jsdoc -c config/dev/jsdoc.json",
+    "docs:publish": "rm -rf public/docs && cp -r docs public/docs",
+    "docs:predeploy": "npm run docs && npm run docs:publish",
     "clean": "node scripts/clean.js",
     "reinstall": "node scripts/reinstall.js",
     "validate:predeploy": "node scripts/validate-predeploy.js",

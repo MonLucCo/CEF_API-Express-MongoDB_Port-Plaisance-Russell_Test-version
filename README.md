@@ -6,8 +6,8 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 6](https://img.shields.io/badge/Phase%206-Frontend-green) ![Version v0.6.1](https://img.shields.io/badge/Release-v0.6.1-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.2.1--dev.d-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.2.1--dev-yellow)
- ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
+![Milestone Phase 6](https://img.shields.io/badge/Phase%206-Frontend-green) ![Version v0.6.1](https://img.shields.io/badge/Release-v0.6.1-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.2.1--dev.d-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.3.0--dev-yellow)
+![Version Doc-API](https://img.shields.io/badge/Version%20Doc--API-v0.1.0--doc-yellow)  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
 ![Statut du dépôt](https://img.shields.io/badge/Status%20dépôt-en%20développement-orange) [![Site déployé](https://img.shields.io/badge/Accès%20site-Alwaysdata-blue)](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
 
 > 🔗 [Accès aux phases](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/milestones/)
@@ -60,7 +60,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   │   └── pages/                ← Contrôleur du frontend (pagesController.js)
 │   │
 │   ├── middlewares/        ← Middlewares Express (authentification, validation, sécurité…)        
-│   ├── services/           ← Logique métier réutilisable (accès DB, règles métier…)  
+│   ├── utils/              ← Fonctions non-métier réutilisables  
 │   └── routes/             ← Définition des routes Express     
 │       ├── api/                  ← Routes de l'API REST
 │       └── pages/                ← Routes du frontend (routesController.js)
@@ -69,6 +69,13 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── dashboard.ejs       ← Page dynamique (EJS) de l'espace utilisateur (Dashboard)
 │   ├── home.ejs            ← Page dynamique (EJS) de l'accueil (Home)
 │   ├── login.ejs           ← Page dynamique (EJS) de la connexion (Login)
+│   │
+│   ├── catways-details.ejs       ← Page des détails d'un catway (vue Dashboard)
+│   ├── catways-list.ejs          ← Page de la liste des catways (vue Dashboard)
+│   ├── reservations-details.ejs  ← Page des détails d'une réservation (vue Dashboard)
+│   ├── reservations-list.ejs     ← Page de la liste des réservations (vue Dashboard)
+│   ├── users-list.ejs            ← Page de la liste des utilisateurs (vue Dashboard)
+│   ├── docs-api.ejs              ← Page d'accès à la documentatin (JSDoc) de l'API (vue Dashboard)
 │   │
 │   ├── home/             ← Page d'accueil (Home) découpée en parties élémentaires        
 │   ├── partials/         ← Parties (partials en include) réutilisables d'une page HTML (EJS)
@@ -85,6 +92,9 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   └── dev/                      ← Configurations de l'environnement de développement (nodemon…)
 │
 ├── public/            ← Fichiers statiques pour le front minimal
+│   ├── docs/              ← Documentation publiée du code (JSDoc)  
+│   ├── docs-api/          ← Documentation publiée de l'API (REST) 
+│   │
 │   ├── css/               ← Styles unifiés (main.css)  
 │   └── img/               ← Favicon et Logos     
 │
@@ -109,6 +119,8 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── securite.md              ← Mesures de sécurité (JWT, bcrypt, Helmet, CORS…)
 │   ├── tests-strategy.md        ← Stratégie globale des tests (niveaux 1 à 3)
 │   ├── decisions-techniques.md  ← Historique des choix techniques majeurs
+│   │
+│   ├── api/                     ← Documentation de l'API (REST)
 │   │
 │   ├── hebergement/             ← Documentation Alwaysdata & MongoDB
 │   ├── deploiement/             ← Procédures de déploiement, de validation et d'import JSON
@@ -184,13 +196,13 @@ Les données importées concernent les Utilisateurs (`user.json`), les Catways (
 
 ## 🖥️ Front-end minimal
 
-- Page d’accueil  
-- Dashboard utilisateur  
-- Liste des catways  
-- Liste des réservations  
-- Détails d’un catway  
-- Détails d’une réservation
-- Documentation de l'API (JSDoc)
+- [x] Page d’accueil  
+- [x] Dashboard utilisateur  
+- [x] Liste des catways  
+- [x] Liste des réservations  
+- [x] Détails d’un catway  
+- [x] Détails d’une réservation
+- [x] Documentation de l'API (JSDoc)
 
 ---
 
@@ -227,18 +239,23 @@ Les tests couvrent les **9 fonctionnalités demandées** :
 
 ## 📚 Documentation
 
-La documentation technique est générée avec **JSDoc** et accessible via :
+La **documentation de l'API** est générée manuellement avec des fichiers Markdown exportés en HTML. Elle est accessible via :
 
-```text
-docs/
-```
+- `docs-dev/api/` : documentation de l'API établie avec des fichiers Markdown
+- `public/docs-api/` : artefact de publication (version déplacée de `docs-dev/api` des fichiers HTML exportés avec l'option `HTML (OffLine)` de l'éditeur Visual Studio Code)
 
 Elle inclut :
 
 - Vue d’ensemble  
 - Tutoriel  
 - Exemples  
-- Glossaire  
+- Glossaire
+- Endpoints de l'API
+
+La **documentation du code** est générée avec **JSDoc** et accessible via :
+
+- `docs/` : artefact de génération (version produite automatiquement avec l'outil `jsdoc` dans le script `npm run docs` de `package.json`)
+- `public/docs/` : artefact de publication (version copiée de `docs/` avec le script `npm run docs:publish` de `package.json`)
 
 ---
 
@@ -256,6 +273,17 @@ La **documentation interne versionnée** est disponible dans le dossier `docs-de
 - [Déploiement](./docs-dev/deploiement/README_deploiement.md)
 - [Hébergement](./docs-dev/hebergement/alwaysdata.md)
 - [Développement continu (CI/CD)](./docs-dev/developpement-continu.md)
+
+La **documentation de l'API** est disponible dans le dossier `api/`
+
+- [Introduction](./docs-dev/api/index.md)
+- [Vue d’ensemble](./docs-dev/api/overview.md)
+- [Tutoriel](./docs-dev/api/tutorial.md)
+- [Exemples](./docs-dev/api/examples.md)
+- [Glossaire](./docs-dev/api/glossary.md)
+- [Endpoints Users](./docs-dev/api/users.md)
+- [Endpoints Catways](./docs-dev/api/catways.md)
+- [Endpoints Reservations](./docs-dev/api/reservations.md)
 
 **Scripts et outils** dans le dossier `scripts/` :
 
@@ -314,7 +342,7 @@ Les scripts sont conservés dans le dossier privé `scratches/`.
 
 Le projet est déployé sur **Alwaysdata** : 🔗 [API du port de plaisance Russell](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
 
-Le déploiement est réalisé via un script automatisé :
+Le déploiement est réalisé via un script automatisé de `package.json` :
 
 ```bash
 npm run deploy
@@ -414,11 +442,18 @@ npm test
 
 Un serveur Express dédié (`tests/test-app.js`) permet d’exécuter les tests E2E locaux via Postman, avec une base MongoMemoryServer.
 
-Commandes disponibles :
+Commandes disponibles (serveur local de l'application avec une base MongoDB en mémoire) :
 
 ```bash
 npm run test:app         # sans nodemon (recommandé)
 npm run test:app:watch   # avec nodemon (développement)
+```
+
+Commandes disponibles (serveur local de l'application connectée avec une base MongoDB Atlas) :
+
+```bash
+npm run start        # sans nodemon
+npm run dev          # avec nodemon
 ```
 
 👉 Collection Postman :  [docs-dev/tests/assets/collection-e2e-local.json](./docs-dev/tests/assets/collection-e2e-local.json)

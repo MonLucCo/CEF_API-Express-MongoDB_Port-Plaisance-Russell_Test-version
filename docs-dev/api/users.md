@@ -1,8 +1,16 @@
 # Endpoints Users
 
+Nécessite pour chaque route une authentification et la transmission du `<token>`.
+
 ---
 
-## POST /auth/register
+## GET /users
+
+Liste des utilisateurs.
+
+---
+
+## POST /users
 
 Créer un utilisateur.
 
@@ -18,22 +26,22 @@ Payload :
 
 ---
 
-## POST /auth/login
+## PATCH /users/:id
 
-Connexion d’un utilisateur.
+Modification d’un utilisateur.
 
-Réponse :
+Payload :
 
 ```json
 {
-  "token": "<jwt>"
+  "name": "Nouveau nom",
 }
 ```
 
 ---
 
-## DELETE /auth/delete/:id
+## DELETE /users/:id
 
-Supprimer un utilisateur (JWT requis).
+Supprimer un utilisateur.
 
 ---

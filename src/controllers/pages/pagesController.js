@@ -106,13 +106,12 @@ exports.renderLogin = (req, res) => {
  * 
  * @description Traite les données du formulaire de connexion, communique avec l'API pour vérifier les identifiants,
  * et gère la création du token JWT en cas de succès. En cas d'échec, rend la page de connexion avec un message d'erreur.
- * Cette méthode utilise axios pour envoyer une requête POST à l'endpoint de connexion de l'API.
+ * Cette méthode envoie une requête POST à l'endpoint de connexion de l'API.
  * En cas de succès, le token JWT est stocké dans un cookie sécurisé et l'utilisateur est redirigé vers le dashboard.
  * En cas d'échec (identifiants invalides ou erreur de communication), la page de connexion est rendue à nouveau avec un 
  * message d'erreur.
  * 
  * Prise en compte de la base de l'URL dans la requête et dans la redirection.
- * Suppression de l'emploi de 'Axios' car la requête est interne à l'application.
  * 
  * Le code exploite une technique de "controller composition" afin de réaliser un patch minimal sans impact sur l'API ni 
  * les tests. Il s'agit de faire un appel interne du contrôleur API sans réponse HTTP.

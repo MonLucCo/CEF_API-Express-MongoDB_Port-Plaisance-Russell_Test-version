@@ -4,20 +4,7 @@ Ce tutoriel présente les étapes essentielles pour utiliser l’API.
 
 ---
 
-## 1. Créer un utilisateur
-
-```js
-POST /auth/register
-{
-  "name": "Alice",
-  "email": "alice@example.com",
-  "password": "Secret123!"
-}
-```
-
----
-
-## 2. Se connecter
+## 1. Se connecter
 
 ```js
 POST /auth/login
@@ -35,9 +22,7 @@ Réponse :
 }
 ```
 
----
-
-## 3. Appeler une route protégée
+## 2. Appeler une route protégée
 
 Ajouter le token dans le header :
 
@@ -45,22 +30,35 @@ Ajouter le token dans le header :
 Authorization: Bearer <token>
 ```
 
-Exemple :
+Exemples de requête :
 
-```js
-GET /catways
-```
+- **Créer un utilisateur**
 
----
+    ```js
+    POST /auth/register
+    {
+      "name": "Alice",
+      "email": "alice@example.com",
+      "password": "Secret123!"
+    }
+    ```
 
-## 4. Créer une réservation
+- **Liste des catways**
 
-```js
-POST /catways/123/reservations
-{
-  "checkIn": "2026-04-01",
-  "checkOut": "2026-04-03"
-}
-```
+    ```js
+    GET /catways
+    ```
+
+- **Créer une réservation pour le catway `123`**
+
+    ```js
+    POST /catways/123/reservations
+    {
+      "clientName": "Butterfly",
+      "boatName": "My Little Butterfly"
+      "checkIn": "2026-04-01",
+      "checkOut": "2026-04-03"
+    }
+    ```
 
 ---

@@ -25,15 +25,19 @@
       <div class="crossnote markdown-preview  ">
       
 <h1 id="exemples-de-requêtes">Exemples de requêtes </h1>
+<p>Nécessite pour chaque route une authentification et la transmission du <code>&lt;token&gt;</code>.</p>
 <hr>
 <h2 id="exemple--liste-des-catways">Exemple : Liste des catways </h2>
 <pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token constant">GET</span> <span class="token operator">/</span>catways
 </code></pre><p>Réponse :</p>
 <pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">[</span>
   <span class="token punctuation">{</span>
-    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"65f1..."</span><span class="token punctuation">,</span>
-    <span class="token property">"identifier"</span><span class="token operator">:</span> <span class="token string">"A1"</span><span class="token punctuation">,</span>
-    <span class="token property">"status"</span><span class="token operator">:</span> <span class="token string">"free"</span>
+    <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"65f1..."</span><span class="token punctuation">,</span>
+    <span class="token property">"catwayNumber"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"short"</span><span class="token punctuation">,</span>
+    <span class="token property">"catwayState"</span><span class="token operator">:</span> <span class="token string">"bon état"</span><span class="token punctuation">,</span>
+    <span class="token property">"createdAt"</span><span class="token operator">:</span> <span class="token string">"2026-02-15T16:43:28.908Z"</span><span class="token punctuation">,</span>
+    <span class="token property">"updatedAt"</span><span class="token operator">:</span> <span class="token string">"2026-02-15T16:43:28.908Z"</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">]</span>
 </code></pre><hr>
@@ -43,8 +47,10 @@
 <h2 id="exemple--créer-une-réservation">Exemple : Créer une réservation </h2>
 <pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token constant">POST</span> <span class="token operator">/</span>catways<span class="token operator">/</span>65f1<span class="token spread operator">...</span><span class="token operator">/</span>reservations
 <span class="token punctuation">{</span>
-  <span class="token string-property property">"startDate"</span><span class="token operator">:</span> <span class="token string">"2026-04-01"</span><span class="token punctuation">,</span>
-  <span class="token string-property property">"endDate"</span><span class="token operator">:</span> <span class="token string">"2026-04-03"</span>
+  <span class="token string-property property">"clientName"</span><span class="token operator">:</span> <span class="token string">"Butterfly"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"boatName"</span><span class="token operator">:</span> <span class="token string">"My Little Butterfly"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"checkIn"</span><span class="token operator">:</span> <span class="token string">"2026-04-01"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"checkOut"</span><span class="token operator">:</span> <span class="token string">"2026-04-03"</span>
 <span class="token punctuation">}</span>
 </code></pre><hr>
 

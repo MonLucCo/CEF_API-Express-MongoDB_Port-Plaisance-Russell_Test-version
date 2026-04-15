@@ -27,50 +27,115 @@
 <h1 id="vue-densemble-de-lapi">Vue d’ensemble de l’API </h1>
 <p>L’API REST du Port de Plaisance Russell permet de gérer :</p>
 <ul>
+<li>l’authentification des utilisateurs,</li>
 <li>les utilisateurs,</li>
-<li>les catways (emplacements d’amarrage),</li>
+<li>les catways,</li>
 <li>les réservations associées aux catways.</li>
 </ul>
-<p>Elle repose sur les principes suivants :</p>
+<p>Elle repose sur :</p>
 <ul>
-<li>Architecture REST,</li>
-<li>Authentification JWT,</li>
-<li>Format JSON pour toutes les requêtes et réponses,</li>
-<li>Séparation claire entre les ressources.</li>
-</ul>
-<hr>
-<h2 id="ressources-principales">Ressources principales </h2>
-<h3 id="users">Users </h3>
-<p>Gestion des utilisateurs de la capitainerie :</p>
-<ul>
-<li>création,</li>
-<li>connexion,</li>
-<li>suppression,</li>
-<li>consultation.</li>
-</ul>
-<h3 id="catways">Catways </h3>
-<p>Gestion des emplacements d’amarrage :</p>
-<ul>
-<li>liste,</li>
-<li>détail,</li>
-<li>création,</li>
-<li>modification,</li>
-<li>suppression.</li>
-</ul>
-<h3 id="reservations">Reservations </h3>
-<p>Gestion des réservations d’un catway :</p>
-<ul>
-<li>liste,</li>
-<li>détail,</li>
-<li>création,</li>
-<li>suppression.</li>
+<li>une architecture REST,</li>
+<li>une authentification JWT,</li>
+<li>un format JSON pour toutes les requêtes,</li>
+<li>une séparation claire entre les ressources.</li>
 </ul>
 <hr>
 <h2 id="url-de-base">URL de base </h2>
 <pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>/api/port-plaisance-russell
 </code></pre><p>Sur Alwaysdata :</p>
 <ul>
-<li><a href="https://perlucco.alwaysdata.net/api/port-plaisance-russell">https://perlucco.alwaysdata.net/api/port-plaisance-russell</a></li>
+<li><code>https://perlucco.alwaysdata.net/api/port-plaisance-russell</code></li>
+</ul>
+<hr>
+<h2 id="ressources-principales"><strong>Ressources principales</strong> </h2>
+<hr>
+<h3 id="-1-authentification">🔐 1. Authentification </h3>
+<p>L’API utilise un système d’authentification basé sur JWT.</p>
+<h4 id="11-endpoints">1.1 Endpoints </h4>
+<ul>
+<li><code>POST /auth/login</code><br>
+→ Retourne un token JWT à utiliser dans les routes protégées.</li>
+</ul>
+<h4 id="12-header-requis-pour-les-routes-protégées">1.2 Header requis pour les routes protégées </h4>
+<pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token literal-property property">Authorization</span><span class="token operator">:</span> <span class="token maybe-class-name">Bearer</span> <span class="token operator">&lt;</span>token<span class="token operator">&gt;</span>
+</code></pre><hr>
+<h3 id="-2-users">👤 2. Users </h3>
+<p>Gestion des utilisateurs de la capitainerie.</p>
+<h4 id="21-endpoints">2.1 Endpoints </h4>
+<ul>
+<li>
+<p><code>GET /users</code><br>
+→ Liste des utilisateurs</p>
+</li>
+<li>
+<p><code>POST /users</code><br>
+→ Création d’un utilisateur</p>
+</li>
+<li>
+<p><code>PATCH /users/:id</code><br>
+→ Mise à jour partielle</p>
+</li>
+<li>
+<p><code>DELETE /users/:id</code><br>
+→ Suppression</p>
+</li>
+</ul>
+<h4 id="22-notes">2.2 Notes </h4>
+<ul>
+<li>Toutes les routes Users sont <strong>protégées par JWT</strong>.</li>
+<li>Les anciennes routes <code>/auth/register</code> et <code>/auth/delete/:id</code> sont <strong>dépréciées</strong>.</li>
+</ul>
+<hr>
+<h3 id="-3-catways">⚓ 3. Catways </h3>
+<p>Gestion des emplacements d’amarrage.</p>
+<h4 id="31-endpoints">3.1 Endpoints </h4>
+<ul>
+<li>
+<p><code>GET /catways</code><br>
+→ Liste des catways</p>
+</li>
+<li>
+<p><code>GET /catways/:id</code><br>
+→ Détail d’un catway</p>
+</li>
+<li>
+<p><code>POST /catways</code><br>
+→ Création d’un catway</p>
+</li>
+<li>
+<p><code>PUT /catways/:id</code><br>
+→ Modification complète</p>
+</li>
+<li>
+<p><code>PATCH /catways/:id</code><br>
+→ Modification partielle</p>
+</li>
+<li>
+<p><code>DELETE /catways/:id</code><br>
+→ Suppression</p>
+</li>
+</ul>
+<hr>
+<h3 id="️-4-reservations">🛥️ 4. Reservations </h3>
+<p>Gestion des réservations d’un catway.</p>
+<h4 id="41-endpoints">4.1 Endpoints </h4>
+<ul>
+<li>
+<p><code>GET /catways/:id/reservations</code><br>
+→ Liste des réservations d’un catway</p>
+</li>
+<li>
+<p><code>GET /catways/:id/reservations/:idReservation</code><br>
+→ Détail d’une réservation</p>
+</li>
+<li>
+<p><code>POST /catways/:id/reservations</code><br>
+→ Création d’une réservation</p>
+</li>
+<li>
+<p><code>DELETE /catways/:id/reservations/:idReservation</code><br>
+→ Suppression d’une réservation</p>
+</li>
 </ul>
 <hr>
 

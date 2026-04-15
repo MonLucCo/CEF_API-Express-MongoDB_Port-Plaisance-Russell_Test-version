@@ -27,15 +27,7 @@
 <h1 id="tutoriel-dutilisation-de-lapi">Tutoriel d’utilisation de l’API </h1>
 <p>Ce tutoriel présente les étapes essentielles pour utiliser l’API.</p>
 <hr>
-<h2 id="1-créer-un-utilisateur">1. Créer un utilisateur </h2>
-<pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token constant">POST</span> <span class="token operator">/</span>auth<span class="token operator">/</span>register
-<span class="token punctuation">{</span>
-  <span class="token string-property property">"name"</span><span class="token operator">:</span> <span class="token string">"Alice"</span><span class="token punctuation">,</span>
-  <span class="token string-property property">"email"</span><span class="token operator">:</span> <span class="token string">"alice@example.com"</span><span class="token punctuation">,</span>
-  <span class="token string-property property">"password"</span><span class="token operator">:</span> <span class="token string">"Secret123!"</span>
-<span class="token punctuation">}</span>
-</code></pre><hr>
-<h2 id="2-se-connecter">2. Se connecter </h2>
+<h2 id="1-se-connecter">1. Se connecter </h2>
 <pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token constant">POST</span> <span class="token operator">/</span>auth<span class="token operator">/</span>login
 <span class="token punctuation">{</span>
   <span class="token string-property property">"email"</span><span class="token operator">:</span> <span class="token string">"alice@example.com"</span><span class="token punctuation">,</span>
@@ -45,20 +37,36 @@
 <pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token punctuation">{</span>
   <span class="token string-property property">"token"</span><span class="token operator">:</span> <span class="token string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>
 <span class="token punctuation">}</span>
-</code></pre><hr>
-<h2 id="3-appeler-une-route-protégée">3. Appeler une route protégée </h2>
+</code></pre><h2 id="2-appeler-une-route-protégée">2. Appeler une route protégée </h2>
 <p>Ajouter le token dans le header :</p>
 <pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token literal-property property">Authorization</span><span class="token operator">:</span> <span class="token maybe-class-name">Bearer</span> <span class="token operator">&lt;</span>token<span class="token operator">&gt;</span>
-</code></pre><p>Exemple :</p>
+</code></pre><p>Exemples de requête :</p>
+<ul>
+<li>
+<p><strong>Créer un utilisateur</strong></p>
+<pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token constant">POST</span> <span class="token operator">/</span>auth<span class="token operator">/</span>register
+<span class="token punctuation">{</span>
+  <span class="token string-property property">"name"</span><span class="token operator">:</span> <span class="token string">"Alice"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"email"</span><span class="token operator">:</span> <span class="token string">"alice@example.com"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"password"</span><span class="token operator">:</span> <span class="token string">"Secret123!"</span>
+<span class="token punctuation">}</span>
+</code></pre></li>
+<li>
+<p><strong>Liste des catways</strong></p>
 <pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token constant">GET</span> <span class="token operator">/</span>catways
-</code></pre><hr>
-<h2 id="4-créer-une-réservation">4. Créer une réservation </h2>
+</code></pre></li>
+<li>
+<p><strong>Créer une réservation pour le catway <code>123</code></strong></p>
 <pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token constant">POST</span> <span class="token operator">/</span>catways<span class="token operator">/</span><span class="token number">123</span><span class="token operator">/</span>reservations
 <span class="token punctuation">{</span>
+  <span class="token string-property property">"clientName"</span><span class="token operator">:</span> <span class="token string">"Butterfly"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"boatName"</span><span class="token operator">:</span> <span class="token string">"My Little Butterfly"</span>
   <span class="token string-property property">"checkIn"</span><span class="token operator">:</span> <span class="token string">"2026-04-01"</span><span class="token punctuation">,</span>
   <span class="token string-property property">"checkOut"</span><span class="token operator">:</span> <span class="token string">"2026-04-03"</span>
 <span class="token punctuation">}</span>
-</code></pre><hr>
+</code></pre></li>
+</ul>
+<hr>
 
       </div>
       

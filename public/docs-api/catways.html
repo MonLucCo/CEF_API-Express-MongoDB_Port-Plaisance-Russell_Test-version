@@ -25,6 +25,7 @@
       <div class="crossnote markdown-preview  ">
       
 <h1 id="endpoints-catways">Endpoints Catways </h1>
+<p>Nécessite pour chaque route une authentification et la transmission du <code>&lt;token&gt;</code>.</p>
 <hr>
 <h2 id="get-catways">GET /catways </h2>
 <p>Liste des catways.</p>
@@ -36,8 +37,9 @@
 <p>Créer un catway.</p>
 <p>Payload :</p>
 <pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
-  <span class="token property">"identifier"</span><span class="token operator">:</span> <span class="token string">"A1"</span><span class="token punctuation">,</span>
-  <span class="token property">"status"</span><span class="token operator">:</span> <span class="token string">"free"</span>
+  <span class="token property">"catwayNumber"</span><span class="token operator">:</span> <span class="token number">999</span><span class="token punctuation">,</span>
+  <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"long"</span><span class="token punctuation">,</span>
+  <span class="token property">"catwayState"</span><span class="token operator">:</span> <span class="token string">"free for testing"</span>
 <span class="token punctuation">}</span>
 </code></pre><hr>
 <h2 id="put-catwaysid">PUT /catways/:id </h2>

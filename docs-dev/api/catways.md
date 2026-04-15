@@ -1,5 +1,7 @@
 # Endpoints Catways
 
+Nécessite pour chaque route une authentification et la transmission du `<token>`.
+
 ---
 
 ## GET /catways
@@ -22,8 +24,9 @@ Payload :
 
 ```json
 {
-  "identifier": "A1",
-  "status": "free"
+  "catwayNumber": 999,
+  "type": "long",
+  "catwayState": "free for testing"
 }
 ```
 

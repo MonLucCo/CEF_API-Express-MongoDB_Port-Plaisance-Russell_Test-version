@@ -25,8 +25,12 @@
       <div class="crossnote markdown-preview  ">
       
 <h1 id="endpoints-users">Endpoints Users </h1>
+<p>Nécessite pour chaque route une authentification et la transmission du <code>&lt;token&gt;</code>.</p>
 <hr>
-<h2 id="post-authregister">POST /auth/register </h2>
+<h2 id="get-users">GET /users </h2>
+<p>Liste des utilisateurs.</p>
+<hr>
+<h2 id="post-users">POST /users </h2>
 <p>Créer un utilisateur.</p>
 <p>Payload :</p>
 <pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
@@ -35,15 +39,15 @@
   <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"Secret123!"</span>
 <span class="token punctuation">}</span>
 </code></pre><hr>
-<h2 id="post-authlogin">POST /auth/login </h2>
-<p>Connexion d’un utilisateur.</p>
-<p>Réponse :</p>
+<h2 id="patch-usersid">PATCH /users/:id </h2>
+<p>Modification d’un utilisateur.</p>
+<p>Payload :</p>
 <pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
-  <span class="token property">"token"</span><span class="token operator">:</span> <span class="token string">"&lt;jwt&gt;"</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Nouveau nom"</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span>
 </code></pre><hr>
-<h2 id="delete-authdeleteid">DELETE /auth/delete/:id </h2>
-<p>Supprimer un utilisateur (JWT requis).</p>
+<h2 id="delete-usersid">DELETE /users/:id </h2>
+<p>Supprimer un utilisateur.</p>
 <hr>
 
       </div>

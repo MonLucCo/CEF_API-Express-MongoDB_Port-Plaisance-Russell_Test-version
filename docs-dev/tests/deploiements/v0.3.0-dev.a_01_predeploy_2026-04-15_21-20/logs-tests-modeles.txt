@@ -5,11 +5,11 @@
 > cef_api-express-mongodb_port-plaisance-russell_test-version@0.2.1 tests:models
 > mocha --require tests/root-hooks.js tests/models/**/*.test.js --exit
 
-◇ injected env (13) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+◇ injected env (13) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
 
 
   Model Catway – Tests d’intégration (niveau‑2)
-    ✔ devrait enregistrer un catway valide en base (59ms)
+    ✔ devrait enregistrer un catway valide en base (55ms)
     ✔ devrait refuser un catwayNumber dupliqué (erreur E11000)
     ✔ devrait refuser un type invalide (enum)
     ✔ devrait refuser un catwayNumber < 1
@@ -53,6 +53,6 @@
     ✔ devrait refuser un mot de passe non hashé
 
 
-  32 passing (2s)
+  32 passing (951ms)
 
 

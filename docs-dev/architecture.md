@@ -235,7 +235,9 @@ docs-dev/                   ← Documentation interne versionnée
       │   ├── collection-e2e-local.json                          ← Collection Postman (API v0.1-dev)
       │   ├── API-Port-Russell_v0.2.0-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.0-dev - Pré-déploiement)
       │   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json  ← Collection Postman (API v0.2.1-dev - Tests techniques)
-      │   └── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
+      │   ├── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
+      │   ├── API-Port-Russell_v0.2.1-dev_02-PostDeploy.json     ← Collection Postman (API v0.2.1-dev - Post-déploiement)
+      │   └── API-Port-Russell_v0.3.0-dev_02-PostDeploy.json     ← Collection Postman (API v0.3.0-dev - Post-déploiement)
       │
       ├── auth/                                ← Catégorie Authentification
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
@@ -256,7 +258,19 @@ docs-dev/                   ← Documentation interne versionnée
       │   └── reservations-niveau-2-integration.md  ← Tests de niveau 2 - tests d'intégration Reservations
       │
       └── déploiements/                         ← Catégorie Déploiements
-          └── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Tests des validations pré-déploiement de la version v0.2.0-dev
+          ├── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Tests des validations - version v0.2.0-dev
+          ├── v0.2.1-dev_01_predeploy_2026-03-26_11-35/   ← Tests des validations - version v0.2.1-dev
+          ├── v0.2.1-dev_02_deploy_2026-03-29_09-01/      ← Tests des vérifications - version v0.2.1-dev
+          ├── v0.2.1-dev.a_02_deploy_2026-03-30_10-03/    ← Tests des vérifications - version v0.2.1-dev patch a
+          ├── v0.2.1-dev.b_02_deploy_2026-03-30_10-34/    ← Tests des vérifications - version v0.2.1-dev patch b
+          ├── v0.2.1-dev.c_02_deploy_2026-03-30_10-56/    ← Tests des vérifications - version v0.2.1-dev patch c
+          ├── v0.2.1-dev.d_02_deploy_2026-03-30_20-30/    ← Tests des vérifications - version v0.2.1-dev patch d
+          ├── v0.3.0-dev_01_predeploy_2026-04-15_16-14/   ← Tests des validations - version v0.3.0-dev
+          ├── v0.3.0-dev_02_deploy_2026-04-15_18-16/      ← Tests des vérifications - version v0.3.0-dev
+          ├── v0.3.0-dev.a_01_predeploy_2026-04-15_21-20/ ← Tests des validations - version v0.3.0-dev patch a
+          ├── v0.3.0-dev.a_02_deploy_2026-04-15_21-28/    ← Tests des vérifications - version v0.2.0-dev patch a
+          ├── v0.3.0-dev.b_01_predeploy_2026-04-16_07-58/ ← Tests des validations - version v0.2.0-dev patch b
+          └── v0.3.0-dev.b_02_deploy_2026-04-16_08-06/    ← Tests des vérifications - version v0.2.0-dev patch b
     
 ```
 
@@ -2636,19 +2650,22 @@ La version développée est la **v0.3.0-dev** qui finalise les fonctionnalités 
 - **Étape 4 : validation de la version avec le pipeline PreDeploy**
   - Exécution du pipeline `validate-predeploy` pour vérifier :
     - la présence et la cohérence de `/docs` et `/public/docs`,  
-    - la version documentaire (`APP_JSDOC_TAG`) dans `config/appData.js`,  
-    - l’accessibilité locale de `/docs/index.html` et `/public/docs/index.html`.  
+    - la version documentaire (`APP_DOC_API_TAG`) dans `config/appData.js`,  
+    - l’accessibilité locale de la documentation.  
   - Vérification de la page Dashboard `docs-api.ejs` (lien externe + iframe).  
   - Validation que la documentation publiée correspond bien à la version générée.
 
 - **Étape 5 : déploiement avec le pipeline Deploy et vérification de la version publiée**
-  - Exécution du script `npm run deploy` (rsync + synchronisation Alwaysdata).  
-  - Publication automatique de `/public/docs` sur le serveur Alwaysdata.  
   - Vérification distante via `npm run verify:deploy` :
-    - accessibilité de `/docs/index.html` sur Alwaysdata,  
-    - cohérence des métadonnées (`X-API-VERSION`, `APP_JSDOC_TAG`),  
+    - accessibilité de la documentation sur Alwaysdata,  
+    - cohérence des métadonnées (`X-API-VERSION`, `APP_DOC_API_TAG`),
+    - validité fonctionnelle du dashboard et de l'API sur Alwaysdata,  
     - affichage correct de la documentation dans le Dashboard déployé.  
   - Archivage des résultats dans `docs-dev/tests/deploiements/`.
+
+  > Cette démarche de publication est reproduite 2 fois pour corriger (patches) la configuration de la connexion et des requêtes dans l'environnement Alwaysdata.  
+  > Chaque version _patchée_ fait l'objet d'un validation de pré-déploiement et d'une vérification de déploiement qui sont archivées indépendamment.  
+  > La version publiée est la **v0.3.0-dev.b**.
 
 - **Étape 6 : documentation de l'issue-39**
   - Mise à jour de la documentation interne (`docs-dev/`) :

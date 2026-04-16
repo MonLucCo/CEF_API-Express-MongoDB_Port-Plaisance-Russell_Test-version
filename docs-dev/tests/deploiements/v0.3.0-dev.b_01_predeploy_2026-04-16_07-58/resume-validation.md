@@ -1,6 +1,6 @@
-# Résumé de validation — v0.3.0-dev
+# Résumé de validation — v0.3.0-dev.b
 
-Date : 15/04/2026 13:50:13
+Date : 16/04/2026 07:58:54
 
 Les tests automatisés ont été exécutés et archivés dans ce dossier.
 
@@ -14,8 +14,8 @@ Pipeline validate-predeploy : 1.0.0
 
 === Validation pré-déploiement ===
 Pipeline validate-predeploy — version 1.0.0
-Réponse (Nom de la version (ex : v0.2.0-dev) ?) : v0.3.0-dev
-📁 Dossier créé : docs-dev\tests\deploiements\v0.3.0-dev_01_predeploy_2026-04-15_13-50
+Réponse (Nom de la version (ex : v0.2.0-dev) ?) : v0.3.0-dev.b
+📁 Dossier créé : docs-dev\tests\deploiements\v0.3.0-dev.b_01_predeploy_2026-04-16_07-58
 
 Réponse (Souhaites-tu réinstaller l'environnement : (o/N) ?) : o
 
@@ -33,7 +33,7 @@ Réponse (Souhaites-tu réinstaller l'environnement : (o/N) ?) : o
 ✔ Nettoyage terminé !
 ➡ Installation des dépendances...
 
-added 327 packages, and audited 328 packages in 41s
+added 325 packages, and audited 326 packages in 40s
 
 68 packages are looking for funding
   run `npm fund` for details

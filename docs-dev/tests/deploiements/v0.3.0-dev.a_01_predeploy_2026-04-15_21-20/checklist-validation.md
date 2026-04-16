@@ -1,4 +1,4 @@
-# Checklist pré-déploiement — v0.3.0-dev
+# Checklist pré-déploiement — v0.3.0-dev.a
 
 ## Tests automatisés
 
@@ -37,7 +37,7 @@
 
 ## Conclusion
 
-- Version vérifiée : v0.3.0-dev
+- Version vérifiée : v0.3.0-dev.a
 
 ### Décision
 
@@ -50,6 +50,4 @@
 
 ### Actions à mener
 
-- Actualiser le contenu de la documentation de l'API.
 - Revoir le contenu de la JSDoc dans le code pour améliorer la lecture.
-- Retirer le module Axios de la configuration.

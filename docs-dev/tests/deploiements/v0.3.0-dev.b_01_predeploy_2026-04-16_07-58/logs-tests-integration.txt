@@ -5,7 +5,7 @@
 > cef_api-express-mongodb_port-plaisance-russell_test-version@0.2.1 test:integration
 > mocha --require tests/root-hooks.js tests/integration/**/*.test.js --exit
 
-◇ injected env (13) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+◇ injected env (14) from .env // tip: ⌁ auth for agents [www.vestauth.com]
 
 
   Tests d’intégration - Niveau 2 – Protection JWT des routes API
@@ -13,7 +13,7 @@
       ✔ GET /api/catways → 401 si aucun token
       ✔ GET /api/catways → 401 si token invalide
       ✔ GET /api/catways → 200 si token valide
-      ✔ POST /api/catways → 401 si aucun token (85ms)
+      ✔ POST /api/catways → 401 si aucun token (77ms)
       ✔ DELETE /api/catways/:id → 401 si aucun token
     Protection JWT – Routes Reservations
       ✔ GET /api/catways/:id/reservations → 401 si aucun token
@@ -32,19 +32,19 @@
       ✔ retourne 401 si token manquant
       ✔ retourne 401 si token invalide
       ✔ retourne 400 si champs manquants
-      ✔ retourne 400 si email déjà utilisé (102ms)
-      ✔ retourne 201 si création valide (51ms)
-      ✔ POST /api/auth/register doit renvoyer X-Deprecated: true (52ms)
+      ✔ retourne 400 si email déjà utilisé (100ms)
+      ✔ retourne 201 si création valide (50ms)
+      ✔ POST /api/auth/register doit renvoyer X-Deprecated: true (50ms)
     POST /auth/login
       ✔ retourne 400 si champs manquants
       ✔ retourne 401 si identifiants invalides
-      ✔ retourne 200 et un token si identifiants valides (97ms)
+      ✔ retourne 200 et un token si identifiants valides (105ms)
     DELETE /auth/delete/:id
       ✔ retourne 401 si token manquant
       ✔ retourne 401 si token invalide
       ✔ retourne 404 si utilisateur introuvable
-      ✔ retourne 200 si suppression valide (53ms)
-      ✔ DELETE /api/auth/delete/:id doit renvoyer X-Deprecated: true (56ms)
+      ✔ retourne 200 si suppression valide (50ms)
+      ✔ DELETE /api/auth/delete/:id doit renvoyer X-Deprecated: true (50ms)
 
   Tests d’intégration - Niveau 2 – Routes Catways
     GET /catways
@@ -111,9 +111,9 @@
       ✔ 200 - retourne un tableau vide
       ✔ 500 — erreur interne simulée
     POST /api/users — niveau‑2 (issue‑37 - étape-6)
-      ✔ 201 - crée un utilisateur (48ms)
-      ✔ 400 — email déjà utilisé (48ms)
-      ✔ 500 - erreur interne simulée (49ms)
+      ✔ 201 - crée un utilisateur (51ms)
+      ✔ 400 — email déjà utilisé (49ms)
+      ✔ 500 - erreur interne simulée (50ms)
     PATCH /api/users/:id — niveau‑2 (issue‑37 - étape-6)
       ✔ 200 - met à jour un utilisateur
       ✔ 400 - identifiant invalide
@@ -127,6 +127,6 @@
       ✔ 500 - erreur interne simulée
 
 
-  88 passing (6s)
+  88 passing (7s)
 
 

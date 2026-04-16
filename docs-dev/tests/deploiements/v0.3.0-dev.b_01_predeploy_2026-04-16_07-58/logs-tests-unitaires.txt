@@ -5,7 +5,7 @@
 > cef_api-express-mongodb_port-plaisance-russell_test-version@0.2.1 test:unit
 > mocha --require tests/root-hooks.js tests/controllers/**/*.test.js tests/middlewares/**/*.test.js --exit
 
-◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+◇ injected env (14) from .env // tip: ⌘ suppress logs { quiet: true }
 
 
   Controller Authentification – tests niveau 1
@@ -17,9 +17,9 @@
       ✔ retourne 500 en cas d’erreur interne
     register()
       ✔ retourne 400 si champs manquants
-      ✔ retourne 400 si ValidationError (51ms)
-      ✔ retourne 201 si création valide (50ms)
-      ✔ retourne 500 en cas d’erreur interne (51ms)
+      ✔ retourne 400 si ValidationError (53ms)
+      ✔ retourne 201 si création valide (51ms)
+      ✔ retourne 500 en cas d’erreur interne (48ms)
     deleteUser()
       ✔ retourne 400 si l'ID est invalide
       ✔ retourne 404 si l'utilisateur est introuvable
@@ -163,6 +163,6 @@
     ✔ validateUserPayloadPartial → 400 si name n’est pas une string
 
 
-  93 passing (2s)
+  93 passing (1s)
 
 

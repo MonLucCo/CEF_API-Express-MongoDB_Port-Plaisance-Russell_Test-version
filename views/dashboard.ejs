@@ -30,191 +30,197 @@
                         </div>
                         <% } %>
 
-                            <!-- Bloc 1 : Gestion des utilisateurs -->
-                            <details class="dashboard-block">
+                            <section>
+                                <!-- Bloc 1 : Gestion des utilisateurs -->
+                                <details class="dashboard-block">
 
-                                <summary>
-                                    <h2>Gestion des utilisateurs</h2>
-                                </summary>
+                                    <summary>
+                                        <h2>Gestion des utilisateurs</h2>
+                                    </summary>
 
-                                <section>
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Créer un utilisateur</h3>
-                                        </summary>
-                                        <form method="POST" action="<%= BASE_URL %>/dashboard/users/create">
-                                            <input type="text" name="name" placeholder="Nom" required>
-                                            <input type="email" name="email" placeholder="Email" required>
-                                            <input type="password" name="password" placeholder="Mot de passe" required>
-                                            <button type="submit">Créer</button>
-                                        </form>
-                                    </details>
+                                    <section>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Créer un utilisateur</h3>
+                                            </summary>
+                                            <form method="POST" action="<%= BASE_URL %>/dashboard/users/create">
+                                                <input type="text" name="name" placeholder="Nom" required>
+                                                <input type="email" name="email" placeholder="Email" required>
+                                                <input type="password" name="password" placeholder="Mot de passe"
+                                                    required>
+                                                <button type="submit">Créer</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Modifier un utilisateur</h3>
-                                        </summary>
-                                        <form method="POST" action="<%= BASE_URL %>/dashboard/users/update">
-                                            <input type="text" name="id" placeholder="ID utilisateur" required>
-                                            <input type="text" name="name" placeholder="Nouveau nom">
-                                            <input type="email" name="email" placeholder="Nouvel email">
-                                            <input type="password" name="password" placeholder="Nouveau mot de passe">
-                                            <button type="submit">Modifier</button>
-                                        </form>
-                                    </details>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Modifier un utilisateur</h3>
+                                            </summary>
+                                            <form method="POST" action="<%= BASE_URL %>/dashboard/users/update">
+                                                <input type="text" name="id" placeholder="ID utilisateur" required>
+                                                <input type="text" name="name" placeholder="Nouveau nom">
+                                                <input type="email" name="email" placeholder="Nouvel email">
+                                                <input type="password" name="password"
+                                                    placeholder="Nouveau mot de passe">
+                                                <button type="submit">Modifier</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Supprimer un utilisateur</h3>
-                                        </summary>
-                                        <form method="POST" action="<%= BASE_URL %>/dashboard/users/delete">
-                                            <input type="text" name="id" placeholder="ID utilisateur" required>
-                                            <button type="submit">Supprimer</button>
-                                        </form>
-                                    </details>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Supprimer un utilisateur</h3>
+                                            </summary>
+                                            <form method="POST" action="<%= BASE_URL %>/dashboard/users/delete">
+                                                <input type="text" name="id" placeholder="ID utilisateur" required>
+                                                <button type="submit">Supprimer</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Afficher tous les utilisateurs</h3>
-                                        </summary>
-                                        <form method="GET" action="<%= BASE_URL %>/dashboard/users/list">
-                                            <button type="submit">Afficher tous</button>
-                                        </form>
-                                    </details>
-                                </section>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Afficher tous les utilisateurs</h3>
+                                            </summary>
+                                            <form method="GET" action="<%= BASE_URL %>/dashboard/users/list">
+                                                <button type="submit">Afficher tous</button>
+                                            </form>
+                                        </details>
+                                    </section>
 
-                            </details>
+                                </details>
 
-                            <!-- Bloc 2 : Gestion des catways -->
-                            <details class="dashboard-block">
-                                <summary>
-                                    <h2>Gestion des catways</h2>
-                                </summary>
+                                <!-- Bloc 2 : Gestion des catways -->
+                                <details class="dashboard-block">
+                                    <summary>
+                                        <h2>Gestion des catways</h2>
+                                    </summary>
 
-                                <section>
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Créer un catway</h3>
-                                        </summary>
-                                        <form method="POST" action="<%= BASE_URL %>/dashboard/catways/create">
-                                            <input type="number" name="catwayNumber" placeholder="Numéro du catway"
-                                                required>
-                                            <select name="type" required>
-                                                <option value="" disabled selected>-- Choisir un type --</option>
-                                                <% catwayTypes.forEach(t=> { %>
-                                                    <option value="<%= t %>">
-                                                        <%= t %>
-                                                    </option>
-                                                    <% }) %>
-                                            </select>
-                                            <input type="text" name="catwayState" placeholder="État" required>
-                                            <button type="submit">Créer</button>
-                                        </form>
-                                    </details>
+                                    <section>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Créer un catway</h3>
+                                            </summary>
+                                            <form method="POST" action="<%= BASE_URL %>/dashboard/catways/create">
+                                                <input type="number" name="catwayNumber" placeholder="Numéro du catway"
+                                                    required>
+                                                <select name="type" required>
+                                                    <option value="" disabled selected>-- Choisir un type --</option>
+                                                    <% catwayTypes.forEach(t=> { %>
+                                                        <option value="<%= t %>">
+                                                            <%= t %>
+                                                        </option>
+                                                        <% }) %>
+                                                </select>
+                                                <input type="text" name="catwayState" placeholder="État" required>
+                                                <button type="submit">Créer</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Modifier l'état d'un catway</h3>
-                                        </summary>
-                                        <form method="POST" action="<%= BASE_URL %>/dashboard/catways/update">
-                                            <input type="text" name="id" placeholder="ID ou Numéro du catway" required>
-                                            <input type="text" name="catwayState" placeholder="Nouvel état">
-                                            <button type="submit">Modifier</button>
-                                        </form>
-                                    </details>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Modifier l'état d'un catway</h3>
+                                            </summary>
+                                            <form method="POST" action="<%= BASE_URL %>/dashboard/catways/update">
+                                                <input type="text" name="id" placeholder="ID ou Numéro du catway"
+                                                    required>
+                                                <input type="text" name="catwayState" placeholder="Nouvel état">
+                                                <button type="submit">Modifier</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Supprimer un catway</h3>
-                                        </summary>
-                                        <form method="POST" action="<%= BASE_URL %>/dashboard/catways/delete">
-                                            <input type="text" name="id" placeholder="ID ou Numéro du catway" required>
-                                            <button type="submit">Supprimer</button>
-                                        </form>
-                                    </details>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Supprimer un catway</h3>
+                                            </summary>
+                                            <form method="POST" action="<%= BASE_URL %>/dashboard/catways/delete">
+                                                <input type="text" name="id" placeholder="ID ou Numéro du catway"
+                                                    required>
+                                                <button type="submit">Supprimer</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Afficher un catway</h3>
-                                        </summary>
-                                        <form method="GET" action="<%= BASE_URL %>/dashboard/catways/details">
-                                            <input type="text" name="id" placeholder="ID ou Numéro du catway" required>
-                                            <button type="submit">Afficher</button>
-                                        </form>
-                                    </details>
-                                </section>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Afficher un catway</h3>
+                                            </summary>
+                                            <form method="GET" action="<%= BASE_URL %>/dashboard/catways/details">
+                                                <input type="text" name="id" placeholder="ID ou Numéro du catway"
+                                                    required>
+                                                <button type="submit">Afficher</button>
+                                            </form>
+                                        </details>
+                                    </section>
 
-                            </details>
+                                </details>
 
-                            <!-- Bloc 3 : Gestion des réservations -->
-                            <details class="dashboard-block">
-                                <summary>
-                                    <h2>Gestion des réservations</h2>
-                                </summary>
+                                <!-- Bloc 3 : Gestion des réservations -->
+                                <details class="dashboard-block">
+                                    <summary>
+                                        <h2>Gestion des réservations</h2>
+                                    </summary>
 
-                                <section>
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Créer une réservation</h3>
-                                        </summary>
-                                        <form method="POST" action="<%= BASE_URL %>/dashboard/reservations/create">
-                                            <input type="text" name="catwayId" placeholder="ID ou Numéro du catway"
-                                                required>
-                                            <input type="text" name="clientName" placeholder="Nom du client" required>
-                                            <input type="text" name="boatName" placeholder="Nom du bateau" required>
-                                            <input type="date" name="checkIn" required>
-                                            <input type="date" name="checkOut" required>
-                                            <button type="submit">Créer</button>
-                                        </form>
-                                    </details>
+                                    <section>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Créer une réservation</h3>
+                                            </summary>
+                                            <form method="POST" action="<%= BASE_URL %>/dashboard/reservations/create">
+                                                <input type="text" name="catwayId" placeholder="ID ou Numéro du catway"
+                                                    required>
+                                                <input type="text" name="clientName" placeholder="Nom du client"
+                                                    required>
+                                                <input type="text" name="boatName" placeholder="Nom du bateau" required>
+                                                <input type="date" name="checkIn" required>
+                                                <input type="date" name="checkOut" required>
+                                                <button type="submit">Créer</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Supprimer une réservation</h3>
-                                        </summary>
-                                        <form method="POST" action="<%= BASE_URL %>/dashboard/reservations/delete">
-                                            <input type="text" name="catwayId" placeholder="ID ou Numéro du catway"
-                                                required>
-                                            <input type="text" name="reservationId" placeholder="ID réservation"
-                                                required>
-                                            <button type="submit">Supprimer</button>
-                                        </form>
-                                    </details>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Supprimer une réservation</h3>
+                                            </summary>
+                                            <form method="POST" action="<%= BASE_URL %>/dashboard/reservations/delete">
+                                                <input type="text" name="catwayId" placeholder="ID ou Numéro du catway"
+                                                    required>
+                                                <input type="text" name="reservationId" placeholder="ID réservation"
+                                                    required>
+                                                <button type="submit">Supprimer</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Afficher une réservation</h3>
-                                        </summary>
-                                        <form method="GET" action="<%= BASE_URL %>/dashboard/reservations/details">
-                                            <input type="text" name="catwayId" placeholder="ID ou Numéro du catway"
-                                                required>
-                                            <input type="text" name="reservationId" placeholder="ID réservation"
-                                                required>
-                                            <button type="submit">Afficher</button>
-                                        </form>
-                                    </details>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Afficher une réservation</h3>
+                                            </summary>
+                                            <form method="GET" action="<%= BASE_URL %>/dashboard/reservations/details">
+                                                <input type="text" name="catwayId" placeholder="ID ou Numéro du catway"
+                                                    required>
+                                                <input type="text" name="reservationId" placeholder="ID réservation"
+                                                    required>
+                                                <button type="submit">Afficher</button>
+                                            </form>
+                                        </details>
 
-                                    <details class="dashboard-subblock">
-                                        <summary>
-                                            <h3>Afficher les réservations d'un catway</h3>
-                                        </summary>
-                                        <form method="GET" action="<%= BASE_URL %>/dashboard/reservations/catway">
-                                            <input type="text" name="catwayId" placeholder="ID ou Numéro du catway"
-                                                required>
-                                            <button type="submit">Afficher</button>
-                                        </form>
-                                    </details>
-                                </section>
+                                        <details class="dashboard-subblock">
+                                            <summary>
+                                                <h3>Afficher les réservations d'un catway</h3>
+                                            </summary>
+                                            <form method="GET" action="<%= BASE_URL %>/dashboard/reservations/catway">
+                                                <input type="text" name="catwayId" placeholder="ID ou Numéro du catway"
+                                                    required>
+                                                <button type="submit">Afficher</button>
+                                            </form>
+                                        </details>
+                                    </section>
 
-                            </details>
+                                </details>
+                            </section>
 
                             <!-- Navigation -->
                             <nav class="dashboard-nav">
                                 <a href="<%= BASE_URL %>/dashboard/catways/list">Liste des catways</a>
                                 <a href="<%= BASE_URL %>/dashboard/reservations/list">Liste des réservations</a>
-
-                                <!-- Placeholder pour l'issue-39 -->
-                                <!-- <a href="<%= BASE_URL %>/dashboard/docs/api">Documentation API</a> -->
+                                <a href="<%= BASE_URL %>/dashboard/docs/api">Documentation API</a>
                             </nav>
 
         </main>

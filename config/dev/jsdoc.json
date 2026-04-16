@@ -1,0 +1,17 @@
+{
+    "source": {
+        "include": [
+            "src"
+        ],
+        "includePattern": ".js$",
+        "excludePattern": "(test|node_modules)"
+    },
+    "opts": {
+        "destination": "./docs",
+        "recurse": true,
+        "encoding": "utf8"
+    },
+    "tags": {
+        "allowUnknownTags": true
+    }
+}

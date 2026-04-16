@@ -7,9 +7,11 @@
  * - Configuration du moteur de vues EJS (views/)
  * - Configuration des fichiers statiques (public/)
  * 
- * Prise en compte du Préfixe dans la base de l'URL (accès dans les données locales d'Express)
+ * Prise en compte du Préfixe dans la base de l'URL (accès dans les données locales d'Express).
+ * Prise en compte de l'URL complète de l'application (accès dans les données locales d'Express) selon 
+ * l'environnement (local ou distant).
  * 
- * Prise en compte des messages flash pour les notifications de succès ou d'erreur (utilisés dans le dashboard)
+ * Prise en compte des messages flash pour les notifications de succès ou d'erreur (utilisés dans le dashboard).
  *
  * @module app
  * @requires express
@@ -17,7 +19,7 @@
  * @requires cookie-parser
  * @requires express-session
  * @requires connect-flash
- * @version 0.5.4
+ * @version 0.5.5
  */
 
 const express = require('express');
@@ -38,9 +40,12 @@ app.locals.BASE_URL = process.env.API_PREFIX || "/";
 /* ---------------------------------------------------------
    Configuration de l'application URL des liens du frontend
 --------------------------------------------------------- */
-app.locals.APP_URL = process.env.PORT
+app.locals.APP_URL = process.env.ENV_SERVEUR === 'local'
    ? `${process.env.PROTOCOL}://${process.env.DOMAIN}:${process.env.PORT}${app.locals.BASE_URL}`
    : `${process.env.PROTOCOL}://${process.env.DOMAIN}${app.locals.BASE_URL}`;
+
+console.log(`Lancement -Base URL: ${app.locals.BASE_URL}`);
+console.log(`Lancement - App URL: ${app.locals.APP_URL}`);
 
 /* ---------------------------------------------------------
    Configuration du moteur de vues (EJS)

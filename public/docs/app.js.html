@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: app.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: app.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file app.js
+ * @description Configuration principale de l'application Express :
+ * - Middlewares globaux
+ * - Montage du routeur des Pages (EJS)
+ * - Montage du routeurs API (REST)
+ * - Configuration du moteur de vues EJS (views/)
+ * - Configuration des fichiers statiques (public/)
+ * 
+ * Prise en compte du Préfixe dans la base de l'URL (accès dans les données locales d'Express)
+ * 
+ * Prise en compte des messages flash pour les notifications de succès ou d'erreur (utilisés dans le dashboard)
+ *
+ * @module app
+ * @requires express
+ * @requires path
+ * @requires cookie-parser
+ * @requires express-session
+ * @requires connect-flash
+ * @version 0.5.4
+ */
+
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+
+// Import des routeurs
+const pagesRoutes = require('./routes/pages/pagesRoutes');
+const apiRoutes = require('./routes/api/apiRoutes');
+
+const app = express();
+
+/* ---------------------------------------------------------
+   Configuration de la base URL des liens du frontend
+--------------------------------------------------------- */
+app.locals.BASE_URL = process.env.API_PREFIX || "/";
+
+/* ---------------------------------------------------------
+   Configuration de l'application URL des liens du frontend
+--------------------------------------------------------- */
+app.locals.APP_URL = process.env.PORT
+   ? `${process.env.PROTOCOL}://${process.env.DOMAIN}:${process.env.PORT}${app.locals.BASE_URL}`
+   : `${process.env.PROTOCOL}://${process.env.DOMAIN}${app.locals.BASE_URL}`;
+
+/* ---------------------------------------------------------
+   Configuration du moteur de vues (EJS)
+--------------------------------------------------------- */
+app.set('views', path.join(__dirname, '../views'));
+app.set('view engine', 'ejs');
+
+/* ---------------------------------------------------------
+   Fichiers statiques (CSS, JS, images)
+--------------------------------------------------------- */
+app.use(express.static(path.join(__dirname, '../public')));
+
+/* ---------------------------------------------------------
+   Middlewares globaux
+--------------------------------------------------------- */
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+/* ---------------------------------------------------------
+   Sessions + Flash messages
+--------------------------------------------------------- */
+const session = require('express-session');
+const flash = require('connect-flash');
+
+app.use(session({
+   secret: 'flash-secret',
+   resave: false,
+   saveUninitialized: true
+}));
+
+app.use(flash());
+
+/* ---------------------------------------------------------
+   Routes Pages (EJS)
+--------------------------------------------------------- */
+app.use('/', pagesRoutes);
+
+/* ---------------------------------------------------------
+   Routes API (REST)
+--------------------------------------------------------- */
+app.use('/api', apiRoutes);
+
+/* ---------------------------------------------------------
+   Export de l'application
+--------------------------------------------------------- */
+module.exports = app;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-apiRoutes.html">apiRoutes</a></li><li><a href="module-app.html">app</a></li><li><a href="module-controllers_authController.html">controllers/authController</a></li><li><a href="module-controllers_catwayController.html">controllers/catwayController</a></li><li><a href="module-controllers_pagesController.html">controllers/pagesController</a></li><li><a href="module-controllers_reservationController.html">controllers/reservationController</a></li><li><a href="module-controllers_userController.html">controllers/userController</a></li><li><a href="module-middlewares_catwayMiddleware.html">middlewares/catwayMiddleware</a></li><li><a href="module-middlewares_catwayPayloadMiddleware.html">middlewares/catwayPayloadMiddleware</a></li><li><a href="module-middlewares_requireAuthPages.html">middlewares/requireAuthPages</a></li><li><a href="module-middlewares_reservationMiddleware.html">middlewares/reservationMiddleware</a></li><li><a href="module-middlewares_userMiddleware.html">middlewares/userMiddleware</a></li><li><a href="module-models_user.html">models/user</a></li><li><a href="module-routes_authRoutes.html">routes/authRoutes</a></li><li><a href="module-routes_catwayRoutes.html">routes/catwayRoutes</a></li><li><a href="module-routes_pagesRoutes.html">routes/pagesRoutes</a></li><li><a href="module-routes_reservationRoutes.html">routes/reservationRoutes</a></li><li><a href="module-routes_userRoutes.html">routes/userRoutes</a></li><li><a href="module-utils_jwt.html">utils/jwt</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#boatName">boatName</a></li><li><a href="global.html#catwayNumber">catwayNumber</a></li><li><a href="global.html#catwayState">catwayState</a></li><li><a href="global.html#checkIn">checkIn</a></li><li><a href="global.html#checkOut">checkOut</a></li><li><a href="global.html#clientName">clientName</a></li><li><a href="global.html#disconnectClientDBConnection">disconnectClientDBConnection</a></li><li><a href="global.html#initClientDBConnection">initClientDBConnection</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#normalizeMongoError">normalizeMongoError</a></li><li><a href="global.html#startServer">startServer</a></li><li><a href="global.html#type">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Apr 15 2026 14:39:41 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

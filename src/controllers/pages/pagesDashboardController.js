@@ -911,7 +911,7 @@ exports.listAllReservationsFromDashboard = async (req, res) => {
 }
 
 /**
- * @function detailReservationFromDashboard
+ * @function renderApiDocsFromDashboard
  * @memberof module:controllers/pagesDashboardController
  * @param {*} req 
  * @param {*} res
@@ -926,10 +926,23 @@ exports.listAllReservationsFromDashboard = async (req, res) => {
  * En version 0.1.0, cette fonction est un placeholder qui affiche un message d'erreur indiquant que la documentation
  * de l'API n'est pas encore implémentée, et redirige vers le dashboard.
  * 
- * @version 0.1.0
+ * En version 0.2.0, cette fonction affiche la page de documentation technique du code de l'API (JSDoc) à partir du 
+ * dashboard, en utilisant les données nécessaires pour afficher la documentation de manière claire et informative. 
+ * L'accès à la documentation du code est accessible soit directement (iframe), soit via une page indépendante.
+ * 
+ * En version 0.3.0, cette fonction affiche la page des documentations de l'API :
+ * - la documentation du code (JSDoc)
+ * - la documentation de l'API (REST). 
+ * 
+ * @version 0.3.0
  **/
 exports.renderApiDocsFromDashboard = (req, res) => {
-    // TODO : implémenter la logique de rendu de la documentation API à partir du dashboard
-    req.flash('error', "API docs not implemented");
-    res.redirect(`${req.app.locals.BASE_URL}/dashboard`);
+    const docAPIVersion = appData.APP_DOC_API_TAG || "Version inconnue";
+
+    res.render('docs-api', {
+        BASE_URL: req.app.locals.BASE_URL,
+        currentPage: 'documentation-API',
+        version_tag: appData.APP_VERSION_TAG,
+        docAPI_version: docAPIVersion
+    });
 }

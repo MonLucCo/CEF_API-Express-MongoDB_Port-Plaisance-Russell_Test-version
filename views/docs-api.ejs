@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: "Documentation API" }) %>
+</head>
+
+<body>
+    <%- include('partials/header', { authenticated: true }) %>
+
+        <main class="container">
+            <h1>Documentations de l'API</h1>
+            <p class="subtitle">Version : <%= docAPI_version %>
+            </p>
+
+            <section>
+                <details class="dashboard-block">
+                    <summary>
+                        <h2>Documentation de l'API (REST)</h2>
+                    </summary>
+                    <p>
+                        La documentation de l'API REST correspond à la version <strong>
+                            <%= docAPI_version %>
+                        </strong> du projet.
+                    </p>
+
+                    <hr>
+
+                    <div style="height: 70vh;">
+                        <iframe src="<%= BASE_URL %>/docs-api/index.html"
+                            style="width: 100%; height: 100%; border: none;">
+                        </iframe>
+                    </div>
+
+                </details>
+
+                <details class="dashboard-block">
+                    <summary>
+                        <h2>Documentation du code (JSDoc)</h2>
+                    </summary>
+                    <p>
+                        La documentation du code de l’API est générée automatiquement via JSDoc.
+                        Elle correspond à la version <strong>
+                            <%= version_tag %>
+                        </strong> du projet.
+                    </p>
+
+                    <p>
+                        Pour consulter la documentation complète dans une page indépendante, cliquez sur le lien
+                        ci-dessous :
+                    </p>
+
+                    <p>
+                        <a href="<%= BASE_URL %>/docs/index.html" target="_blank" class="btn btn-primary">
+                            Ouvrir la documentation JSDoc
+                        </a>
+                    </p>
+
+                    <hr>
+
+                    <details class="dashboard-subblock">
+                        <summary>
+                            <h3>Documentation intégrée du code (JSDoc)</h3>
+                        </summary>
+                        <p>Vous pouvez consulter la documentation du<strong>
+                                <%= version_tag %>
+                            </strong> directement dans cette page :</p>
+
+                        <div style="border: 1px solid #ccc; height: 80vh; overflow: hidden; border-radius: 6px;">
+                            <iframe src="<%= BASE_URL %>/docs/index.html"
+                                style="width: 100%; height: 80vh; border: none;" title="Documentation JSDoc intégrée">
+                            </iframe>
+                        </div>
+
+                    </details>
+
+                </details>
+
+            </section>
+        </main>
+
+        <%- include('partials/footer', { version: version_tag }) %>
+</body>
+
+</html>

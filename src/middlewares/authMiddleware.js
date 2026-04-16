@@ -16,16 +16,16 @@ const { verifyToken } = require('../utils/jwt');
  * Effets de bord :
  * - Ajoute `req.userId` contenant l'identifiant utilisateur extrait du token.
  *
- * @param {import('express').Request} req - Requête Express
- * @param {import('express').Response} res - Réponse Express
- * @param {import('express').NextFunction} next - Fonction permettant de passer au middleware suivant
+ * @param {Object} req - Requête Express
+ * @param {Object} res - Réponse Express
+ * @param {Function} next - Fonction permettant de passer au middleware suivant
  * 
  * @returns {Object} 401 - Token manquant ou invalide
  * @returns {Object} 500 - Erreur interne lors de la vérification du token
  * @returns {void} next() - Token valide, passage au middleware suivant avec `req.userId` défini
  * 
  * @requires utils/jwt
- * @version 0.1.0
+ * @version 0.1.1
  */
 function authMiddleware(req, res, next) {
     try {

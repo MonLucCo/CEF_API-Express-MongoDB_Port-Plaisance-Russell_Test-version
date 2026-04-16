@@ -26,6 +26,6 @@ router.get('/reservations/catway', pagesDashboardController.listReservationsFrom
 router.get('/reservations/list', pagesDashboardController.listAllReservationsFromDashboard);
 
 // Documentation API
-// router.get('/docs/api', pagesDashboardController.renderApiDocsFromDashboard);    // Placeholder pour l'issue-39
+router.get('/docs/api', pagesDashboardController.renderApiDocsFromDashboard);
 
 module.exports = router;

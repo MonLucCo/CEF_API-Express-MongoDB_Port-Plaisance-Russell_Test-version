@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: routes/api/catwayRoutes.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: routes/api/catwayRoutes.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @description Définition des routes Catways de l’API Port de Plaisance Russell.
+ *
+ * Ce module regroupe l’ensemble des endpoints liés aux catways.
+ * Il intègre les middlewares :
+ * - de validation et de résolution d’identifiant (issue‑26)
+ * - de validation de payload (issue‑27)
+ *
+ * Routes disponibles :
+ * - GET /catways               → liste des catways
+ * - GET /catways/:id           → détail d’un catway (identifiant hybride)
+ * - POST /catways              → création d’un catway
+ * - PUT /catways/:id           → mise à jour complète d’un catway
+ * - PATCH /catways/:id         → mise à jour partielle d’un catway
+ * - DELETE /catways/:id        → suppression d’un catway
+ *
+ * Ce routeur est monté dans `app.js` sur le chemin `/catways` : app.use('/catways', catwayRoutes);
+ * 
+ * @module routes/catwayRoutes
+ * @requires express
+ * @requires module:controllers/catwayController
+ * @requires module:middlewares/catwayMiddleware
+ * @requires module:middlewares/catwayPayloadMiddleware
+ * @version 0.4.3
+ */
+
+const express = require('express');
+const router = express.Router();
+
+const {
+    validateCatwayId,
+    resolveCatwayIdentifier
+} = require('../../middlewares/catwayMiddleware');
+
+const {
+    getAllCatways,
+    getCatwayById,
+    createCatway,
+    updateCatway,
+    patchCatway,
+    deleteCatway
+} = require('../../controllers/api/catwayController');
+
+const {
+    validateCatwayPayload,
+    validateCatwayPartialPayload
+} = require('../../middlewares/catwayPayloadMiddleware');
+
+/**
+ * GET /catways
+ * @summary Récupère la liste complète des catways.
+ * @description Retourne tous les catways présents en base MongoDB.
+ *
+ * Aucun middleware n’est nécessaire pour cette route.
+ *
+ * @returns {Array&lt;Object>} 200 - Liste des catways
+ * @throws {Object} 500 - Erreur interne du serveur
+ *
+ * @see module:controllers/catwayController.getAllCatways
+ */
+router.get('/', getAllCatways);
+
+/**
+ * GET /catways/:id
+ * @summary Récupère un catway selon un identifiant hybride.
+ * @description Cette route utilise deux middlewares :
+ *
+ * - `validateCatwayId` : vérifie la validité syntaxique de l’identifiant
+ * - `resolveCatwayIdentifier` : résout l’identifiant hybride et attache le catway à `req.catway`
+ *
+ * Le contrôleur `getCatwayById` se contente ensuite de renvoyer `req.catway`.
+ *
+ * @param {string} id - Identifiant Catway (ObjectId ou catwayNumber)
+ *
+ * @returns {Object} 200 - Catway trouvé
+ * @throws {Object} 400 - Identifiant invalide
+ * @throws {Object} 404 - Catway introuvable
+ * @throws {Object} 500 - Erreur interne du serveur
+ *
+ * @see module:middlewares/catwayMiddleware.validateCatwayId
+ * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
+ * @see module:controllers/catwayController.getCatwayById
+ */
+router.get('/:id', validateCatwayId, resolveCatwayIdentifier, getCatwayById);
+
+/**
+ * POST /catways
+ * @summary Crée un nouveau catway.
+ * @description Cette route utilise le middleware `validateCatwayPayload` pour valider le payload de création.
+ *
+ * Le contrôleur `createCatway` suppose que le payload est valide et se concentre sur la logique métier de création.
+ * Le middleware assure que les champs requis sont présents et valides avant d’atteindre le contrôleur.
+ *
+ * @returns {Object} 201 - Catway créé
+ * @throws {Object} 400 - Données invalides
+ * @throws {Object} 409 - catwayNumber déjà existant
+ * @throws {Object} 500 - Erreur interne du serveur
+ * 
+ * @see module:middlewares/catwayPayloadMiddleware.validateCatwayPayload
+ * @see module:controllers/catwayController.createCatway
+ */
+router.post('/', validateCatwayPayload, createCatway);
+
+/**
+ * PUT /catways/:id
+ * @summary Met à jour complètement un catway.
+ * @description Cette route utilise les middlewares suivants :
+ *
+ * - `validateCatwayId` : vérifie la validité syntaxique de l’identifiant
+ * - `resolveCatwayIdentifier` : résout l’identifiant hybride et attache le catway à `req.catway`
+ * - `validateCatwayPayload` : valide le payload de mise à jour complète
+ * 
+ * Le contrôleur `updateCatway` suppose que l’identifiant est valide, que le catway existe et que le payload est valide.
+ * Il se concentre donc sur la logique métier de mise à jour complète.
+ * Le middleware de validation de payload assure que les données métiers sont valides avant d’atteindre le contrôleur.
+ * 
+ * @returns {Object} 200 - Catway mis à jour
+ * @throws {Object} 400 - Identifiant ou données invalides
+ * @throws {Object} 404 - Catway introuvable
+ * @throws {Object} 409 - catwayNumber déjà existant
+ * @throws {Object} 500 - Erreur interne du serveur
+ * 
+ * @see module:middlewares/catwayMiddleware.validateCatwayId
+ * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
+ * @see module:middlewares/catwayPayloadMiddleware.validateCatwayPayload
+ * @see module:controllers/catwayController.updateCatway
+ */
+router.put('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPayload, updateCatway);
+
+/**
+ * PATCH /catways/:id
+ * @summary Met à jour partiellement un catway.
+ * @description
+ * Cette route utilise les middlewares suivants :
+ *
+ * - `validateCatwayId` : vérifie la validité syntaxique de l’identifiant
+ * - `resolveCatwayIdentifier` : résout l’identifiant hybride et attache le catway à `req.catway`
+ * - `validateCatwayPartialPayload` : valide le payload de mise à jour partielle
+ * 
+ * Le contrôleur `patchCatway` suppose que l’identifiant est valide, que le catway existe et que le payload est valide.
+ * Il se concentre donc sur la logique métier de mise à jour partielle.
+ * Le middleware de validation de payload assure que les données métiers sont valides avant d’atteindre le contrôleur.
+ * 
+ * @returns {Object} 200 - Catway mis à jour
+ * @throws {Object} 400 - Identifiant ou données invalides
+ * @throws {Object} 404 - Catway introuvable
+ * @throws {Object} 409 - catwayNumber déjà existant
+ * @throws {Object} 500 - Erreur interne du serveur
+ * 
+ * @see module:middlewares/catwayMiddleware.validateCatwayId
+ * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
+ * @see module:middlewares/catwayPayloadMiddleware.validateCatwayPartialPayload
+ * @see module:controllers/catwayController.patchCatway
+ */
+router.patch('/:id', validateCatwayId, resolveCatwayIdentifier, validateCatwayPartialPayload, patchCatway);
+
+/**
+ * DELETE /catways/:id
+ * @summary Supprime un catway.
+ * @description Cette route utilise les middlewares suivants :
+ *
+ * - `validateCatwayId` : vérifie la validité syntaxique de l’identifiant
+ * - `resolveCatwayIdentifier` : résout l’identifiant hybride et attache le catway à `req.catway`
+ *
+ * Le contrôleur `deleteCatway` suppose que l’identifiant est valide et que le catway existe.
+ * Il se concentre donc sur la logique métier de suppression.
+ * Le middleware de validation d’identifiant assure que l’identifiant est valide et que le catway existe avant d’atteindre le contrôleur.
+ * Le middleware de résolution d’identifiant assure que le catway est attaché à `req.catway` pour que le contrôleur puisse le supprimer.
+ * 
+ * @returns {Object} 204 - Catway supprimé
+ * @returns {Object} 400 - Identifiant invalide
+ * @returns {Object} 404 - Catway introuvable
+ * @returns {Object} 500 - Erreur interne du serveur
+ * 
+ * @see module:middlewares/catwayMiddleware.validateCatwayId
+ * @see module:middlewares/catwayMiddleware.resolveCatwayIdentifier
+ * @see module:controllers/catwayController.deleteCatway
+ */
+router.delete('/:id', validateCatwayId, resolveCatwayIdentifier, deleteCatway);
+
+module.exports = router;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-apiRoutes.html">apiRoutes</a></li><li><a href="module-app.html">app</a></li><li><a href="module-controllers_authController.html">controllers/authController</a></li><li><a href="module-controllers_catwayController.html">controllers/catwayController</a></li><li><a href="module-controllers_pagesController.html">controllers/pagesController</a></li><li><a href="module-controllers_reservationController.html">controllers/reservationController</a></li><li><a href="module-controllers_userController.html">controllers/userController</a></li><li><a href="module-middlewares_catwayMiddleware.html">middlewares/catwayMiddleware</a></li><li><a href="module-middlewares_catwayPayloadMiddleware.html">middlewares/catwayPayloadMiddleware</a></li><li><a href="module-middlewares_requireAuthPages.html">middlewares/requireAuthPages</a></li><li><a href="module-middlewares_reservationMiddleware.html">middlewares/reservationMiddleware</a></li><li><a href="module-middlewares_userMiddleware.html">middlewares/userMiddleware</a></li><li><a href="module-models_user.html">models/user</a></li><li><a href="module-routes_authRoutes.html">routes/authRoutes</a></li><li><a href="module-routes_catwayRoutes.html">routes/catwayRoutes</a></li><li><a href="module-routes_pagesRoutes.html">routes/pagesRoutes</a></li><li><a href="module-routes_reservationRoutes.html">routes/reservationRoutes</a></li><li><a href="module-routes_userRoutes.html">routes/userRoutes</a></li><li><a href="module-utils_jwt.html">utils/jwt</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#boatName">boatName</a></li><li><a href="global.html#catwayNumber">catwayNumber</a></li><li><a href="global.html#catwayState">catwayState</a></li><li><a href="global.html#checkIn">checkIn</a></li><li><a href="global.html#checkOut">checkOut</a></li><li><a href="global.html#clientName">clientName</a></li><li><a href="global.html#disconnectClientDBConnection">disconnectClientDBConnection</a></li><li><a href="global.html#initClientDBConnection">initClientDBConnection</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#normalizeMongoError">normalizeMongoError</a></li><li><a href="global.html#startServer">startServer</a></li><li><a href="global.html#type">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Apr 15 2026 14:39:41 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

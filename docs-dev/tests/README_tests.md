@@ -257,6 +257,7 @@ Ils valideront respectivement :
 Le pipeline Deploy utilise une collection Postman dédiée (archivée dans `docs-dev/tests/assets/`) :
 
 - **`collection-v0.2.1-dev_02-PostDeploy.json`**  
+- **`collection-v0.3.0-dev_02-PostDeploy.json`** (issue-39)
 
 ---
 
@@ -304,7 +305,13 @@ docs-dev/`tests`/
     ├── v0.2.1-dev_02_deploy_2026-03-29_09-01/      ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch A)
     ├── v0.2.1-dev.a_02_deploy_2026-03-30_10-03/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch B)
     ├── v0.2.1-dev.b_02_deploy_2026-03-30_10-34/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch C)
-    └── v0.2.1-dev.a_02_deploy_2026-03-30_20-0/     ← Archivage des validations pré-déploiement (v0.2.1-dev : accord - patch D)
+    └── v0.2.1-dev.d_02_deploy_2026-03-30_20-30/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord - patch D)
+    └── v0.3.0-dev_01_predeploy_2026-04-15_16-14/   ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
+    └── v0.3.0-dev_02_deploy_2026-04-15_18-16/      ← Archivage des validations pré-déploiement (v0.3.0-dev : accord partiel)
+    └── v0.3.0-dev.a_01_predeploy_2026-04-15_21-20/ ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
+    └── v0.3.0-dev.a_02_deploy_2026-04-15_21-28/    ← Archivage des validations pré-déploiement (v0.3.0-dev : accord partiel - patch A)
+    └── v0.3.0-dev.b_01_predeploy_2026-04-16_07-58/ ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
+    └── v0.3.0-dev.b_02_deploy_2026-04-16_08-06/    ← Archivage des validations pré-déploiement (v0.3.0-dev : accord - patch B)
 ```
 
 ---

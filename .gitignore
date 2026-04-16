@@ -30,7 +30,7 @@ build/
 coverage/
 
 # Documentation générée (JSDoc)
-docs/
+# docs/
 
 # ============================
 #  Dossiers privés (non versionnés)

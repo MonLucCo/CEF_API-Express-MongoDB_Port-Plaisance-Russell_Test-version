@@ -93,6 +93,7 @@ views/                          ← Page dynamique (EJS) du Frontend
   ├── reservations-details.ejs         ← Page des détails d'une réservation (vue Dashboard)
   ├── reservations-list.ejs            ← Page de la liste des réservations (vue Dashboard)
   ├── users-list.ejs                   ← Page de la liste des utilisateurs (vue Dashboard)
+  ├── docs-api.ejs                     ← Page d’accès à la documentation de l’API (REST) et du code (JSDoc)
   │
   ├── home/                     ← Page d'accueil (Home) découpée en parties (partials) élémentaires
   │   ├── _title.ejs               ← Titre de la page (titre et sous-titre)
@@ -147,6 +148,9 @@ config/                     ← Configuration globale (JWT, paramètres transver
       └── nodemon.json              ← Configuration nodemon (issue‑17)
 
 public/                     ← Eléments statique du frontend
+  ├── docs/                      ← Documentation publiée du code (JSDoc)  
+  ├── docs-api/                  ← Documentation publiée de l'API (REST) 
+  │
   ├── css/                       ← Feuilles de style
   │   └── main.css                  ← Feuille des styles unifiée de l'application
   └── img/                       ← Images de l'interface utilisateur (frontend) de l'application
@@ -200,7 +204,7 @@ tests/                      ← Tests Mocha/Chai/Supertest
       ├── user.unitaires.test.js            ← tests unitaires (niveau-1) de User 
       └── user.integration.test.js          ← tests d'intégration (niveau-2) de User 
 
-docs/                       ← Documentation JSDoc générée
+docs/                       ← Documentation JSDoc générée automatiquement
 
 docs-dev/                   ← Documentation interne versionnée
   │
@@ -216,6 +220,8 @@ docs-dev/                   ← Documentation interne versionnée
   │   ├── collection-analysis.md                   ← Détail de l'analyse d'une collection Postman (v0.2.1-dev - incrément 2)
   │   └── suppression-depreciation-analysis.md     ← Détail de l'analyse d'une fonction obsolète (dépréciation)
   │
+  ├── api/                     ← Documentation de l'API (REST) (ensemble des fichiers Markdown)
+  │
   ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
   │   └── import-donnees.md           ← Documentation import JSON (issue‑20B)
   │
@@ -229,7 +235,9 @@ docs-dev/                   ← Documentation interne versionnée
       │   ├── collection-e2e-local.json                          ← Collection Postman (API v0.1-dev)
       │   ├── API-Port-Russell_v0.2.0-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.0-dev - Pré-déploiement)
       │   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json  ← Collection Postman (API v0.2.1-dev - Tests techniques)
-      │   └── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
+      │   ├── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
+      │   ├── API-Port-Russell_v0.2.1-dev_02-PostDeploy.json     ← Collection Postman (API v0.2.1-dev - Post-déploiement)
+      │   └── API-Port-Russell_v0.3.0-dev_02-PostDeploy.json     ← Collection Postman (API v0.3.0-dev - Post-déploiement)
       │
       ├── auth/                                ← Catégorie Authentification
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
@@ -250,7 +258,19 @@ docs-dev/                   ← Documentation interne versionnée
       │   └── reservations-niveau-2-integration.md  ← Tests de niveau 2 - tests d'intégration Reservations
       │
       └── déploiements/                         ← Catégorie Déploiements
-          └── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Tests des validations pré-déploiement de la version v0.2.0-dev
+          ├── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Tests des validations - version v0.2.0-dev
+          ├── v0.2.1-dev_01_predeploy_2026-03-26_11-35/   ← Tests des validations - version v0.2.1-dev
+          ├── v0.2.1-dev_02_deploy_2026-03-29_09-01/      ← Tests des vérifications - version v0.2.1-dev
+          ├── v0.2.1-dev.a_02_deploy_2026-03-30_10-03/    ← Tests des vérifications - version v0.2.1-dev patch a
+          ├── v0.2.1-dev.b_02_deploy_2026-03-30_10-34/    ← Tests des vérifications - version v0.2.1-dev patch b
+          ├── v0.2.1-dev.c_02_deploy_2026-03-30_10-56/    ← Tests des vérifications - version v0.2.1-dev patch c
+          ├── v0.2.1-dev.d_02_deploy_2026-03-30_20-30/    ← Tests des vérifications - version v0.2.1-dev patch d
+          ├── v0.3.0-dev_01_predeploy_2026-04-15_16-14/   ← Tests des validations - version v0.3.0-dev
+          ├── v0.3.0-dev_02_deploy_2026-04-15_18-16/      ← Tests des vérifications - version v0.3.0-dev
+          ├── v0.3.0-dev.a_01_predeploy_2026-04-15_21-20/ ← Tests des validations - version v0.3.0-dev patch a
+          ├── v0.3.0-dev.a_02_deploy_2026-04-15_21-28/    ← Tests des vérifications - version v0.2.0-dev patch a
+          ├── v0.3.0-dev.b_01_predeploy_2026-04-16_07-58/ ← Tests des validations - version v0.2.0-dev patch b
+          └── v0.3.0-dev.b_02_deploy_2026-04-16_08-06/    ← Tests des vérifications - version v0.2.0-dev patch b
     
 ```
 
@@ -318,7 +338,7 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 - Issue-37 : Création de la page d'accueil du frontend
 - Issue-38 : Création du Dashboard de l'Utilisateur
-- Issue-39 : Création des pages listes et détails (finalisation du frontend)
+- Issue-39 : Création de la documentation de l'API (v0.1.0-doc), intégration dans le dashboard et déploiement Alwaysdata
 
 #### 1.3.6 Phase 7 — Tests unitaires
 
@@ -2045,7 +2065,13 @@ La Phase 6 introduit la séparation complète entre :
   - Etape 3 : intégrations des fonctions de gestion des catways (création, modification, suppression, détails, liste)
   - Etape 4 : intégrations des fonctions de gestion des réservations (création, modification, suppression, détails, liste)
   - Etape 5 : mise à jour de la documentation de développement du projet
-- **Issue-39** : Création des pages listes et détails (finalisation du frontend)
+- **Issue-39** : Création de la page de la documentation API (finalisation du frontend) et déploiement Alwaysdata
+  - Étape 1 : architecture de production de la documentation JSDoc
+  - Étape 2 : intégration de la page de Documentation API dans le Dashboard
+  - Étape 3 : finalisation de la documentation (scripts JSDoc et documents Markdown de l'API)
+  - Étape 4 : validation de la version avec le pipeline PreDeploy
+  - Étape 5 : déploiement avec le pipeline Deploy et vérification de la version publiée
+  - Étape 6 : documentation de l'issue-39
 
 #### 2.5.1 - Issue-37 - Création de la page d'accueil du frontend
 
@@ -2581,9 +2607,75 @@ L’issue‑38 étend le Dashboard utilisateur en plusieurs étapes, en s’appu
 
 ---
 
-#### 2.5.3 - Issue-39 - Création des pages listes et détails (finalisation du frontend)
+#### 2.5.3 - Issue-39 - Création de la page Documentation API (finalisation du frontend) et déploiement Alwaysdata
 
-(à compléter lors de l'issue-39)
+L'issue-39 finalise le Dashboard, prépare le déploiement et réalise la publication sur Alwaysdata en plusieurs étapes.
+
+La version développée est la **v0.3.0-dev** qui finalise les fonctionnalités du Dashboard en ajoutant (en version préliminaire v0.1.0-doc) une documentation JSDoc de l'API.
+
+À chaque étape du développement, la version du Dashboard du frontend est opérationnelle et fait l'objet d'une validation fonctionnelle manuelle.
+
+- **Étape 1 : architecture de production de la documentation JSDoc**
+  - Mise en place d’un dossier dédié `/docs` comme **artefact de génération**.  
+  - Configuration de JSDoc via `config/dev/jsdoc.json` pour produire une documentation complète à partir des commentaires JSDoc du code source.  
+  - Régénération systématique du dossier `/docs` à chaque exécution du script `npm run docs` (suppression automatique du dossier existant par JSDoc).  
+  - Séparation stricte entre :
+    - **/docs** → production interne (non servie par Express)  
+    - **/public/docs** → publication statique (servie par Express et Alwaysdata)
+
+- **Étape 2 : intégration de la page de Documentation API dans le Dashboard**
+  - Création de la vue `views/docs-api.ejs` dédiée à la documentation API.  
+  - Ajout d’un lien vers la documentation JSDoc dans un nouvel onglet (`/docs/index.html`).  
+  - Intégration d’un affichage interne via `<iframe>` pour consulter la documentation du code directement dans le Dashboard.  
+  - Activation de la route `GET /dashboard/docs/api` dans `pagesDashboardRoutes.js`.  
+  - Mise à jour du Dashboard (`dashboard.ejs`) pour activer le bouton “Documentation API”.
+
+- **Étape 3 : finalisation de la production de la documentation**
+  - Production de la documentation de l'API :
+    - Création dans `docs-dev/api/` d'une famille de fichiers Markdown pour établir la documentation de l'API (version préliminaire v0.1.0-doc) selon le plan demandé (vue d'ensemble, tutoriel, exemples, glossaire)
+    - Création manuellement par Export HTML (offline) de la documentation
+    - Déplacement de `docs-dev/api/`vers `public/docs-api` des fichiers HTML
+    - intégration dans la page `views/docs-api.ejs` d'un affichage interne `<iframe>` pour consulter la documentation de l'API directement dans le Dashboard.
+  - Production des outils de la documentation du code (JSDoc) :
+    - Création d’une famille de scripts `docs:*` dans `package.json` :
+      - `docs` : génération complète de la documentation dans `/docs`.  
+      - `docs:publish` : suppression de `/public/docs` puis copie intégrale de `/docs` → `/public/docs`.  
+      - `docs:predeploy` : pipeline documentaire complet (génération + publication).  
+    - Garantie d’un état propre :  
+      - aucune fusion,  
+      - aucune persistance de fichiers obsolètes,  
+      - artefacts toujours synchronisés.  
+  - Préparation à l’intégration dans les pipelines de déploiement.
+
+- **Étape 4 : validation de la version avec le pipeline PreDeploy**
+  - Exécution du pipeline `validate-predeploy` pour vérifier :
+    - la présence et la cohérence de `/docs` et `/public/docs`,  
+    - la version documentaire (`APP_DOC_API_TAG`) dans `config/appData.js`,  
+    - l’accessibilité locale de la documentation.  
+  - Vérification de la page Dashboard `docs-api.ejs` (lien externe + iframe).  
+  - Validation que la documentation publiée correspond bien à la version générée.
+
+- **Étape 5 : déploiement avec le pipeline Deploy et vérification de la version publiée**
+  - Vérification distante via `npm run verify:deploy` :
+    - accessibilité de la documentation sur Alwaysdata,  
+    - cohérence des métadonnées (`X-API-VERSION`, `APP_DOC_API_TAG`),
+    - validité fonctionnelle du dashboard et de l'API sur Alwaysdata,  
+    - affichage correct de la documentation dans le Dashboard déployé.  
+  - Archivage des résultats dans `docs-dev/tests/deploiements/`.
+
+  > Cette démarche de publication est reproduite 2 fois pour corriger (patches) la configuration de la connexion et des requêtes dans l'environnement Alwaysdata.  
+  > Chaque version _patchée_ fait l'objet d'un validation de pré-déploiement et d'une vérification de déploiement qui sont archivées indépendamment.  
+  > La version publiée est la **v0.3.0-dev.b**.
+
+- **Étape 6 : documentation de l'issue-39**
+  - Mise à jour de la documentation interne (`docs-dev/`) :
+    - ajout de la section 2.5.3 dans `architecture.md`,  
+    - mise à jour des sections liées à la documentation API dans `README.md`,  
+    - ajout des scripts `docs:*` dans la documentation des scripts (`scripts/README_scripts.md`),  
+    - mise à jour de `decisions-techniques.md` pour tracer les choix liés au pipeline documentaire.  
+  - Archivage des captures, tests et validations dans le dossier de l’issue‑39.  
+
+À l'issue de l'issue-39, le Dashboard offre l'ensemble des fonctionnalités de l'application, tout en respectant la séparation stricte API / frontend et la cohérence documentaire. La documentation accessible dans le Dashboard est une version préliminaire (v0.1.0-doc) qui sera finalisée lors de la Phase 8 (documentation de l'API).
 
 ---
 

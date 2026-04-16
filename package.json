@@ -8,6 +8,9 @@
     "test": "tests"
   },
   "scripts": {
+    "docs": "jsdoc -c config/dev/jsdoc.json",
+    "docs:publish": "rm -rf public/docs && cp -r docs public/docs",
+    "docs:predeploy": "npm run docs && npm run docs:publish",
     "clean": "node scripts/clean.js",
     "reinstall": "node scripts/reinstall.js",
     "validate:predeploy": "node scripts/validate-predeploy.js",
@@ -56,17 +59,19 @@
   },
   "homepage": "https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version#readme",
   "dependencies": {
-    "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.5"
   },
   "devDependencies": {
     "chai": "^6.2.2",
+    "jsdoc": "^4.0.5",
     "mocha": "^11.7.5",
     "mongodb-memory-server": "^11.0.1",
     "nodemon": "^3.1.11",

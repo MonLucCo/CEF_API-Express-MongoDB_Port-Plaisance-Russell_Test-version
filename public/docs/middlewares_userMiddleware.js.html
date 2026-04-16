@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: middlewares/userMiddleware.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: middlewares/userMiddleware.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file userMiddleware.js
+ * @description 
+ * Middlewares de validation et de résolution des identifiants pour les users.
+ * Middleware de validation du payload de création d'utilisateur.
+ * Middleware de validation du payload partiel de mise à jour d'un utilisateur.
+ *
+ * Ces middlewares suivent la même architecture que ceux des Catways (issue‑26) :
+ * - validation syntaxique de l’identifiant
+ * - résolution de l’identifiant en base
+ * - attachement de la ressource à l’objet `req`
+ *
+ * @module middlewares/userMiddleware
+ * @requires mongoose
+ * @requires ../models/user
+ * 
+ * @version 0.1.0
+ */
+
+const mongoose = require('mongoose');
+const User = require('../models/user');
+
+/**
+ * @middleware validateUserId
+ * @description
+ * Vérifie la validité syntaxique de l’identifiant d'utilisateur.
+ *
+ * Règles :
+ * - L’identifiant doit être un ObjectId MongoDB valide.
+ * - Aucune requête en base n’est effectuée ici.
+ *
+ * @param {Object} req - Objet Request Express
+ * @param {Object} res - Objet Response Express
+ * @param {Function} next - Fonction Express pour passer au middleware suivant
+ * 
+ * @throws {Object} 400 - Identifiant d'utilisateur invalide
+ *
+ * @example
+ * GET /api/users/65fabc1234567890
+ * 
+ * @requires mongoose
+ * @version 0.1.0
+ */
+exports.validateUserId = (req, res, next) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+            error: 'Identifiant d\'utilisateur invalide'
+        });
+    }
+
+    next();
+};
+
+/**
+ * @middleware resolveUserIdentifier
+ * @async
+ * @description
+ * Résout l’identifiant d'utilisateur et attache la ressource à `req.user`.
+ *
+ * Étapes :
+ * 1. Recherche de la réservation via `findById(id)`
+ * 2. Vérification de l’existence
+ * 3. Attachement à `req.user`
+ *
+ * @notes :
+ * - En cas d’échec de validation ou de résolution, une réponse 404 est renvoyée pour éviter les fuites d’information.
+ * - En cas d’erreur interne, une réponse 500 est renvoyée.
+ * 
+ *
+ * @param {Object} req - Objet Request Express
+ * @param {Object} res - Objet Response Express
+ * @param {Function} next - Fonction Express pour passer au middleware suivant
+ * 
+ * @throws {Object} 404 - Utilisateur introuvable
+ * @throws {Object} 500 - Erreur interne du serveur
+ *
+ * @example
+ * GET /api/users/65fabc1234567890
+ * 
+ * @requires mongoose
+ * @requires ../models/user
+ * @version 0.1.0
+ */
+exports.resolveUserIdentifier = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({
+                error: 'Utilisateur introuvable'
+            });
+        }
+
+        req.user = user;
+        next();
+
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Erreur interne du serveur'
+        });
+    }
+};
+
+/**
+ * @middleware validateUserPayload
+ * @description
+ * Valide le payload de création d’un utilisateur.
+ *
+ * Règles :
+ * - name : string obligatoire
+ * - email : string obligatoire
+ * - password : ??
+ *
+ * En cas d’erreur → 400
+ * En cas de succès → next()
+ *
+ * @param {Object} req - Express Request
+ * @param {Object} res - Express Response
+ * @param {Function} next - Fonction Express pour passer au middleware suivant
+ *
+ * @returns {void}
+ * @throws {Object} 400 - Payload d'utilisateur invalide
+ * 
+ * @example
+ * POST /api/users
+ * 
+ * @requires mongoose
+ * @requires ../models/user
+ *
+ * @version 0.1.0
+ */
+exports.validateUserPayload = (req, res, next) => {
+    const { name, email, password } = req.body;
+
+    // Champs obligatoires
+    if (!name || !email || !password) {
+        return res.status(400).json({
+            error: 'Les champs name, email et password sont obligatoires'
+        });
+    }
+
+    next();
+};
+
+/**
+ * @middleware validateUserPayloadPartial
+ * @description
+ * Valide le payload partiel pour la mise à jour d’un utilisateur (PATCH).
+ *
+ * Règles :
+ * - Au moins un champ parmi { name, email, password } doit être présent.
+ * - Chaque champ présent doit être valide.
+ *
+ * @param {Object} req - Express Request
+ * @param {Object} res - Express Response
+ * @param {Function} next - Fonction Express
+ *
+ * @returns {void}
+ * @throws {Object} 400 - Payload invalide
+ *
+ * @version 0.1.0
+ */
+exports.validateUserPayloadPartial = (req, res, next) => {
+    const { name, email, password } = req.body;
+
+    // Aucun champ fourni
+    if (!name &amp;&amp; !email &amp;&amp; !password) {
+        return res.status(400).json({
+            error: "Au moins un champ (name, email, password) doit être fourni"
+        });
+    }
+
+    // Validation simple des champs présents
+    if (name !== undefined &amp;&amp; typeof name !== 'string') {
+        return res.status(400).json({ error: "Le champ name doit être une chaîne" });
+    }
+
+    if (email !== undefined &amp;&amp; typeof email !== 'string') {
+        return res.status(400).json({ error: "Le champ email doit être une chaîne" });
+    }
+
+    if (password !== undefined &amp;&amp; typeof password !== 'string') {
+        return res.status(400).json({ error: "Le champ password doit être une chaîne" });
+    }
+
+    next();
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-apiRoutes.html">apiRoutes</a></li><li><a href="module-app.html">app</a></li><li><a href="module-controllers_authController.html">controllers/authController</a></li><li><a href="module-controllers_catwayController.html">controllers/catwayController</a></li><li><a href="module-controllers_pagesController.html">controllers/pagesController</a></li><li><a href="module-controllers_reservationController.html">controllers/reservationController</a></li><li><a href="module-controllers_userController.html">controllers/userController</a></li><li><a href="module-middlewares_catwayMiddleware.html">middlewares/catwayMiddleware</a></li><li><a href="module-middlewares_catwayPayloadMiddleware.html">middlewares/catwayPayloadMiddleware</a></li><li><a href="module-middlewares_requireAuthPages.html">middlewares/requireAuthPages</a></li><li><a href="module-middlewares_reservationMiddleware.html">middlewares/reservationMiddleware</a></li><li><a href="module-middlewares_userMiddleware.html">middlewares/userMiddleware</a></li><li><a href="module-models_user.html">models/user</a></li><li><a href="module-routes_authRoutes.html">routes/authRoutes</a></li><li><a href="module-routes_catwayRoutes.html">routes/catwayRoutes</a></li><li><a href="module-routes_pagesRoutes.html">routes/pagesRoutes</a></li><li><a href="module-routes_reservationRoutes.html">routes/reservationRoutes</a></li><li><a href="module-routes_userRoutes.html">routes/userRoutes</a></li><li><a href="module-utils_jwt.html">utils/jwt</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#boatName">boatName</a></li><li><a href="global.html#catwayNumber">catwayNumber</a></li><li><a href="global.html#catwayState">catwayState</a></li><li><a href="global.html#checkIn">checkIn</a></li><li><a href="global.html#checkOut">checkOut</a></li><li><a href="global.html#clientName">clientName</a></li><li><a href="global.html#disconnectClientDBConnection">disconnectClientDBConnection</a></li><li><a href="global.html#initClientDBConnection">initClientDBConnection</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#normalizeMongoError">normalizeMongoError</a></li><li><a href="global.html#startServer">startServer</a></li><li><a href="global.html#type">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Apr 15 2026 14:39:41 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

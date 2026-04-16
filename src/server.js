@@ -7,6 +7,7 @@
  * - v1.0.0 : Issue‑21 — Connexion MongoDB avant listen()
  * - v1.1.0 : JSDoc enrichie
  * - v2.0.0 : Issue‑22 — Résilience serveur & gestion des erreurs MongoDB
+ * - v2.1.0 : Issue-39 — Adaptation des paramètres du serveur (DOMAIN, PORT) pour compatibilité local et distant (Alwaysdata)
  *
  * Ce module :
  * - charge les variables d’environnement (.env)
@@ -22,7 +23,7 @@
  * @requires express
  * @requires ./app
  * @requires ./db/mongo
- * @version 2.0.0
+ * @version 2.1.0
  */
 
 require('dotenv').config();
@@ -30,7 +31,7 @@ const express = require('express');
 const app = require('./app');
 const { initClientDBConnection, disconnectClientDBConnection } = require('./db/mongo');
 
-const IP = process.env.IP || '0.0.0.0';
+const DOMAIN = process.env.IP || 'localhost';
 const PORT = process.env.PORT || 3000;
 const PREFIX = process.env.API_PREFIX || '/';
 
@@ -57,8 +58,8 @@ async function startServer() {
     }
 
     try {
-        const server = expressApp.listen(PORT, IP, () => {
-            console.log(`🚀 Serveur démarré sur http://${IP}:${PORT}${PREFIX}`);
+        const server = expressApp.listen(PORT, DOMAIN, () => {
+            console.log(`🚀 Serveur démarré sur http://${DOMAIN}:${PORT}${PREFIX}`);
         });
 
         server.on('error', (err) => {

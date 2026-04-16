@@ -7,12 +7,19 @@
  * - Configuration du moteur de vues EJS (views/)
  * - Configuration des fichiers statiques (public/)
  * 
- * Prise en compte du Préfixe dans la base de l'URL (accès dans les données locales d'Express)
+ * Prise en compte du Préfixe dans la base de l'URL (accès dans les données locales d'Express).
+ * Prise en compte de l'URL complète de l'application (accès dans les données locales d'Express) selon 
+ * l'environnement (local ou distant).
+ * 
+ * Prise en compte des messages flash pour les notifications de succès ou d'erreur (utilisés dans le dashboard).
  *
  * @module app
  * @requires express
  * @requires path
- * @version 0.5.3
+ * @requires cookie-parser
+ * @requires express-session
+ * @requires connect-flash
+ * @version 0.5.5
  */
 
 const express = require('express');
@@ -31,6 +38,16 @@ const app = express();
 app.locals.BASE_URL = process.env.API_PREFIX || "/";
 
 /* ---------------------------------------------------------
+   Configuration de l'application URL des liens du frontend
+--------------------------------------------------------- */
+app.locals.APP_URL = process.env.ENV_SERVEUR === 'local'
+   ? `${process.env.PROTOCOL}://${process.env.DOMAIN}:${process.env.PORT}${app.locals.BASE_URL}`
+   : `${process.env.PROTOCOL}://${process.env.DOMAIN}${app.locals.BASE_URL}`;
+
+console.log(`Lancement -Base URL: ${app.locals.BASE_URL}`);
+console.log(`Lancement - App URL: ${app.locals.APP_URL}`);
+
+/* ---------------------------------------------------------
    Configuration du moteur de vues (EJS)
 --------------------------------------------------------- */
 app.set('views', path.join(__dirname, '../views'));
@@ -47,6 +64,20 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+/* ---------------------------------------------------------
+   Sessions + Flash messages
+--------------------------------------------------------- */
+const session = require('express-session');
+const flash = require('connect-flash');
+
+app.use(session({
+   secret: 'flash-secret',
+   resave: false,
+   saveUninitialized: true
+}));
+
+app.use(flash());
 
 /* ---------------------------------------------------------
    Routes Pages (EJS)

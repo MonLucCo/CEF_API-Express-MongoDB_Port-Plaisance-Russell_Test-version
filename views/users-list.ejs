@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: "Liste des utilisateurs" }) %>
+</head>
+
+<body>
+
+    <%- include('partials/header', { authenticated: true }) %>
+
+        <main class="container">
+            <h1>Liste des utilisateurs</h1>
+
+            <div class="table-wrapper">
+
+                <!-- Header fixe -->
+                <table class="table-header">
+                    <colgroup>
+                        <col style="width: 34%">
+                        <col style="width: 33%">
+                        <col style="width: 33%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                </table>
+
+                <!-- Body scrollable -->
+                <div class="table-body-wrapper">
+                    <table class="table-body">
+                        <colgroup>
+                            <col style="width: 34%">
+                            <col style="width: 33%">
+                            <col style="width: 33%">
+                        </colgroup>
+                        <tbody>
+                            <% users.forEach(u=> { %>
+                                <tr>
+                                    <td>
+                                        <%= u._id %>
+                                    </td>
+                                    <td>
+                                        <%= u.name %>
+                                    </td>
+                                    <td>
+                                        <%= u.email %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <a href="<%= BASE_URL %>/dashboard" class="btn-back">← Retour au dashboard</a>
+
+        </main>
+
+        <%- include('partials/footer', { version: version_tag }) %>
+
+</body>
+
+</html>

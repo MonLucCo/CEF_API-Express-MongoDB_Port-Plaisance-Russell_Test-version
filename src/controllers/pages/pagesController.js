@@ -3,12 +3,10 @@
  * Gère le rendu de la page d'accueil et d'autres pages statiques.
  * Ne contient pas de logique métier complexe ni de middleware.
  * @module controllers/pagesController
- * @requires axios
  * @requires ms
  * @requires appData
- * @version 0.2.0
+ * @version 0.3.0
  */
-const axios = require('axios');
 const ms = require('ms');
 const appData = require('../../../config/appData');
 
@@ -108,18 +106,16 @@ exports.renderLogin = (req, res) => {
  * 
  * @description Traite les données du formulaire de connexion, communique avec l'API pour vérifier les identifiants,
  * et gère la création du token JWT en cas de succès. En cas d'échec, rend la page de connexion avec un message d'erreur.
- * Cette méthode utilise axios pour envoyer une requête POST à l'endpoint de connexion de l'API.
+ * Cette méthode envoie une requête POST à l'endpoint de connexion de l'API.
  * En cas de succès, le token JWT est stocké dans un cookie sécurisé et l'utilisateur est redirigé vers le dashboard.
  * En cas d'échec (identifiants invalides ou erreur de communication), la page de connexion est rendue à nouveau avec un 
  * message d'erreur.
  * 
  * Prise en compte de la base de l'URL dans la requête et dans la redirection.
- * Suppression de l'emploi de 'Axios' car la requête est interne à l'application.
  * 
  * Le code exploite une technique de "controller composition" afin de réaliser un patch minimal sans impact sur l'API ni 
  * les tests. Il s'agit de faire un appel interne du contrôleur API sans réponse HTTP.
  * 
- * @requires axios (suppression dans le patch : instable en production)
  * @requires ms
  * @version 0.1.2
  * 
@@ -174,39 +170,6 @@ exports.handleLogin = async (req, res) => {
             error: "Identifiants invalides"
         });
     }
-};
-
-/**
- * Rendu du dashboard utilisateur.
- * @function renderDashboard
- * @memberof module:controllers/pagesController
- * @param {*} req 
- * @param {*} res
- * @return {void}
- * 
- * @description Affiche la page du dashboard pour les utilisateurs authentifiés. Cette page est protégée par le middleware `
- * requireAuthPage`.
- * Le dashboard affiche des informations personnalisées basées sur `req.userId`, qui est défini par le middleware 
- * d'authentification.
- * En version 0.1.0, le dashboard est un placeholder qui affiche simplement l'identifiant utilisateur extrait du token JWT.
- * Les fonctionnalités spécifiques du dashboard seront développées dans les versions ultérieures.
- * 
- * @version 0.1.0
- * 
- * @see renderLogin
- * @see handleLogin
- * @see handleLogout
- * @see middlewares/requireAuthPages
- * @see routes/pagesRoutes
- * @see views/dashboard.ejs
- * @see config/jwt
- */
-exports.renderDashboard = (req, res) => {
-    res.render('dashboard', {
-        userId: req.userId,
-        currentPage: 'dashboard',
-        version_tag: appData.APP_VERSION_TAG
-    });    // Rendu de la vue EJS avec les données de l'utilisateur connecté, de la page courante et de la version
 };
 
 /**

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <%- include('partials/head', { title: "Liste des réservations" }) %>
+</head>
+
+<body>
+
+    <%- include('partials/header', { authenticated: true }) %>
+
+        <main class="container">
+            <h1>Liste des réservations</h1>
+
+            <div class="table-wrapper">
+
+                <!-- Header fixe -->
+                <table class="table-header">
+                    <colgroup>
+                        <col style="width: 25%">
+                        <col style="width: 10%">
+                        <col style="width: 15%">
+                        <col style="width: 15%">
+                        <col style="width: 15%">
+                        <col style="width: 15%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID Réservation</th>
+                            <th>Catway</th>
+                            <th>Client</th>
+                            <th>Bateau</th>
+                            <th>Arrivée</th>
+                            <th>Départ</th>
+                        </tr>
+                    </thead>
+                </table>
+
+                <!-- Body scrollable -->
+                <div class="table-body-wrapper">
+                    <table class="table-body">
+                        <colgroup>
+                            <col style="width: 25%">
+                            <col style="width: 10%">
+                            <col style="width: 15%">
+                            <col style="width: 15%">
+                            <col style="width: 15%">
+                            <col style="width: 15%">
+                        </colgroup>
+                        <tbody>
+                            <% if (reservations && reservations.length> 0) { %>
+                                <% reservations.forEach(r=> { %>
+                                    <tr>
+                                        <td>
+                                            <%= r._id %>
+                                        </td>
+                                        <td>
+                                            <%= r.catwayNumber %>
+                                        </td>
+                                        <td>
+                                            <%= r.clientName %>
+                                        </td>
+                                        <td>
+                                            <%= r.boatName %>
+                                        </td>
+                                        <td>
+                                            <%= r.checkIn %>
+                                        </td>
+                                        <td>
+                                            <%= r.checkOut %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="6" class="table-empty">
+                                                    Aucune réservation trouvée.
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <a href="<%= BASE_URL %>/dashboard" class="btn-back">← Retour au dashboard</a>
+        </main>
+
+        <%- include('partials/footer', { version: version_tag }) %>
+
+</body>
+
+</html>

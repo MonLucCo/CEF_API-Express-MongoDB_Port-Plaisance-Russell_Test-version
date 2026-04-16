@@ -54,7 +54,8 @@ src/                        ← Dossier principal du code de l'API
   │   │   └── reservationController.js  ← Contrôleur des Reservations
   │   │
   │   └── pages                     ← Contrôleur du Frontend
-  │       └── pagesController.js        ← Contrôleur des pages du frontend
+  │       ├── pagesController.js           ← Contrôleur des pages du frontend (non protégées)
+  │       └── pagesDashboardController.js  ← Contrôleur des pages du dashboard du frontend (accès protégé)
   │
   ├── middlewares/              ← Middlewares (auth, validation, sécurité)
   │   ├── attachDeprecatedInfo.js        ← Middleware ajoutant les métadonnées de dépréciation dans la réponse
@@ -68,7 +69,8 @@ src/                        ← Dossier principal du code de l'API
   │   ├── catwayPayloadMiddleware.js     ← Middlewares Catways (issue‑27) : validateCatwayPayload, validateCatwayPartialPayload
   │   └── reservationMiddleware.js       ← Middlewares Reservations (issues 33–36)
   │
-  ├── services/                 ← Logique métier réutilisable
+  ├── utils/                    ← Fonctions (non métier) réutilisables
+  │   └── jwt.js                        ← Fonctions utilitaires pour la génération et la vérification des JSON Web Tokens (JWT)
   │
   └── routes/                   ← Définition des routes Express
       ├── api                       ← Routes de l'API
@@ -79,12 +81,19 @@ src/                        ← Dossier principal du code de l'API
       │   └── apiRoutes.js              ← Routeur principal API (agrégation Users, Catways, Reservations)
       │
       └── pages                     ← Routes du Frontend
-          └── pagesRoutes.js            ← Routes des pages du frontend
+          ├── pagesRoutes.js            ← Routes des pages du frontend (routes de premier niveau)
+          └── pagesDashboardRoutes.js   ← Routes des pages du dashboard du frontend (routes du dashboard)
 
-views/
-  ├── dashboard.ejs             ← Page dynamique (EJS) de l'espace utilisateur (Dashboard) du Frontend
-  ├── home.ejs                  ← Page dynamique (EJS) de l'accueil (Home) du Frontend
-  ├── login.ejs                 ← Page dynamique (EJS) de la connexion (Login) du Frontend
+views/                          ← Page dynamique (EJS) du Frontend
+  ├── dashboard.ejs                    ← Page de l'espace utilisateur (Dashboard)
+  ├── home.ejs                         ← Page de l'accueil (Home)
+  ├── login.ejs                        ← Page de la connexion (Login)
+  ├── catways-details.ejs              ← Page des détails d'un catway (vue Dashboard)
+  ├── catways-list.ejs                 ← Page de la liste des catways (vue Dashboard)
+  ├── reservations-details.ejs         ← Page des détails d'une réservation (vue Dashboard)
+  ├── reservations-list.ejs            ← Page de la liste des réservations (vue Dashboard)
+  ├── users-list.ejs                   ← Page de la liste des utilisateurs (vue Dashboard)
+  ├── docs-api.ejs                     ← Page d’accès à la documentation de l’API (REST) et du code (JSDoc)
   │
   ├── home/                     ← Page d'accueil (Home) découpée en parties (partials) élémentaires
   │   ├── _title.ejs               ← Titre de la page (titre et sous-titre)
@@ -98,8 +107,34 @@ views/
       ├── header.ejs               ← En-tête du corps de la page <body> (logo et menu de navigation)
       └── footer.ejs               ← Pied de page de la page <body> (copyright et version)
 
-scripts/
-  └── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
+scripts/                        ← Scripts opérationnels du projet (déploiement, maintenance, outils internes)
+  ├── config/                      ← Configuration des pipelines de pré‑déploiement
+  │   └── predeploy.config.json        ← Configuration centralisée du script validate-predeploy.js
+  │
+  ├── templates/                   ← Modèles Markdown utilisés pour les checklists et résumés de déploiement
+  │   ├── checklist.md                 ← Modèle générique de checklist
+  │   ├── checklist-deploy.md          ← Modèle de checklist spécifique au déploiement
+  │   ├── resume.md                    ← Modèle générique de résumé
+  │   └── resume-deploy.md             ← Modèle de résumé spécifique au déploiement
+  │
+  ├── .rsync-filter.example        ← Exemple de configuration rsync (non utilisé en production)
+  ├── .rsync-filter.rules          ← Règles rsync utilisées par les scripts de déploiement
+  │
+  ├── check-wsl-env.js             ← Vérification de l’environnement WSL (compatibilité Windows/Linux)
+  ├── clean.js                     ← Nettoyage local (node_modules, caches, artefacts)
+  ├── import-data.js               ← Script d’import JSON → MongoDB (issue‑20B)
+  ├── reinstall.js                 ← Réinstallation complète de l’environnement Node (sécurisé)
+  ├── validate-predeploy.js        ← Pipeline de pré‑déploiement (vérifications techniques)
+  ├── verify-deploy.js             ← Vérification post‑déploiement (Alwaysdata)
+  │
+  ├── deploy.sh                    ← Script principal de déploiement Alwaysdata
+  ├── deploy-checklist-local.sh    ← Génération locale de la checklist de déploiement
+  ├── deploy-checklist-site.sh     ← Génération de la checklist depuis Alwaysdata
+  ├── ssh-connect.sh               ← Connexion SSH automatisée à Alwaysdata
+  ├── ssh-site-path.sh             ← Résolution automatique du chemin distant Alwaysdata
+  │
+  ├── deploy-config.json           ← Configuration du déploiement (serveur, chemins, options)
+  └── ssh-config.json              ← Configuration SSH (hôte, utilisateur, port)
 
 data/                           ← Données du projet
   ├── users.json                   ← Données initiales des Utilisateurs
@@ -113,6 +148,9 @@ config/                     ← Configuration globale (JWT, paramètres transver
       └── nodemon.json              ← Configuration nodemon (issue‑17)
 
 public/                     ← Eléments statique du frontend
+  ├── docs/                      ← Documentation publiée du code (JSDoc)  
+  ├── docs-api/                  ← Documentation publiée de l'API (REST) 
+  │
   ├── css/                       ← Feuilles de style
   │   └── main.css                  ← Feuille des styles unifiée de l'application
   └── img/                       ← Images de l'interface utilisateur (frontend) de l'application
@@ -166,7 +204,7 @@ tests/                      ← Tests Mocha/Chai/Supertest
       ├── user.unitaires.test.js            ← tests unitaires (niveau-1) de User 
       └── user.integration.test.js          ← tests d'intégration (niveau-2) de User 
 
-docs/                       ← Documentation JSDoc générée
+docs/                       ← Documentation JSDoc générée automatiquement
 
 docs-dev/                   ← Documentation interne versionnée
   │
@@ -182,6 +220,8 @@ docs-dev/                   ← Documentation interne versionnée
   │   ├── collection-analysis.md                   ← Détail de l'analyse d'une collection Postman (v0.2.1-dev - incrément 2)
   │   └── suppression-depreciation-analysis.md     ← Détail de l'analyse d'une fonction obsolète (dépréciation)
   │
+  ├── api/                     ← Documentation de l'API (REST) (ensemble des fichiers Markdown)
+  │
   ├── hebergement/             ← Documentation Alwaysdata, configuration serveur, MongoDB Atlas
   │   └── import-donnees.md           ← Documentation import JSON (issue‑20B)
   │
@@ -195,7 +235,9 @@ docs-dev/                   ← Documentation interne versionnée
       │   ├── collection-e2e-local.json                          ← Collection Postman (API v0.1-dev)
       │   ├── API-Port-Russell_v0.2.0-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.0-dev - Pré-déploiement)
       │   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json  ← Collection Postman (API v0.2.1-dev - Tests techniques)
-      │   └── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
+      │   ├── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
+      │   ├── API-Port-Russell_v0.2.1-dev_02-PostDeploy.json     ← Collection Postman (API v0.2.1-dev - Post-déploiement)
+      │   └── API-Port-Russell_v0.3.0-dev_02-PostDeploy.json     ← Collection Postman (API v0.3.0-dev - Post-déploiement)
       │
       ├── auth/                                ← Catégorie Authentification
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
@@ -216,7 +258,19 @@ docs-dev/                   ← Documentation interne versionnée
       │   └── reservations-niveau-2-integration.md  ← Tests de niveau 2 - tests d'intégration Reservations
       │
       └── déploiements/                         ← Catégorie Déploiements
-          └── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Tests des validations pré-déploiement de la version v0.2.0-dev
+          ├── v0.2.0-dev_01_predeploy_2026-03-19_18-49/   ← Tests des validations - version v0.2.0-dev
+          ├── v0.2.1-dev_01_predeploy_2026-03-26_11-35/   ← Tests des validations - version v0.2.1-dev
+          ├── v0.2.1-dev_02_deploy_2026-03-29_09-01/      ← Tests des vérifications - version v0.2.1-dev
+          ├── v0.2.1-dev.a_02_deploy_2026-03-30_10-03/    ← Tests des vérifications - version v0.2.1-dev patch a
+          ├── v0.2.1-dev.b_02_deploy_2026-03-30_10-34/    ← Tests des vérifications - version v0.2.1-dev patch b
+          ├── v0.2.1-dev.c_02_deploy_2026-03-30_10-56/    ← Tests des vérifications - version v0.2.1-dev patch c
+          ├── v0.2.1-dev.d_02_deploy_2026-03-30_20-30/    ← Tests des vérifications - version v0.2.1-dev patch d
+          ├── v0.3.0-dev_01_predeploy_2026-04-15_16-14/   ← Tests des validations - version v0.3.0-dev
+          ├── v0.3.0-dev_02_deploy_2026-04-15_18-16/      ← Tests des vérifications - version v0.3.0-dev
+          ├── v0.3.0-dev.a_01_predeploy_2026-04-15_21-20/ ← Tests des validations - version v0.3.0-dev patch a
+          ├── v0.3.0-dev.a_02_deploy_2026-04-15_21-28/    ← Tests des vérifications - version v0.2.0-dev patch a
+          ├── v0.3.0-dev.b_01_predeploy_2026-04-16_07-58/ ← Tests des validations - version v0.2.0-dev patch b
+          └── v0.3.0-dev.b_02_deploy_2026-04-16_08-06/    ← Tests des vérifications - version v0.2.0-dev patch b
     
 ```
 
@@ -284,7 +338,7 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 - Issue-37 : Création de la page d'accueil du frontend
 - Issue-38 : Création du Dashboard de l'Utilisateur
-- Issue-39 : Création des pages listes et détails (finalisation du frontend)
+- Issue-39 : Création de la documentation de l'API (v0.1.0-doc), intégration dans le dashboard et déploiement Alwaysdata
 
 #### 1.3.6 Phase 7 — Tests unitaires
 
@@ -2006,7 +2060,18 @@ La Phase 6 introduit la séparation complète entre :
   - Etape 8 : déploiement et vérification post-déploiement de la version (v0.2.1-dev EJS + REST)
   - Etape 9 : finalisation documentaire de l'issue-37
 - **Issue-38** : Création du Dashboard de l'Utilisateur
-- **Issue-39** : Création des pages listes et détails (finalisation du frontend)
+  - Etape 1 : mise en place de l'architecture du dashboard (routes, contrôleurs, gestion unifiée JWT, messages tilisateurs)
+  - Etape 2 : intégrations des fonctions de gestion des utilisateurs (création, modification, suppression, liste)
+  - Etape 3 : intégrations des fonctions de gestion des catways (création, modification, suppression, détails, liste)
+  - Etape 4 : intégrations des fonctions de gestion des réservations (création, modification, suppression, détails, liste)
+  - Etape 5 : mise à jour de la documentation de développement du projet
+- **Issue-39** : Création de la page de la documentation API (finalisation du frontend) et déploiement Alwaysdata
+  - Étape 1 : architecture de production de la documentation JSDoc
+  - Étape 2 : intégration de la page de Documentation API dans le Dashboard
+  - Étape 3 : finalisation de la documentation (scripts JSDoc et documents Markdown de l'API)
+  - Étape 4 : validation de la version avec le pipeline PreDeploy
+  - Étape 5 : déploiement avec le pipeline Deploy et vérification de la version publiée
+  - Étape 6 : documentation de l'issue-39
 
 #### 2.5.1 - Issue-37 - Création de la page d'accueil du frontend
 
@@ -2411,21 +2476,206 @@ Elle met en oeuvre la démarche d'archivage des validations déploiement, réali
 
 ---
 
-##### 2.5.1.9 Etape 9 - finalisation documentaire de l'issue-37
+##### 2.5.1.9 Etape 9 - Mise à jour documentaire issue‑37 et publication de la version v0.2.1‑dev
 
-(à compléter commit-6 et PR-issue-37-dev, puis PR-dev-main)
+L’issue‑37 (Phase 6) a introduit plusieurs évolutions majeures dans l’architecture du projet, nécessitant une mise à jour documentaire transversale.  
+Cette section récapitule les impacts documentaires et les ajustements réalisés lors de la stabilisation et du déploiement de la version **v0.2.1‑dev**.
+
+###### 2.5.1.9.1 Séparation complète API REST / Frontend EJS
+
+L’architecture a été mise à jour pour refléter la séparation stricte entre :
+
+- les routes API (`src/routes/api/…`),
+- les routes des pages publiques (`src/routes/pages/pagesRoutes.js`),
+- les routes du dashboard (`src/routes/pages/pagesDashboardRoutes.js`).
+
+Cette séparation est désormais intégrée dans :
+
+- la section 1.2 (arborescence du projet),
+- la section 4.3 des décisions techniques,
+- la documentation interne `docs-dev/architecture/`.
+
+###### 2.5.1.9.2 Introduction des pipelines PreDeploy / Deploy / PostDeploy
+
+L’issue‑37 a introduit un cycle de validation complet avant publication d’une version.  
+Les pipelines sont désormais documentés dans :
+
+- `docs-dev/tests/deploiements/<version>/`,
+- `scripts/` (scripts de validation, déploiement, vérification),
+- `decisions-techniques.md` (sections 4.7.3 et 4.7.4).
+
+La documentation d’architecture a été mise à jour pour refléter :
+
+- l’existence des pipelines,
+- leur rôle dans la validation des versions,
+- leur archivage systématique.
+
+###### 2.5.1.9.3 Gestion de l’obsolescence des routes Auth
+
+La version v0.2.1‑dev introduit :
+
+- un mécanisme générique de dépréciation (`deprecatedRoute`, `attachDeprecatedInfo`),
+- la privatisation et la dépréciation des anciennes routes Auth/register et Auth/delete,
+- la mise à jour des tests unitaires et d’intégration.
+
+Ces éléments sont désormais intégrés dans :
+
+- la section 1.2 (middlewares),
+- la section 4.7.2 des décisions techniques,
+- la documentation interne `docs-dev/architecture/suppression-depreciation-analysis.md`.
+
+###### 2.5.1.9.4 Mise à jour des métadonnées de version
+
+La documentation a été ajustée pour refléter :
+
+- `APP_VERSION_TAG = 'v0.2.1-dev'`,
+- la distinction entre version locale, version déployée et version release,
+- l’introduction des patchs (`v0.2.1-dev.a`, `v0.2.1-dev.b`, …).
+
+Ces éléments sont intégrés dans :
+
+- la section 4.4 des décisions techniques,
+- `config/appData.js`,
+- les pages du frontend (footer, dashboard).
+
+###### 2.5.1.9.5 Stabilisation du frontend minimal
+
+L’issue‑37 a introduit :
+
+- la page d’accueil (Home),
+- la page de connexion (Login),
+- la structure du Dashboard,
+- les partials EJS réutilisables.
+
+La documentation d’architecture a été mise à jour pour inclure :
+
+- la structure complète du dossier `views/`,
+- la séparation Home / Dashboard,
+- les partials et leur rôle.
+
+###### 2.5.1.9.6 Conclusion
+
+Cette mise à jour documentaire consolide l’ensemble des évolutions introduites en Phase 6 et garantit que l’architecture décrite dans `architecture.md` reflète fidèlement :
+
+- la structure réelle du projet,
+- les mécanismes de sécurité,
+- les pipelines de validation,
+- la séparation API/Frontend,
+- la gestion de l’obsolescence,
+- la version v0.2.1‑dev et ses patchs.
+
+Elle constitue la base stable pour les phases suivantes (issue‑38, issue‑39, issue‑40).
 
 ---
 
 #### 2.5.2 - Issue-38 - Création du Dashboard de l'Utilisateur
 
-(à compléter lors de l'issue-38)
+L’issue‑38 étend le Dashboard utilisateur en plusieurs étapes, en s’appuyant exclusivement sur l’API REST sécurisée.
+  
+À chaque étape, la version du Dashboard du frontend est opérationnelle et fait l'objet d'une validation fonctionnelle manuelle.  
+
+- **Étape 1 : architecture du dashboard**
+  - séparation des routes spécifiques au Dashboard dans un fichier spécifique (`pagesDashboardRoutes.js`). Ces routes sont privatisée (en-tête) dans les routes de premier niveau des pages du frontend (`pagesRoutes.js`)
+  - mise en place d’un système de messages flash (succès / erreur) pour toutes les actions
+  - mise en place du contrôleur (`pagesDashboardController.js`) pour toutes les fonctions du dashboard en version _placeholder_ (v0.1.0) pour vérification de l'interface utilisateur
+
+- **Étape 2 et 3 : intégration Users et Catways**
+  - ajout des actions depuis le Dashboard :
+    - création, mise à jour, suppression d’un utilisateur
+    - création, mise à jour, détails, suppression d’un catway
+  - utilisation systématique de l’API (`/api/users`, `/api/catways/...`) via `fetch` côté contrôleur `pagesDashboardController.js`
+
+- **Étape 4 : intégration complète des Reservations dans le Dashboard**
+  - ajout des fonctions :
+    - création d’une réservation pour un catway
+    - suppression d’une réservation
+    - visualisation du détail d’une réservation
+    - liste des réservations (vue dédiée `reservations-list.ejs`)
+  - réutilisation de l’identifiant hybride côté API (catwayId / reservationId) et nettoyage des identifiants côté Dashboard (`cleanIdentifier`)
+  - homogénéisation des vues de détail (`catway-details.ejs`, `reservation-details.ejs`) et des listes (`catways-list.ejs`, `reservations-list.ejs`)
+
+- **Étape 5 : documentation de l’issue‑38**
+  - mise à jour de `docs-dev/architecture.md` pour décrire :
+    - le rôle de `pagesDashboardController.js`
+    - les nouvelles vues Dashboard (listes et détails)
+    - l’intégration des fonctions Reservations dans le frontend
+  - mise à jour de `docs-dev/decisions-techniques.md` (sections 4.7.5 et 4.7.6) pour tracer :
+    - le choix de ne pas ajouter de route API globale pour la liste des réservations du port
+    - la mise en place d’une première version de la documentation JSDoc (v0.1.0) pour valider la page de documentation du Dashboard
+
+À l’issue de l’issue‑38, le Dashboard offre un accès complet aux fonctions Users, Catways et Reservations, tout en respectant la séparation stricte API / frontend et la cohérence documentaire.
 
 ---
 
-#### 2.5.3 - Issue-39 - Création des pages listes et détails (finalisation du frontend)
+#### 2.5.3 - Issue-39 - Création de la page Documentation API (finalisation du frontend) et déploiement Alwaysdata
 
-(à compléter lors de l'issue-39)
+L'issue-39 finalise le Dashboard, prépare le déploiement et réalise la publication sur Alwaysdata en plusieurs étapes.
+
+La version développée est la **v0.3.0-dev** qui finalise les fonctionnalités du Dashboard en ajoutant (en version préliminaire v0.1.0-doc) une documentation JSDoc de l'API.
+
+À chaque étape du développement, la version du Dashboard du frontend est opérationnelle et fait l'objet d'une validation fonctionnelle manuelle.
+
+- **Étape 1 : architecture de production de la documentation JSDoc**
+  - Mise en place d’un dossier dédié `/docs` comme **artefact de génération**.  
+  - Configuration de JSDoc via `config/dev/jsdoc.json` pour produire une documentation complète à partir des commentaires JSDoc du code source.  
+  - Régénération systématique du dossier `/docs` à chaque exécution du script `npm run docs` (suppression automatique du dossier existant par JSDoc).  
+  - Séparation stricte entre :
+    - **/docs** → production interne (non servie par Express)  
+    - **/public/docs** → publication statique (servie par Express et Alwaysdata)
+
+- **Étape 2 : intégration de la page de Documentation API dans le Dashboard**
+  - Création de la vue `views/docs-api.ejs` dédiée à la documentation API.  
+  - Ajout d’un lien vers la documentation JSDoc dans un nouvel onglet (`/docs/index.html`).  
+  - Intégration d’un affichage interne via `<iframe>` pour consulter la documentation du code directement dans le Dashboard.  
+  - Activation de la route `GET /dashboard/docs/api` dans `pagesDashboardRoutes.js`.  
+  - Mise à jour du Dashboard (`dashboard.ejs`) pour activer le bouton “Documentation API”.
+
+- **Étape 3 : finalisation de la production de la documentation**
+  - Production de la documentation de l'API :
+    - Création dans `docs-dev/api/` d'une famille de fichiers Markdown pour établir la documentation de l'API (version préliminaire v0.1.0-doc) selon le plan demandé (vue d'ensemble, tutoriel, exemples, glossaire)
+    - Création manuellement par Export HTML (offline) de la documentation
+    - Déplacement de `docs-dev/api/`vers `public/docs-api` des fichiers HTML
+    - intégration dans la page `views/docs-api.ejs` d'un affichage interne `<iframe>` pour consulter la documentation de l'API directement dans le Dashboard.
+  - Production des outils de la documentation du code (JSDoc) :
+    - Création d’une famille de scripts `docs:*` dans `package.json` :
+      - `docs` : génération complète de la documentation dans `/docs`.  
+      - `docs:publish` : suppression de `/public/docs` puis copie intégrale de `/docs` → `/public/docs`.  
+      - `docs:predeploy` : pipeline documentaire complet (génération + publication).  
+    - Garantie d’un état propre :  
+      - aucune fusion,  
+      - aucune persistance de fichiers obsolètes,  
+      - artefacts toujours synchronisés.  
+  - Préparation à l’intégration dans les pipelines de déploiement.
+
+- **Étape 4 : validation de la version avec le pipeline PreDeploy**
+  - Exécution du pipeline `validate-predeploy` pour vérifier :
+    - la présence et la cohérence de `/docs` et `/public/docs`,  
+    - la version documentaire (`APP_DOC_API_TAG`) dans `config/appData.js`,  
+    - l’accessibilité locale de la documentation.  
+  - Vérification de la page Dashboard `docs-api.ejs` (lien externe + iframe).  
+  - Validation que la documentation publiée correspond bien à la version générée.
+
+- **Étape 5 : déploiement avec le pipeline Deploy et vérification de la version publiée**
+  - Vérification distante via `npm run verify:deploy` :
+    - accessibilité de la documentation sur Alwaysdata,  
+    - cohérence des métadonnées (`X-API-VERSION`, `APP_DOC_API_TAG`),
+    - validité fonctionnelle du dashboard et de l'API sur Alwaysdata,  
+    - affichage correct de la documentation dans le Dashboard déployé.  
+  - Archivage des résultats dans `docs-dev/tests/deploiements/`.
+
+  > Cette démarche de publication est reproduite 2 fois pour corriger (patches) la configuration de la connexion et des requêtes dans l'environnement Alwaysdata.  
+  > Chaque version _patchée_ fait l'objet d'un validation de pré-déploiement et d'une vérification de déploiement qui sont archivées indépendamment.  
+  > La version publiée est la **v0.3.0-dev.b**.
+
+- **Étape 6 : documentation de l'issue-39**
+  - Mise à jour de la documentation interne (`docs-dev/`) :
+    - ajout de la section 2.5.3 dans `architecture.md`,  
+    - mise à jour des sections liées à la documentation API dans `README.md`,  
+    - ajout des scripts `docs:*` dans la documentation des scripts (`scripts/README_scripts.md`),  
+    - mise à jour de `decisions-techniques.md` pour tracer les choix liés au pipeline documentaire.  
+  - Archivage des captures, tests et validations dans le dossier de l’issue‑39.  
+
+À l'issue de l'issue-39, le Dashboard offre l'ensemble des fonctionnalités de l'application, tout en respectant la séparation stricte API / frontend et la cohérence documentaire. La documentation accessible dans le Dashboard est une version préliminaire (v0.1.0-doc) qui sera finalisée lors de la Phase 8 (documentation de l'API).
 
 ---
 

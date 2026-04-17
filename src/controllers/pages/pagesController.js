@@ -140,7 +140,6 @@ exports.handleLogin = async (req, res) => {
 
         const fakeRes = {
             status: (code) => {
-                console.log("fakeRes.status:", code);
                 return fakeRes;
             },
             json: (data) => {

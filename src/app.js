@@ -44,7 +44,7 @@ app.locals.APP_URL = process.env.ENV_SERVEUR === 'local'
    ? `${process.env.PROTOCOL}://${process.env.DOMAIN}:${process.env.PORT}${app.locals.BASE_URL}`
    : `${process.env.PROTOCOL}://${process.env.DOMAIN}${app.locals.BASE_URL}`;
 
-console.log(`Lancement -Base URL: ${app.locals.BASE_URL}`);
+console.log(`Lancement - Base URL: ${app.locals.BASE_URL}`);
 console.log(`Lancement - App URL: ${app.locals.APP_URL}`);
 
 /* ---------------------------------------------------------

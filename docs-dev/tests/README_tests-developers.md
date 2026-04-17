@@ -1,6 +1,6 @@
 # Documentation des tests — Vue d’ensemble
 
-Ce dossier regroupe l’ensemble de la documentation liée aux tests du projet.  
+Ce dossier regroupe l’ensemble de la documentation liée aux **tests développers** du projet.  
 Les tests sont organisés selon **deux axes complémentaires** :
 
 1. **Catégorie fonctionnelle**  

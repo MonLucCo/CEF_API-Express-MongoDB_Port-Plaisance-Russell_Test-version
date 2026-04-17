@@ -165,6 +165,10 @@ tests/                      ← Tests Mocha/Chai/Supertest
   ├── helpers/
   │   └── createTestUser.js     ← Helper centralisé pour créer un utilisateur + token JWT cohérent
   │
+  ├── client/                   ← Tests opérationnels des fonctions du Client
+  │   ├── catways.client.test.js         ← tests des 5 fonctions opérationnelles Catways
+  │   └── reservations.client.test.js    ← tests des 4 fonctions opérationnelles Reservations
+  │
   ├── controllers/              ← Tests unitaires (niveau‑1) des contrôleurs via Mocha + Chai + Sinon
   │   ├── authController.test.js         ← Tests unitaires du contrôleur Authentification
   │   ├── userController.test.js         ← Tests unitaires du contrôleur Users
@@ -212,7 +216,9 @@ docs-dev/                   ← Documentation interne versionnée
   ├── conventions.md           ← Conventions de développement (code, dossiers, nommage, JSDoc)
   ├── workflow-git.md          ← Workflow Git détaillé (branches, PR, milestones, bonnes pratiques)
   ├── securite.md              ← Politique de sécurité de l’API (JWT, bcrypt, Helmet, CORS, MongoDB)
-  ├── tests-strategy.md        ← Stratégie de tests (unitaires, intégration, E2E) et organisation du dossier tests/
+  ├── tests-strategy.md        ← Stratégie de tests et organisation du dossier tests/
+  ├── tests-developers.md      ← Stratégie de tests du développement
+  ├── tests-client.md          ← Stratégie de tests des fonctionnalités opérationnelles du Client
   ├── decisions-techniques.md  ← Journal des décisions techniques (ADR simplifié)
   │
   ├── architecture/            ← Documentation de détail de l'architecture
@@ -238,6 +244,9 @@ docs-dev/                   ← Documentation interne versionnée
       │   ├── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
       │   ├── API-Port-Russell_v0.2.1-dev_02-PostDeploy.json     ← Collection Postman (API v0.2.1-dev - Post-déploiement)
       │   └── API-Port-Russell_v0.3.0-dev_02-PostDeploy.json     ← Collection Postman (API v0.3.0-dev - Post-déploiement)
+      │
+      ├── client/                             ← Catégorie des tests Client
+      │   └── tests-fonctionnalités.md.md           ← Tests des fonctions opérationnelles du Client
       │
       ├── auth/                                ← Catégorie Authentification
       │   ├── auth-niveau-1-unitaires.md            ← Tests de niveau 1 - tests unitaires
@@ -342,7 +351,10 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 #### 1.3.6 Phase 7 — Tests unitaires
 
-(sera complété avec les issues lors de l'engagement de la phase)
+- Issue-40 : Création des tests des fonctionnalités opérationnelles du Client et intégration dans le lancement de l'application
+- Issue‑41 : Mise à jour documentaire complète de la Phase 7 (tests développeurs + tests Client + architecture + README)
+
+> Note :  L'issue-42 concernant la couverture minimale des tests est retirée de cette phase. Cette fonctionnalité de couverture des tests n'est pas utile à la version à livrer du projet.
 
 #### 1.3.7 Phase 8 — Documentation API
 
@@ -2681,7 +2693,48 @@ La version développée est la **v0.3.0-dev** qui finalise les fonctionnalités 
 
 ### 2.6 Phase 7 — Tests unitaires
 
-(sera complété avec les issues correspondantes)
+La phase 7 établit les tests opérationnels Client en implémentant les **9 fonctionnalités métier** demandées par la capitainerie et qui doivent être réalisés au lancement de l'application.
+
+L'issue-40 réalise les tests des fonctionnalités métier et établit les scripts d'exécution des tests :
+
+- Implémentation des **9 fonctionnalités métier** demandées par la capitainerie :
+  1. Créer un catway  
+  2. Lister les catways  
+  3. Détail d’un catway  
+  4. Modifier un catway  
+  5. Supprimer un catway
+  6. Créer une réservation  
+  7. Supprimer une réservation  
+  8. Lister les réservations  
+  9. Détail d’une réservation  
+
+- Utilisation de :
+  - `root-hooks.js` (MongoMemoryServer + dotenv + nettoyage)
+  - `createTestUser.js` (création utilisateur + JWT)
+  - Supertest pour les appels API
+
+- Structure finale :
+
+  ```txt
+  tests/client/
+    ├── catways.client.test.js
+    └── reservations.client.test.js
+  ```
+
+- Ajout des scripts d'exécution des tests dans `package.json` :
+  - exécution des tests Client : script `tests:client`
+  - intégration du script `tests:client` dans les scripts de lancement de l'exécution de l'application `start` et `dev`.
+
+- Mise à jour des documents de développement :
+  - séparation documentaire des tests Développeurs et des tests CLient
+
+L'issue-41 établit la mise à jour et finalise la version de développement (version v0.3.1-dev) :
+
+- correction des coquilles dans les codes (suppression de traces de log inutiles)
+- mise à jour des variables de configuration (version v0.3.1-dev)
+- mise à jour documentaire pour publication de la phase 7 (documents `architecture.md` et `README.md`)
+
+À l'issue de l'issue-41, le lancement de l'application intègre 9 tests métier puis lance l'application. La version de développement est la v0.3.1-dev qui intègre les tests métier et les corrections mineures et patchs de la version déployée.
 
 ---
 

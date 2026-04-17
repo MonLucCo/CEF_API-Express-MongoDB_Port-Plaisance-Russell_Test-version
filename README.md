@@ -6,7 +6,7 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 6](https://img.shields.io/badge/Phase%206-Frontend-green) ![Version v0.6.2](https://img.shields.io/badge/Release-v0.6.2-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.3.0--dev.b-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.3.0--dev.b-yellow)
+![Milestone Phase 7](https://img.shields.io/badge/Phase%207-Tests-green) ![Version v0.6.2](https://img.shields.io/badge/Release-v0.6.2-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.3.0--dev.b-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.3.1--dev-yellow)
 ![Version Doc-API](https://img.shields.io/badge/Version%20Doc--API-v0.1.0--doc-yellow)  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
 ![Statut du dépôt](https://img.shields.io/badge/Status%20dépôt-en%20développement-orange) [![Site déployé](https://img.shields.io/badge/Accès%20site-Alwaysdata-blue)](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
 
@@ -101,6 +101,8 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 ├── tests/             ← Tests Mocha, Chai, Sinon et Supertest
 │   ├── test-app.js              ← Serveur Express dédié aux tests E2E simulés
 │   │
+│   ├── client/                  ← Tests opérationnels des fonctions (Client)
+│   │
 │   ├── controllers/             ← Tests unitaires (auth-niveau‑1)
 │   ├── middlewares/             ← Tests unitaires (auth-niveau‑1)
 │   ├── integration/             ← Tests d’intégration (auth-niveau‑2)
@@ -117,7 +119,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── conventions.md           ← Conventions de code, nommage et organisation
 │   ├── workflow-git.md          ← Stratégie Git (branches, commits, PR)
 │   ├── securite.md              ← Mesures de sécurité (JWT, bcrypt, Helmet, CORS…)
-│   ├── tests-strategy.md        ← Stratégie globale des tests (niveaux 1 à 3)
+│   ├── tests-strategy.md        ← Stratégie globale des tests (développeur, client)
 │   ├── decisions-techniques.md  ← Historique des choix techniques majeurs
 │   │
 │   ├── api/                     ← Documentation de l'API (REST)
@@ -126,6 +128,7 @@ L’architecture suit une organisation modulaire inspirée des bonnes pratiques 
 │   ├── deploiement/             ← Procédures de déploiement, de validation et d'import JSON
 │   └── tests/                   ← Documentation détaillée des tests par catégorie et par niveau
 │       ├── assets/               ← Collections Postman et images
+│       ├── client/               ← Documentation des tests Client
 │       ├── models/               ← Documentation des tests du modèle
 │       ├── auth/                 ← Documentation des tests d'authentification
 │       ├── fonctions/            ← Documentation des tests des fonctions
@@ -233,7 +236,7 @@ Les tests couvrent les **9 fonctionnalités demandées** :
 
 > Les tests sont organisés par **catégorie** (authentification, modèles, fonctionnalités) et par **niveau** (unitaires, intégration, E2E).
 >
-> 👉 Détails complets : [docs-dev/tests/README_tests.md](./docs-dev/tests/README_tests.md)
+> 👉 Détails complets : [docs-dev/tests/README_tests-developers.md](./docs-dev/tests/README_tests-developers.md)
 
 ---
 
@@ -432,13 +435,26 @@ npm start
 
 Deux modes sont disponibles :
 
-#### 5.1 Tests automatisés
+- les **tests Client** des fonctionnalités métier
+- les **tests Développeur**
+
+#### 5.1 Tests Client (fonctionnalités métier)
+
+Les tests Client sont exécuté à chaque lancement de l'application (lancement des script `start` ou `dev`).
+
+Ces tests peuvent être exécuté spécifiquement en utilisant le script `tests:client`.
+
+#### 5.2 Tests Développeur
+
+Deux modes de tests développeur sont disponibles :
+
+##### 5.2.1 Tests automatisés
 
 ```bash
 npm test
 ```
 
-#### 5.2 Tests manuels avec Postman
+##### 5.2.2 Tests manuels avec Postman
 
 Un serveur Express dédié (`tests/test-app.js`) permet d’exécuter les tests E2E locaux via Postman, avec une base MongoMemoryServer.
 
@@ -517,7 +533,7 @@ Le projet utilise trois types de versions, afin de distinguer clairement :
 - [x] Phase 4 — Catways  
 - [x] Phase 5 — Reservations  
 - [x] Phase 6 — Front-end  
-- [ ] Phase 7 — Tests  
+- [x] Phase 7 — Tests  
 - [ ] Phase 8 — Documentation API  
 - [ ] Phase 9 — Déploiement final  
 

@@ -6,8 +6,8 @@ Etablissement d'une API avec Node.js/Express et MongoDB d'une "gestion des rése
 
 ---
 
-![Milestone Phase 7](https://img.shields.io/badge/Phase%207-Tests-green) ![Version v0.6.2](https://img.shields.io/badge/Release-v0.6.2-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.3.0--dev.b-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v0.3.1--dev-yellow)
-![Version Doc-API](https://img.shields.io/badge/Version%20Doc--API-v0.1.0--doc-yellow)  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
+![Milestone Phase 8](https://img.shields.io/badge/Phase%208-Documentation%20API-green) ![Version v0.6.2](https://img.shields.io/badge/Release-v0.6.2-blue) ![Version déployée](https://img.shields.io/badge/Version%20déployée-v0.3.0--dev.b-blue) ![Version en développement](https://img.shields.io/badge/Version%20Dev-v1.0.0--dev-yellow)
+![Version Doc-API](https://img.shields.io/badge/Version%20Doc--API-v1.0.0--doc-yellow)  ![Issues ouvertes](https://img.shields.io/github/issues/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version) ![Dernier commit](https://img.shields.io/github/last-commit/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version)
 ![Statut du dépôt](https://img.shields.io/badge/Status%20dépôt-en%20développement-orange) [![Site déployé](https://img.shields.io/badge/Accès%20site-Alwaysdata-blue)](https://perlucco.alwaysdata.net/api/port-plaisance-russell)
 
 > 🔗 [Accès aux phases](https://github.com/MonLucCo/CEF_API-Express-MongoDB_Port-Plaisance-Russell_Test-version/milestones/)
@@ -534,7 +534,7 @@ Le projet utilise trois types de versions, afin de distinguer clairement :
 - [x] Phase 5 — Reservations  
 - [x] Phase 6 — Front-end  
 - [x] Phase 7 — Tests  
-- [ ] Phase 8 — Documentation API  
+- [x] Phase 8 — Documentation API  
 - [ ] Phase 9 — Déploiement final  
 
 > Le projet est suivant dans un kanban [CEF-API_Port-Plaisance-Russell](https://github.com/users/MonLucCo/projects/10/views/2)

@@ -1,26 +1,70 @@
-# Endpoints Catways
+# ⚓ Endpoints Catways — API REST
 
-Nécessite pour chaque route une authentification et la transmission du `<token>`.
+Toutes les routes Catways nécessitent une **authentification JWT** :
 
----
+```js
+Authorization: Bearer <token>
+```
 
-## GET /catways
-
-Liste des catways.
-
----
-
-## GET /catways/:id
-
-Détail d’un catway.
+Ces routes sont utilisées par le dashboard (pages EJS) pour afficher, créer et modifier les catways.
 
 ---
 
-## POST /catways
+## ▶️ 1. GET /catways
 
-Créer un catway.
+Liste tous les catways.
 
-Payload :
+### 🔸 1.1 Réponse 200
+
+```json
+[
+  {
+    "_id": "string",
+    "catwayNumber": 10,
+    "type": "long",
+    "catwayState": "ok"
+  }
+]
+```
+
+### 🔸 1.2 Erreurs possibles
+
+| Code | Description                |
+|------|----------------------------|
+| 401  | Token manquant ou invalide |
+
+---
+
+## ▶️ 2. GET /catways/:id
+
+Retourne les détails d’un catway.
+
+### 🔸 2.1 Réponse 200
+
+```json
+{
+  "_id": "string",
+  "catwayNumber": 10,
+  "type": "long",
+  "catwayState": "ok"
+}
+```
+
+### 🔸 2.2 Erreurs possibles
+
+| Code | Description                |
+|------|----------------------------|
+| 400  | ID invalide                |
+| 404  | Catway introuvable         |
+| 401  | Token manquant ou invalide |
+
+---
+
+## ▶️ 3. POST /catways
+
+Crée un catway.
+
+### 🔸 3.1 Body
 
 ```json
 {
@@ -30,22 +74,74 @@ Payload :
 }
 ```
 
+### 🔸 3.2 Réponse 201
+
+```json
+{
+  "_id": "string",
+  "catwayNumber": 999,
+  "type": "long",
+  "catwayState": "free for testing"
+}
+```
+
+### 🔸 3.3 Erreurs possibles
+
+| Code | Description                |
+|------|----------------------------|
+| 400  | Données invalides          |
+| 409  | Catway déjà existant       |
+| 401  | Token manquant ou invalide |
+
 ---
 
-## PUT /catways/:id
+## ▶️ 4. PATCH /catways/:id
 
-Modifier un catway.
+Met à jour partiellement un catway.
+
+### 🔸 4.1 Body (exemple)
+
+```json
+{
+  "catwayState": "occupied"
+}
+```
+
+### 🔸 4.2 Réponse 200
+
+```json
+{
+  "_id": "string",
+  "catwayNumber": 10,
+  "type": "long",
+  "catwayState": "occupied"
+}
+```
+
+### 🔸 4.3 Erreurs possibles
+
+| Code | Description                      |
+|------|----------------------------------|
+| 400  | ID invalide ou payload incorrect |
+| 404  | Catway introuvable               |
+| 401  | Token manquant ou invalide       |
 
 ---
 
-## PATCH /catways/:id
+## ▶️ 5. DELETE /catways/:id
 
-Mettre à jour partiellement un catway.
+Supprime un catway.
 
----
+### 🔸 5.1 Réponse 204
 
-## DELETE /catways/:id
+Aucun contenu.
 
-Supprimer un catway.
+### 🔸 5.2 Erreurs possibles
+
+| Code | Description                |
+|------|----------------------------|
+| 400  | ID invalide                |
+| 404  | Catway introuvable         |
+| 401  | Token manquant ou invalide |
 
 ---

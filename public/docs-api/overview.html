@@ -27,10 +27,10 @@
 <h1 id="vue-densemble-de-lapi">Vue d’ensemble de l’API </h1>
 <p>L’API REST du Port de Plaisance Russell permet de gérer :</p>
 <ul>
-<li>l’authentification des utilisateurs,</li>
 <li>les utilisateurs,</li>
 <li>les catways,</li>
 <li>les réservations associées aux catways.</li>
+<li>l’authentification des utilisateurs,</li>
 </ul>
 <p>Elle repose sur :</p>
 <ul>
@@ -38,6 +38,14 @@
 <li>une authentification JWT,</li>
 <li>un format JSON pour toutes les requêtes,</li>
 <li>une séparation claire entre les ressources.</li>
+</ul>
+<p>Elle est construite avec :</p>
+<ul>
+<li>Node.js / Express</li>
+<li>MongoDB / Mongoose</li>
+<li>JWT / bcrypt</li>
+<li>Tests Mocha / Supertest</li>
+<li>Déploiement Alwaysdata</li>
 </ul>
 <hr>
 <h2 id="url-de-base">URL de base </h2>
@@ -47,10 +55,44 @@
 <li><code>https://perlucco.alwaysdata.net/api/port-plaisance-russell</code></li>
 </ul>
 <hr>
-<h2 id="ressources-principales"><strong>Ressources principales</strong> </h2>
+<h2 id="-formats">📦 Formats </h2>
+<ul>
+<li><strong>Entrées</strong> : JSON</li>
+<li><strong>Sorties</strong> : JSON</li>
+<li><strong>Erreurs</strong> : format standardisé (voir <a href="./errors.html">Gestion des erreurs</a>)</li>
+</ul>
+<hr>
+<h2 id="-ressources-principales">🧱 Ressources principales </h2>
+<table>
+<thead>
+<tr>
+<th>Ressource</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Users</td>
+<td>Gestion des utilisateurs</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>Connexion / Déconnexion</td>
+</tr>
+<tr>
+<td>Catways</td>
+<td>Gestion des catways</td>
+</tr>
+<tr>
+<td>Reservations</td>
+<td>Gestion des réservations d’un catway</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h3 id="-1-authentification">🔐 1. Authentification </h3>
 <p>L’API utilise un système d’authentification basé sur JWT.</p>
+<p>Accès aux <a href="authentification.html">détails de l'authentification</a>.</p>
 <h4 id="11-endpoints">1.1 Endpoints </h4>
 <ul>
 <li><code>POST /auth/login</code><br>
@@ -61,6 +103,7 @@
 </code></pre><hr>
 <h3 id="-2-users">👤 2. Users </h3>
 <p>Gestion des utilisateurs de la capitainerie.</p>
+<p>Accès aux <a href="users.html">détails des utilisateurs</a>.</p>
 <h4 id="21-endpoints">2.1 Endpoints </h4>
 <ul>
 <li>
@@ -83,11 +126,11 @@
 <h4 id="22-notes">2.2 Notes </h4>
 <ul>
 <li>Toutes les routes Users sont <strong>protégées par JWT</strong>.</li>
-<li>Les anciennes routes <code>/auth/register</code> et <code>/auth/delete/:id</code> sont <strong>dépréciées</strong>.</li>
 </ul>
 <hr>
 <h3 id="-3-catways">⚓ 3. Catways </h3>
 <p>Gestion des emplacements d’amarrage.</p>
+<p>Accès aux <a href="catways.html">détails des catways</a>.</p>
 <h4 id="31-endpoints">3.1 Endpoints </h4>
 <ul>
 <li>
@@ -118,6 +161,7 @@
 <hr>
 <h3 id="️-4-reservations">🛥️ 4. Reservations </h3>
 <p>Gestion des réservations d’un catway.</p>
+<p>Accès aux <a href="reservations.html">détails des réservations</a>.</p>
 <h4 id="41-endpoints">4.1 Endpoints </h4>
 <ul>
 <li>

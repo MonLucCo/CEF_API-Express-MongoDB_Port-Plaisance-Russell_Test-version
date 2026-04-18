@@ -24,30 +24,172 @@
     <body for="html-export">
       <div class="crossnote markdown-preview  ">
       
-<h1 id="endpoints-users">Endpoints Users </h1>
-<p>Nécessite pour chaque route une authentification et la transmission du <code>&lt;token&gt;</code>.</p>
+<h1 id="-endpoints-users--api-rest">👤 Endpoints Users — API REST </h1>
+<p>Toutes les routes Users nécessitent une <strong>authentification JWT</strong> :</p>
+<pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token literal-property property">Authorization</span><span class="token operator">:</span> <span class="token maybe-class-name">Bearer</span> <span class="token operator">&lt;</span>token<span class="token operator">&gt;</span>
+</code></pre><p>Les routes Users sont utilisées par le dashboard (pages EJS) mais font partie intégrante de l’API REST.</p>
 <hr>
-<h2 id="get-users">GET /users </h2>
-<p>Liste des utilisateurs.</p>
+<h2 id="️-1-get-users">▶️ 1. GET /users </h2>
+<p>Retourne la liste des utilisateurs.</p>
+<h3 id="-11-réponse-200">🔸 1.1 Réponse 200 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Alice"</span><span class="token punctuation">,</span>
+    <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"alice@example.com"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre><h3 id="-12-erreurs-possibles">🔸 1.2 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
 <hr>
-<h2 id="post-users">POST /users </h2>
-<p>Créer un utilisateur.</p>
-<p>Payload :</p>
+<h2 id="️-2-get-usersid">▶️ 2. GET /users/:id </h2>
+<p>Retourne les détails d’un utilisateur.</p>
+<h3 id="-21-réponse-200">🔸 2.1 Réponse 200 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Alice"</span><span class="token punctuation">,</span>
+  <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"alice@example.com"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-22-erreurs-possibles">🔸 2.2 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>ID invalide</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Utilisateur introuvable</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="️-3-post-users">▶️ 3. POST /users </h2>
+<p>Crée un utilisateur.</p>
+<h3 id="-31-body">🔸 3.1 Body </h3>
 <pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
   <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Alice"</span><span class="token punctuation">,</span>
   <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"alice@example.com"</span><span class="token punctuation">,</span>
   <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"Secret123!"</span>
 <span class="token punctuation">}</span>
-</code></pre><hr>
-<h2 id="patch-usersid">PATCH /users/:id </h2>
-<p>Modification d’un utilisateur.</p>
-<p>Payload :</p>
+</code></pre><h3 id="-32-réponse-201">🔸 3.2 Réponse 201 </h3>
 <pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
-  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Nouveau nom"</span><span class="token punctuation">,</span>
+  <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Alice"</span><span class="token punctuation">,</span>
+  <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"alice@example.com"</span>
 <span class="token punctuation">}</span>
-</code></pre><hr>
-<h2 id="delete-usersid">DELETE /users/:id </h2>
-<p>Supprimer un utilisateur.</p>
+</code></pre><h3 id="-33-erreurs-possibles">🔸 3.3 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>Données invalides</td>
+</tr>
+<tr>
+<td>409</td>
+<td>Email déjà utilisé</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="️-4-patch-usersid">▶️ 4. PATCH /users/:id </h2>
+<p>Met à jour un utilisateur.</p>
+<h3 id="-41-body-exemple">🔸 4.1 Body (exemple) </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Nouveau nom"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-42-réponse-200">🔸 4.2 Réponse 200 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Nouveau nom"</span><span class="token punctuation">,</span>
+  <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"alice@example.com"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-43-erreurs-possibles">🔸 4.3 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>ID invalide ou payload incorrect</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Utilisateur introuvable</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="️-5-delete-usersid">▶️ 5. DELETE /users/:id </h2>
+<p>Supprime un utilisateur.</p>
+<h3 id="-51-réponse-200">🔸 5.1 Réponse 200 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"message"</span><span class="token operator">:</span> <span class="token string">"Utilisateur supprimé"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-52-erreurs-possibles">🔸 5.2 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>ID invalide</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Utilisateur introuvable</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
 <hr>
 
       </div>

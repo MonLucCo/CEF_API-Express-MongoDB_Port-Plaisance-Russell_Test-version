@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head>
-      <title>index</title>
+      <title>error</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
@@ -24,36 +24,108 @@
     <body for="html-export">
       <div class="crossnote markdown-preview  ">
       
-<h1 id="documentation-de-lapi--port-de-plaisance-russell">Documentation de l’API – Port de Plaisance Russell </h1>
-<p>Version : v1.0.0-doc</p>
-<p>Bienvenue dans la documentation officielle de l’API du Port de Plaisance Russell.</p>
-<p>Cette documentation présente :</p>
-<ul>
-<li>une vue d’ensemble de l’API,</li>
-<li>un tutoriel d’utilisation,</li>
-<li>des exemples de requêtes,</li>
-<li>un glossaire des termes utilisés,</li>
-<li>la description détaillée des endpoints Users, Catways et Reservations.</li>
-</ul>
+<h1 id="-gestion-des-erreurs--api-rest">❗ Gestion des erreurs — API REST </h1>
+<p>Toutes les erreurs de l’API REST suivent un format JSON standardisé :</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Message explicite décrivant l’erreur"</span>
+<span class="token punctuation">}</span>
+</code></pre><p>L’API utilise des codes HTTP cohérents avec les bonnes pratiques REST.</p>
 <hr>
-<h2 id="base-url-de-lapplication">Base URL de l'application </h2>
-<h3 id="en-local">En local </h3>
-<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>http://localhost:3000/tests
-</code></pre><h3 id="en-production-alwaysdata">En production (Alwaysdata) </h3>
-<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>https://perlucco.alwaysdata.net/api/port-plaisance-russell
-</code></pre><hr>
-<h2 id="accès-rapide">Accès rapide </h2>
+<h2 id="-400--bad-request">🔸 400 — Bad Request </h2>
+<p>La requête est invalide.</p>
+<p>Causes possibles :</p>
 <ul>
-<li><a href="overview.html">Vue d’ensemble</a></li>
-<li><a href="tutorial.html">Tutoriel</a></li>
-<li><a href="errors.html">Gestion des erreurs</a></li>
-<li><a href="examples.html">Exemples d'utilisation</a></li>
-<li><a href="glossary.html">Glossaire</a></li>
-<li><a href="users.html">Endpoints Users</a></li>
-<li><a href="catways.html">Endpoints Catways</a></li>
-<li><a href="reservations.html">Endpoints Reservations</a></li>
-<li><a href="authentification.html">Endpoints Authentification</a></li>
+<li>ID mal formé (<code>ObjectId</code> invalide)</li>
+<li>Payload JSON incorrect ou incomplet</li>
+<li>Données non conformes au schéma attendu</li>
 </ul>
+<p>Exemple :</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span> <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Invalid ID format"</span> <span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="-401--unauthorized">🔸 401 — Unauthorized </h2>
+<p>Le token JWT est :</p>
+<ul>
+<li>manquant</li>
+<li>invalide</li>
+<li>expiré</li>
+</ul>
+<p>Exemple :</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span> <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Authentication required"</span> <span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="-403--forbidden">🔸 403 — Forbidden </h2>
+<p>L’utilisateur authentifié n’a pas les droits nécessaires.<br>
+<em>(Actuellement non utilisé dans la v1.0.0, mais réservé pour évolutions futures.)</em></p>
+<hr>
+<h2 id="-404--not-found">🔸 404 — Not Found </h2>
+<p>La ressource demandée n’existe pas.</p>
+<p>Causes possibles :</p>
+<ul>
+<li>Catway introuvable</li>
+<li>Réservation introuvable</li>
+<li>Utilisateur introuvable</li>
+</ul>
+<p>Exemple :</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span> <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Catway not found"</span> <span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="-409--conflict">🔸 409 — Conflict </h2>
+<p>Conflit avec une ressource existante.</p>
+<p>Causes possibles :</p>
+<ul>
+<li>Email déjà utilisé</li>
+<li>Catway déjà existant (catwayNumber dupliqué)</li>
+</ul>
+<p>Exemple :</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span> <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Email already exists"</span> <span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="-500--internal-server-error">🔸 500 — Internal Server Error </h2>
+<p>Erreur interne inattendue.</p>
+<p>Exemple :</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span> <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Internal server error"</span> <span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="-résumé-des-codes-utilisés">📌 Résumé des codes utilisés </h2>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Signification</th>
+<th>Exemple de cas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>Requête invalide</td>
+<td>ID incorrect, payload invalide</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Non authentifié</td>
+<td>Token manquant ou invalide</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Accès interdit</td>
+<td>(réservé pour évolutions)</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Ressource introuvable</td>
+<td>Catway / réservation / user absent</td>
+</tr>
+<tr>
+<td>409</td>
+<td>Conflit</td>
+<td>Email ou catwayNumber dupliqué</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Erreur interne</td>
+<td>Exception non gérée</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Cette gestion d’erreurs garantit une API REST <strong>prévisible</strong> et <strong>cohérente</strong>, conforme aux bonnes pratiques et à la v1.0.0.</p>
 <hr>
 
       </div>

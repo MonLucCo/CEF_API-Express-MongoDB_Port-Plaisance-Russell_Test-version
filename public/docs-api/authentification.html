@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head>
-      <title>index</title>
+      <title>authentification</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
@@ -24,37 +24,109 @@
     <body for="html-export">
       <div class="crossnote markdown-preview  ">
       
-<h1 id="documentation-de-lapi--port-de-plaisance-russell">Documentation de l’API – Port de Plaisance Russell </h1>
-<p>Version : v1.0.0-doc</p>
-<p>Bienvenue dans la documentation officielle de l’API du Port de Plaisance Russell.</p>
-<p>Cette documentation présente :</p>
-<ul>
-<li>une vue d’ensemble de l’API,</li>
-<li>un tutoriel d’utilisation,</li>
-<li>des exemples de requêtes,</li>
-<li>un glossaire des termes utilisés,</li>
-<li>la description détaillée des endpoints Users, Catways et Reservations.</li>
-</ul>
+<h1 id="-authentification--api-rest">🔐 Authentification — API REST </h1>
+<p>Cette section décrit <strong>uniquement les routes d’authentification de l’API REST</strong>.<br>
+Les routes de connexion/déconnexion du dashboard (pages EJS) ne font <strong>pas</strong> partie de l’API REST et sont documentées séparément.</p>
+<p>L’API utilise un mécanisme <strong>stateless</strong> basé sur des <strong>JSON Web Tokens (JWT)</strong>.<br>
+Aucune session n’est conservée côté serveur.</p>
 <hr>
-<h2 id="base-url-de-lapplication">Base URL de l'application </h2>
-<h3 id="en-local">En local </h3>
-<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>http://localhost:3000/tests
-</code></pre><h3 id="en-production-alwaysdata">En production (Alwaysdata) </h3>
-<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>https://perlucco.alwaysdata.net/api/port-plaisance-russell
-</code></pre><hr>
-<h2 id="accès-rapide">Accès rapide </h2>
-<ul>
-<li><a href="overview.html">Vue d’ensemble</a></li>
-<li><a href="tutorial.html">Tutoriel</a></li>
-<li><a href="errors.html">Gestion des erreurs</a></li>
-<li><a href="examples.html">Exemples d'utilisation</a></li>
-<li><a href="glossary.html">Glossaire</a></li>
-<li><a href="users.html">Endpoints Users</a></li>
-<li><a href="catways.html">Endpoints Catways</a></li>
-<li><a href="reservations.html">Endpoints Reservations</a></li>
-<li><a href="authentification.html">Endpoints Authentification</a></li>
-</ul>
+<h2 id="️-post-authlogin">▶️ POST /auth/login </h2>
+<p>Authentifie un utilisateur et retourne un <strong>token JWT</strong> permettant d’accéder aux routes protégées de l’API.</p>
+<h3 id="-body">🔸 Body </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+  <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"string"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-réponse-200">🔸 Réponse 200 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"token"</span><span class="token operator">:</span> <span class="token string">"jwt-token"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-erreurs-possibles">🔸 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>Email ou mot de passe manquant</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Identifiants invalides</td>
+</tr>
+</tbody>
+</table>
 <hr>
+<h2 id="-pas-de-route-authlogout-dans-lapi-rest">🚫 Pas de route /auth/logout dans l’API REST </h2>
+<p>L’API REST est <strong>stateless</strong> :<br>
+➡️ elle ne maintient <strong>aucune session</strong> côté serveur<br>
+➡️ elle ne peut donc <strong>pas “déconnecter”</strong> un utilisateur</p>
+<p>La “déconnexion” consiste simplement à <strong>supprimer le token JWT</strong> côté client.</p>
+<h3 id="comment-se-déconnecter-">Comment se déconnecter ? </h3>
+<ul>
+<li>supprimer le cookie contenant le JWT (dashboard EJS)</li>
+<li>ou supprimer le token stocké côté client (application externe)</li>
+<li>ou attendre l’expiration naturelle du token</li>
+</ul>
+<blockquote>
+<p>❗ L’expiration du token n’est pas une action utilisateur :<br>
+elle assure uniquement la sécurité.</p>
+</blockquote>
+<hr>
+<h2 id="-authentification-des-pages-non-api">🧭 Authentification des pages (non API) </h2>
+<p>Les routes suivantes appartiennent au <strong>frontend EJS</strong> et ne font pas partie de l’API REST :</p>
+<ul>
+<li><code>GET /login</code></li>
+<li><code>POST /login</code></li>
+<li><code>GET /logout</code></li>
+</ul>
+<p>Elles gèrent la session utilisateur du dashboard via un cookie JWT.</p>
+<hr>
+<h2 id="️-routes-dépréciées-non-documentées">🗑️ Routes dépréciées (non documentées) </h2>
+<p>Les routes suivantes ont existé durant les versions de développement mais sont <strong>supprimées en v1.0.0</strong> :</p>
+<ul>
+<li><code>POST /auth/register</code></li>
+<li><code>DELETE /auth/delete/:id</code></li>
+</ul>
+<p>Elles ne doivent plus être utilisées et ne font pas partie de l’API stable.</p>
+<hr>
+<h2 id="-résumé">📌 Résumé </h2>
+<table>
+<thead>
+<tr>
+<th>Fonction</th>
+<th>API REST</th>
+<th>Pages EJS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connexion</td>
+<td>✔ POST /auth/login</td>
+<td>✔ POST /login</td>
+</tr>
+<tr>
+<td>Déconnexion</td>
+<td>❌ (stateless)</td>
+<td>✔ GET /logout</td>
+</tr>
+<tr>
+<td>Token JWT</td>
+<td>✔ Oui</td>
+<td>✔ Oui (cookie)</td>
+</tr>
+<tr>
+<td>Sessions serveur</td>
+<td>❌ Non</td>
+<td>❌ Non</td>
+</tr>
+</tbody>
+</table>
+<p>Cette séparation garantit une API REST <strong>propre</strong> et <strong>stateless</strong>, conforme aux bonnes pratiques et à la v1.0.0 de l'application.</p>
 
       </div>
       

@@ -1,6 +1,6 @@
 # Documentation de l’API – Port de Plaisance Russell
 
-Version : v0.1.0-doc
+Version : v1.0.0-doc
 
 Bienvenue dans la documentation officielle de l’API du Port de Plaisance Russell.
 
@@ -14,14 +14,32 @@ Cette documentation présente :
 
 ---
 
+## Base URL de l'application
+
+### En local
+
+```bash
+http://localhost:3000/tests
+```
+
+### En production (Alwaysdata)
+
+```bash
+https://perlucco.alwaysdata.net/api/port-plaisance-russell
+```
+
+---
+
 ## Accès rapide
 
 - [Vue d’ensemble](overview.html)
 - [Tutoriel](tutorial.html)
-- [Exemples](examples.html)
+- [Gestion des erreurs](errors.html)
+- [Exemples d'utilisation](examples.html)
 - [Glossaire](glossary.html)
 - [Endpoints Users](users.html)
 - [Endpoints Catways](catways.html)
 - [Endpoints Reservations](reservations.html)
+- [Endpoints Authentification](authentification.html)
 
 ---

@@ -24,32 +24,174 @@
     <body for="html-export">
       <div class="crossnote markdown-preview  ">
       
-<h1 id="endpoints-catways">Endpoints Catways </h1>
-<p>Nécessite pour chaque route une authentification et la transmission du <code>&lt;token&gt;</code>.</p>
+<h1 id="-endpoints-catways--api-rest">⚓ Endpoints Catways — API REST </h1>
+<p>Toutes les routes Catways nécessitent une <strong>authentification JWT</strong> :</p>
+<pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token literal-property property">Authorization</span><span class="token operator">:</span> <span class="token maybe-class-name">Bearer</span> <span class="token operator">&lt;</span>token<span class="token operator">&gt;</span>
+</code></pre><p>Ces routes sont utilisées par le dashboard (pages EJS) pour afficher, créer et modifier les catways.</p>
 <hr>
-<h2 id="get-catways">GET /catways </h2>
-<p>Liste des catways.</p>
+<h2 id="️-1-get-catways">▶️ 1. GET /catways </h2>
+<p>Liste tous les catways.</p>
+<h3 id="-11-réponse-200">🔸 1.1 Réponse 200 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+    <span class="token property">"catwayNumber"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+    <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"long"</span><span class="token punctuation">,</span>
+    <span class="token property">"catwayState"</span><span class="token operator">:</span> <span class="token string">"ok"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre><h3 id="-12-erreurs-possibles">🔸 1.2 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
 <hr>
-<h2 id="get-catwaysid">GET /catways/:id </h2>
-<p>Détail d’un catway.</p>
+<h2 id="️-2-get-catwaysid">▶️ 2. GET /catways/:id </h2>
+<p>Retourne les détails d’un catway.</p>
+<h3 id="-21-réponse-200">🔸 2.1 Réponse 200 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+  <span class="token property">"catwayNumber"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"long"</span><span class="token punctuation">,</span>
+  <span class="token property">"catwayState"</span><span class="token operator">:</span> <span class="token string">"ok"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-22-erreurs-possibles">🔸 2.2 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>ID invalide</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Catway introuvable</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
 <hr>
-<h2 id="post-catways">POST /catways </h2>
-<p>Créer un catway.</p>
-<p>Payload :</p>
+<h2 id="️-3-post-catways">▶️ 3. POST /catways </h2>
+<p>Crée un catway.</p>
+<h3 id="-31-body">🔸 3.1 Body </h3>
 <pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
   <span class="token property">"catwayNumber"</span><span class="token operator">:</span> <span class="token number">999</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"long"</span><span class="token punctuation">,</span>
   <span class="token property">"catwayState"</span><span class="token operator">:</span> <span class="token string">"free for testing"</span>
 <span class="token punctuation">}</span>
-</code></pre><hr>
-<h2 id="put-catwaysid">PUT /catways/:id </h2>
-<p>Modifier un catway.</p>
+</code></pre><h3 id="-32-réponse-201">🔸 3.2 Réponse 201 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+  <span class="token property">"catwayNumber"</span><span class="token operator">:</span> <span class="token number">999</span><span class="token punctuation">,</span>
+  <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"long"</span><span class="token punctuation">,</span>
+  <span class="token property">"catwayState"</span><span class="token operator">:</span> <span class="token string">"free for testing"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-33-erreurs-possibles">🔸 3.3 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>Données invalides</td>
+</tr>
+<tr>
+<td>409</td>
+<td>Catway déjà existant</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
 <hr>
-<h2 id="patch-catwaysid">PATCH /catways/:id </h2>
-<p>Mettre à jour partiellement un catway.</p>
+<h2 id="️-4-patch-catwaysid">▶️ 4. PATCH /catways/:id </h2>
+<p>Met à jour partiellement un catway.</p>
+<h3 id="-41-body-exemple">🔸 4.1 Body (exemple) </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"catwayState"</span><span class="token operator">:</span> <span class="token string">"occupied"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-42-réponse-200">🔸 4.2 Réponse 200 </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"_id"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+  <span class="token property">"catwayNumber"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"long"</span><span class="token punctuation">,</span>
+  <span class="token property">"catwayState"</span><span class="token operator">:</span> <span class="token string">"occupied"</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="-43-erreurs-possibles">🔸 4.3 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>ID invalide ou payload incorrect</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Catway introuvable</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
 <hr>
-<h2 id="delete-catwaysid">DELETE /catways/:id </h2>
-<p>Supprimer un catway.</p>
+<h2 id="️-5-delete-catwaysid">▶️ 5. DELETE /catways/:id </h2>
+<p>Supprime un catway.</p>
+<h3 id="-51-réponse-204">🔸 5.1 Réponse 204 </h3>
+<p>Aucun contenu.</p>
+<h3 id="-52-erreurs-possibles">🔸 5.2 Erreurs possibles </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>ID invalide</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Catway introuvable</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Token manquant ou invalide</td>
+</tr>
+</tbody>
+</table>
 <hr>
 
       </div>

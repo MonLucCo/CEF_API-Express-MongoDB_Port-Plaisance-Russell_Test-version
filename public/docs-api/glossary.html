@@ -24,17 +24,38 @@
     <body for="html-export">
       <div class="crossnote markdown-preview  ">
       
-<h1 id="glossaire">Glossaire </h1>
+<h1 id="-glossaire">📖 Glossaire </h1>
+<p><strong>API REST</strong><br>
+Interface de programmation permettant d’accéder à des ressources via des requêtes HTTP standardisées (GET, POST, PATCH, DELETE).<br>
+L’API est <em>stateless</em> : aucune session n’est conservée côté serveur.</p>
 <p><strong>Catway</strong><br>
-Petit appontement permettant d’amarrer un bateau.</p>
+Petit appontement permettant d’amarrer un bateau. Ressource principale de l’API.</p>
 <p><strong>Réservation</strong><br>
-Blocage d’un catway pour une période donnée.</p>
+Blocage d’un catway pour une période donnée (check‑in / check‑out).</p>
+<p><strong>Utilisateur (User)</strong><br>
+Personne disposant d’un compte permettant d’accéder aux fonctionnalités protégées de l’API.</p>
 <p><strong>JWT (JSON Web Token)</strong><br>
-Jeton d’authentification utilisé pour sécuriser les routes.</p>
+Jeton signé permettant d’authentifier un utilisateur.<br>
+Transmis dans l’en‑tête HTTP :</p>
+<pre data-role="codeBlock" data-info="js" class="language-javascript js"><code><span class="token literal-property property">Authorization</span><span class="token operator">:</span> <span class="token maybe-class-name">Bearer</span> <span class="token operator">&lt;</span>token<span class="token operator">&gt;</span>
+</code></pre><p><strong>Stateless</strong><br>
+Principe selon lequel le serveur ne conserve aucune session.<br>
+L’authentification repose uniquement sur le JWT envoyé à chaque requête.</p>
 <p><strong>Endpoint</strong><br>
-URL représentant une ressource de l’API.</p>
+URL représentant une ressource de l’API (ex : <code>/catways</code>, <code>/users/:id</code>).</p>
 <p><strong>Payload</strong><br>
 Contenu JSON envoyé dans une requête POST ou PATCH.</p>
+<p><strong>Middleware</strong><br>
+Fonction exécutée avant un contrôleur pour valider, filtrer ou enrichir la requête (ex : validation d’ID, vérification JWT).</p>
+<p><strong>MongoMemoryServer</strong><br>
+Base MongoDB en mémoire utilisée pour les tests (rapide, isolée, sans persistance).</p>
+<p><strong>Token</strong><br>
+Synonyme de JWT dans le contexte de l’API.</p>
+<p><strong>Dashboard</strong><br>
+Interface utilisateur (pages EJS) consommant l’API REST.</p>
+<p><strong>Déprécié</strong><br>
+Fonctionnalité encore présente mais destinée à disparaître.<br>
+Les routes dépréciées ne sont <strong>pas</strong> documentées dans la v1.0.0.</p>
 <hr>
 
       </div>

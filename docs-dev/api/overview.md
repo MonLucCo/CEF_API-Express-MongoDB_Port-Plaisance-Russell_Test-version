@@ -2,10 +2,10 @@
 
 L’API REST du Port de Plaisance Russell permet de gérer :
 
-- l’authentification des utilisateurs,
 - les utilisateurs,
 - les catways,
 - les réservations associées aux catways.
+- l’authentification des utilisateurs,
 
 Elle repose sur :
 
@@ -13,6 +13,14 @@ Elle repose sur :
 - une authentification JWT,
 - un format JSON pour toutes les requêtes,
 - une séparation claire entre les ressources.
+
+Elle est construite avec :
+
+- Node.js / Express
+- MongoDB / Mongoose
+- JWT / bcrypt
+- Tests Mocha / Supertest
+- Déploiement Alwaysdata
 
 ---
 
@@ -28,13 +36,30 @@ Sur Alwaysdata :
 
 ---
 
-## **Ressources principales**
+## 📦 Formats
+
+- **Entrées** : JSON
+- **Sorties** : JSON
+- **Erreurs** : format standardisé (voir [Gestion des erreurs](./errors.html))
+
+---
+
+## 🧱 Ressources principales
+
+| Ressource    | Description                          |
+|--------------|--------------------------------------|
+| Users        | Gestion des utilisateurs             |
+| Auth         | Connexion / Déconnexion              |
+| Catways      | Gestion des catways                  |
+| Reservations | Gestion des réservations d’un catway |
 
 ---
 
 ### 🔐 1. Authentification
 
 L’API utilise un système d’authentification basé sur JWT.
+
+Accès aux [détails de l'authentification](authentification.html).
 
 #### 1.1 Endpoints
 
@@ -53,6 +78,8 @@ Authorization: Bearer <token>
 
 Gestion des utilisateurs de la capitainerie.
 
+Accès aux [détails des utilisateurs](users.html).
+
 #### 2.1 Endpoints
 
 - `GET /users`  
@@ -70,13 +97,14 @@ Gestion des utilisateurs de la capitainerie.
 #### 2.2 Notes
 
 - Toutes les routes Users sont **protégées par JWT**.  
-- Les anciennes routes `/auth/register` et `/auth/delete/:id` sont **dépréciées**.
 
 ---
 
 ### ⚓ 3. Catways
 
 Gestion des emplacements d’amarrage.
+
+Accès aux [détails des catways](catways.html).
 
 #### 3.1 Endpoints
 
@@ -103,6 +131,8 @@ Gestion des emplacements d’amarrage.
 ### 🛥️ 4. Reservations
 
 Gestion des réservations d’un catway.
+
+Accès aux [détails des réservations](reservations.html).
 
 #### 4.1 Endpoints
 

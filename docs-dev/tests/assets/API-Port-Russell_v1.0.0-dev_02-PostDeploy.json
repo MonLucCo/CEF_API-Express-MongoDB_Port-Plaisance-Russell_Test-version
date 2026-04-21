@@ -1,0 +1,862 @@
+{
+    "info": {
+        "name": "API-Port-Russell_v1.0.0-dev_02-PostDeploy",
+        "_postman_id": "ppr-v1.0.0-dev-postdeploy",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "https://perlucco.alwaysdata.net/api/port-plaisance-russell"
+        },
+        {
+            "key": "base_api",
+            "value": "api"
+        },
+        {
+            "key": "token",
+            "value": ""
+        },
+        {
+            "key": "user_id",
+            "value": ""
+        },
+        {
+            "key": "catway_id",
+            "value": ""
+        },
+        {
+            "key": "reservation_id",
+            "value": ""
+        },
+        {
+            "key": "catwayForReservation",
+            "value": ""
+        },
+        {
+            "key": "deprecated",
+            "value": ""
+        },
+        {
+            "key": "fn_handleDeprecated",
+            "value": "(function(){const h=pm.response.headers.get('X-Deprecated');if(h){pm.collectionVariables.set('deprecated',h);pm.test('Route dépréciée',()=>pm.expect(h).to.eql('true'));}else{pm.collectionVariables.set('deprecated','false');}})();"
+        }
+    ],
+    "item": [
+        {
+            "name": "0. Auth",
+            "item": [
+                {
+                    "name": "POST /auth/login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"1234\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "let json = pm.response.json();",
+                                    "if (json.token) pm.collectionVariables.set(\"token\", json.token);",
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "pm.test(\"Statut HTTP valide\", () => pm.expect(pm.response.code).to.be.oneOf([200,400,401]));"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /auth/register (dépréciée)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"User_PreDeploy\",\n  \"email\": \"predeploy@example.com\",\n  \"password\": \"1234\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "let json = pm.response.json();",
+                                    "if (json.user) pm.collectionVariables.set(\"user_id\", json.user._id);",
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "pm.test(\"Statut HTTP valide\", () => pm.expect(pm.response.code).to.be.oneOf([201,400]));"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "DELETE /auth/delete/:id (dépréciée)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/auth/delete/{{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "auth",
+                                "delete",
+                                "{{user_id}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "if (pm.response.code === 200) pm.collectionVariables.set(\"user_id\", \"\");",
+                                    "pm.test(\"Statut HTTP valide\", () => pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "1. Users",
+            "item": [
+                {
+                    "name": "GET /users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/users",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "users"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /users",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/users",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "users"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John\",\n  \"email\": \"john@test.com\",\n  \"password\": \"1234\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "let json = pm.response.json();",
+                                    "if (json.user) pm.collectionVariables.set(\"user_id\", json.user.id);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "PATCH /users/:id",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/users/{{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "users",
+                                "{{user_id}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Name\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "DELETE /users/:id",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/users/{{user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "users",
+                                "{{user_id}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "if ([200,204].includes(pm.response.code)) pm.collectionVariables.set(\"user_id\", \"\");"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "2. Catways",
+            "item": [
+                {
+                    "name": "GET /catways",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "GET /catways/:id",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catwayForReservation}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways",
+                                "{{catwayForReservation}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "let json = pm.response.json();",
+                                    "if (json._id) pm.collectionVariables.set(\"catway_id\", json._id);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /catways",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"catwayNumber\": 999,\n  \"type\": \"long\",\n  \"catwayState\": \"free for testing\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "let json = pm.response.json();",
+                                    "if (json._id) {",
+                                    "    pm.collectionVariables.set(\"catway_id\", json._id);",
+                                    "    pm.collectionVariables.set(\"catwayForReservation\", json.catwayNumber);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "PUT /catways",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catway_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways",
+                                "{{catway_id}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"catwayNumber\": 99,\n  \"type\": \"short\",\n  \"catwayState\": \"Perhaps free for testing\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "let json = pm.response.json();",
+                                    "if (json._id) {",
+                                    "    pm.collectionVariables.set(\"catway_id\", json._id);",
+                                    "    pm.collectionVariables.set(\"catwayForReservation\", json.catwayNumber);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "PATCH /catways/:id",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catway_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways",
+                                "{{catway_id}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"catwayState\": \"maybe occupied for testing\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "let json = pm.response.json();",
+                                    "if (json._id) pm.collectionVariables.set(\"catwayForReservation\", json.catwayNumber);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "DELETE /catways/:id",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catway_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways",
+                                "{{catway_id}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "if ([200,204].includes(pm.response.code)) {",
+                                    "    pm.collectionVariables.set(\"catway_id\", \"\");",
+                                    "    pm.collectionVariables.set(\"catwayForReservation\", \"\");",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "3. Reservations",
+            "item": [
+                {
+                    "name": "GET /catways/:id/reservations",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catwayForReservation}}/reservations",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways",
+                                "{{catwayForReservation}}",
+                                "reservations"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "POST /catways/:id/reservations",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catwayForReservation}}/reservations",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways",
+                                "{{catwayForReservation}}",
+                                "reservations"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"checkIn\": \"2025-05-01T10:00:00Z\",\n  \"checkOut\": \"2025-05-01T12:00:00Z\",\n  \"clientName\": \"Client PreDeploy for testing\",\n  \"boatName\": \"My Little Butterfly\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "let json = pm.response.json();",
+                                    "if (json._id) pm.collectionVariables.set(\"reservation_id\", json._id);"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "GET /catways/:id/reservations/:idReservation",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catwayForReservation}}/reservations/{{reservation_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways",
+                                "{{catwayForReservation}}",
+                                "reservations",
+                                "{{reservation_id}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "DELETE /catways/:id/reservations/:idReservation",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/{{base_api}}/catways/{{catwayForReservation}}/reservations/{{reservation_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "{{base_api}}",
+                                "catways",
+                                "{{catwayForReservation}}",
+                                "reservations",
+                                "{{reservation_id}}"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set('deprecated', '');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "eval(pm.collectionVariables.get(\"fn_handleDeprecated\"));",
+                                    "if ([200,204].includes(pm.response.code)) {",
+                                    "    pm.collectionVariables.set(\"reservation_id\", \"\");",
+                                    "    pm.collectionVariables.set(\"catwayForReservation\", \"\");",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,134 @@
+=== Test : npm run test:integration ===
+
+--- STDOUT ---
+
+> cef_api-express-mongodb_port-plaisance-russell_test-version@0.2.1 test:integration
+> mocha --require tests/root-hooks.js tests/integration/**/*.test.js --exit
+
+◇ injected env (14) from .env // tip: ⌘ enable debugging { debug: true }
+Lancement - Base URL: /tests
+Lancement - App URL: http://localhost:3000/tests
+
+
+  Tests d’intégration - Niveau 2 – Protection JWT des routes API
+    Protection JWT – Routes Catways
+      ✔ GET /api/catways → 401 si aucun token
+      ✔ GET /api/catways → 401 si token invalide
+      ✔ GET /api/catways → 200 si token valide
+      ✔ POST /api/catways → 401 si aucun token (98ms)
+      ✔ DELETE /api/catways/:id → 401 si aucun token
+    Protection JWT – Routes Reservations
+      ✔ GET /api/catways/:id/reservations → 401 si aucun token
+      ✔ POST /api/catways/:id/reservations → 401 si aucun token
+      ✔ DELETE /api/catways/:id/reservations/:idReservation → 401 si aucun token
+      ✔ GET /api/catways/:id/reservations → 200 si token valide
+    Protection JWT – Routes Users
+      ✔ GET /api/users → 401 si aucun token
+      ✔ GET /api/users → 401 si token invalide
+      ✔ GET /api/users → 200 si token valide
+      ✔ POST /api/users → 401 si aucun token
+      ✔ DELETE /api/users/:id → 401 si aucun token
+
+  Tests d’intégration - Niveau 2 – Routes d’authentification
+    POST /auth/register
+      ✔ retourne 401 si token manquant
+      ✔ retourne 401 si token invalide
+      ✔ retourne 400 si champs manquants
+      ✔ retourne 400 si email déjà utilisé (97ms)
+      ✔ retourne 201 si création valide (48ms)
+      ✔ POST /api/auth/register doit renvoyer X-Deprecated: true (49ms)
+    POST /auth/login
+      ✔ retourne 400 si champs manquants
+      ✔ retourne 401 si identifiants invalides
+      ✔ retourne 200 et un token si identifiants valides (95ms)
+    DELETE /auth/delete/:id
+      ✔ retourne 401 si token manquant
+      ✔ retourne 401 si token invalide
+      ✔ retourne 404 si utilisateur introuvable
+      ✔ retourne 200 si suppression valide (50ms)
+      ✔ DELETE /api/auth/delete/:id doit renvoyer X-Deprecated: true (51ms)
+
+  Tests d’intégration - Niveau 2 – Routes Catways
+    GET /catways
+      ✔ retourne 200 et une liste vide si aucun catway
+      ✔ retourne 200 et la liste des catways existants
+    GET /catways/:id
+      ✔ retourne 400 si ID invalide (ni ObjectId, ni nombre)
+      ✔ retourne 404 si catway introuvable (ObjectId inexistant)
+      ✔ retourne 404 si catway introuvable (catwayNumber inexistant)
+      ✔ retourne 200 si catway trouvé
+      ✔ retourne 200 si catway trouvé via catwayNumber
+    POST /catways
+      ✔ retourne 400 si payload invalide
+      ✔ retourne 201 si catway créé
+      ✔ retourne 409 si catwayNumber existe déjà
+      ✔ retourne 500 si erreur interne Mongo survient
+    PUT /catways/:id
+      ✔ retourne 400 si payload invalide
+      ✔ retourne 404 si catway introuvable
+      ✔ retourne 200 si mise à jour réussie
+      ✔ retourne 409 si catwayNumber existe déjà
+      ✔ retourne 500 si erreur interne survient
+    PATCH /catways/:id
+      ✔ retourne 400 si payload invalide
+      ✔ retourne 404 si catway introuvable
+      ✔ retourne 200 si mise à jour partielle réussie
+      ✔ retourne 409 si catwayNumber existe déjà
+      ✔ retourne 500 si erreur interne survient
+    DELETE /catways/:id
+      ✔ retourne 400 si ID invalide
+      ✔ retourne 404 si catway introuvable
+      ✔ retourne 204 si suppression réussie
+      ✔ retourne 500 si erreur interne survient
+
+  Tests d’intégration - Niveau 2 – Routes Reservations
+    GET /catways/:id/reservations — niveau‑2 (issue‑33)
+      ✔ 200 — retourne un tableau vide si aucune réservation
+      ✔ 200 — retourne la liste des réservations du catway
+      ✔ 500 — erreur interne simulée
+    GET /catways/:id/reservations/:idReservation — niveau-2 (issue‑34)
+      ✔ 200 — renvoie le détail d’une réservation
+      ✔ 404 — réservation introuvable
+      ✔ 404 — réservation non associée à ce catway
+      ✔ 400 — identifiant de réservation invalide
+      ✔ 500 — erreur interne simulée
+    POST /catways/:id/reservations — niveau‑2 (issue‑35)
+      ✔ 201 — crée une réservation pour un catway
+      ✔ 400 — payload invalide : champs manquants
+      ✔ 400 — payload invalide : dates invalides
+      ✔ 400 — checkIn doit être strictement inférieur à checkOut
+      ✔ 404 — catway introuvable
+      ✔ 500 — erreur interne simulée
+    DELETE /catways/:id/reservations/:idReservation — niveau‑2 (issue‑36)
+      ✔ 200 — supprime une réservation existante
+      ✔ 404 — réservation introuvable
+      ✔ 404 — réservation non associée à ce catway
+      ✔ 400 — identifiant de réservation invalide
+      ✔ 404 — catway introuvable
+      ✔ 500 — erreur interne simulée
+
+  Tests d’intégration - Niveau 2 – Routes Users
+    GET /api/users — niveau‑2 (issue‑37 - étape-6)
+      ✔ 200 - liste les utilisateurs
+      ✔ 200 - retourne un tableau vide
+      ✔ 500 — erreur interne simulée
+    POST /api/users — niveau‑2 (issue‑37 - étape-6)
+      ✔ 201 - crée un utilisateur (48ms)
+      ✔ 400 — email déjà utilisé (49ms)
+      ✔ 500 - erreur interne simulée (51ms)
+    PATCH /api/users/:id — niveau‑2 (issue‑37 - étape-6)
+      ✔ 200 - met à jour un utilisateur
+      ✔ 400 - identifiant invalide
+      ✔ 400 - payload partiel vide
+      ✔ 409 - si email déjà utilisé
+      ✔ 500 - erreur interne simulée
+    DELETE /api/users/:id — niveau‑2 (issue‑37 - étape-6)
+      ✔ 200 - supprime un utilisateur
+      ✔ 400 - identifiant invalide
+      ✔ 404 - utilisateur introuvable
+      ✔ 500 - erreur interne simulée
+
+
+  88 passing (7s)
+
+

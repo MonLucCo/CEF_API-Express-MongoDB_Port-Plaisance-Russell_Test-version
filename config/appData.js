@@ -8,9 +8,9 @@ module.exports = {
         "Elle sert de point d’entrée pour consulter les informations du système et accéder à la documentation.",
         "Une fois connecté à son espace personnel, l’utilisateur peut gérer les réservations du port de plaisance."
     ],
-    APP_PHASE: "Phase 8 : front-end avec EJS (exploitation API) + documentation (API et JSDoc)",
+    APP_PHASE: "Phase 9 : front-end avec EJS (exploitation API) + documentation (API et JSDoc)",
     APP_NOTES: [
-        "Les fonctionnalités seront activées progressivement au fil du développement.",
+        "Les fonctionnalités sont activées progressivement au fil du développement.",
         "Le projet évolue progressivement selon la roadmap accessible dans le dépôt GitHub.",
         "N'hésitez pas à consulter le code source, mais aucune contribution n'est souhaitée pour le moment !"
     ],

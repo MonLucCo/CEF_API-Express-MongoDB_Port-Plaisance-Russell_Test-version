@@ -228,6 +228,10 @@ Le pipeline PreDeploy utilise une collection Postman dédiée (archivée dans `d
 - **`collection-v0.2.0-dev_01-PreDeploy.json`**  
 - **`collection-v0.2.1-dev_01-PreDeploy.json`**  
 
+Version finale (livrée) :
+
+- **`collection-v1.0.0-dev_01-PretDeploy.json`** (issue-47)
+
 Ces collections sont spécifiques à chaque version et doivent être mises à jour lorsque l’API évolue (ex. séparation Auth/Users en v0.2.1-dev).
 
 Elle valide :
@@ -259,6 +263,10 @@ Le pipeline Deploy utilise une collection Postman dédiée (archivée dans `docs
 - **`collection-v0.2.1-dev_02-PostDeploy.json`**  
 - **`collection-v0.3.0-dev_02-PostDeploy.json`** (issue-39)
 
+Version finale (livrée) :
+
+- **`collection-v1.0.0-dev_02-PostDeploy.json`** (issue-47)
+
 ---
 
 ## 3. Arborescence documentaire
@@ -278,7 +286,9 @@ docs-dev/`tests`/
 │   ├── API-Port-Russell_v0.2.0-dev_01-PreDeploy.json
 │   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json
 │   ├── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json
-│   └── API-Port-Russell_v0.2.1-dev_02-PostDeploy.json
+│   ├── API-Port-Russell_v0.2.1-dev_02-PostDeploy.json
+│   ├── API-Port-Russell_v1.0.0-dev_01-PreDeploy.json
+│   └── API-Port-Russell_v1.0.0-dev_02-PostDeploy.json
 │
 ├── auth/                        ← Catégorie Authentification
 │   ├── auth-niveau-1-unitaires.md
@@ -305,13 +315,16 @@ docs-dev/`tests`/
     ├── v0.2.1-dev_02_deploy_2026-03-29_09-01/      ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch A)
     ├── v0.2.1-dev.a_02_deploy_2026-03-30_10-03/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch B)
     ├── v0.2.1-dev.b_02_deploy_2026-03-30_10-34/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord partiel - patch C)
-    └── v0.2.1-dev.d_02_deploy_2026-03-30_20-30/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord - patch D)
-    └── v0.3.0-dev_01_predeploy_2026-04-15_16-14/   ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
-    └── v0.3.0-dev_02_deploy_2026-04-15_18-16/      ← Archivage des validations pré-déploiement (v0.3.0-dev : accord partiel)
-    └── v0.3.0-dev.a_01_predeploy_2026-04-15_21-20/ ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
-    └── v0.3.0-dev.a_02_deploy_2026-04-15_21-28/    ← Archivage des validations pré-déploiement (v0.3.0-dev : accord partiel - patch A)
-    └── v0.3.0-dev.b_01_predeploy_2026-04-16_07-58/ ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
-    └── v0.3.0-dev.b_02_deploy_2026-04-16_08-06/    ← Archivage des validations pré-déploiement (v0.3.0-dev : accord - patch B)
+    ├── v0.2.1-dev.d_02_deploy_2026-03-30_20-30/    ← Archivage des validations pré-déploiement (v0.2.1-dev : accord - patch D)
+    ├── v0.3.0-dev_01_predeploy_2026-04-15_16-14/   ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
+    ├── v0.3.0-dev_02_deploy_2026-04-15_18-16/      ← Archivage des validations pré-déploiement (v0.3.0-dev : accord partiel)
+    ├── v0.3.0-dev.a_01_predeploy_2026-04-15_21-20/ ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
+    ├── v0.3.0-dev.a_02_deploy_2026-04-15_21-28/    ← Archivage des validations pré-déploiement (v0.3.0-dev : accord partiel - patch A)
+    ├── v0.3.0-dev.b_01_predeploy_2026-04-16_07-58/ ← Archivage des validations pré-déploiement (v0.3.0-dev : accord)
+    ├── v0.3.0-dev.b_02_deploy_2026-04-16_08-06/    ← Archivage des validations pré-déploiement (v0.3.0-dev : accord - patch B)
+    ├── v1.0.0-dev_01_predeploy_2026-04-21_11-28/   ← Tests des validations - version v1.0.0-dev (version livrée)
+    └── v1.0.0-dev_02_deploy_2026-04-21_12-34/      ← Tests des vérifications - version v1.0.0-dev (version livrée)
+
 ```
 
 ---

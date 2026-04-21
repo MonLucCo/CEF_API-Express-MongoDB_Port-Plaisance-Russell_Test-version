@@ -1,10 +1,5 @@
 # Architecture du projet
 
-**En préambule** : cette version initiale du document présente la situation d'architecture du dépôt pour ce projet. Il fait des hypothèses quant à la mise en œuvre technique avec des options possibles.  
-La version finale lors de la livraison du projet fera l'objet d'une actualisation en ne conservant que les éléments réellement mis en place. Le préambule sera retiré pour cette finalisation.
-
----
-
 Ce document décrit l’architecture technique de l’API REST Port de Plaisance Russell.
 
 ---
@@ -243,7 +238,9 @@ docs-dev/                   ← Documentation interne versionnée
       │   ├── API-Port-Russell_v0.2.1-dev_00-Tests-6c-inc1.json  ← Collection Postman (API v0.2.1-dev - Tests techniques)
       │   ├── API-Port-Russell_v0.2.1-dev_01-PreDeploy.json      ← Collection Postman (API v0.2.1-dev - Pré-déploiement)
       │   ├── API-Port-Russell_v0.2.1-dev_02-PostDeploy.json     ← Collection Postman (API v0.2.1-dev - Post-déploiement)
-      │   └── API-Port-Russell_v0.3.0-dev_02-PostDeploy.json     ← Collection Postman (API v0.3.0-dev - Post-déploiement)
+      │   ├── API-Port-Russell_v0.3.0-dev_02-PostDeploy.json     ← Collection Postman (API v0.3.0-dev - Post-déploiement)
+      │   ├── API-Port-Russell_v1.0.0-dev_01-PreDeploy.json      ← Collection Postman (API v1.0.0-dev - Pré-déploiement)
+      │   └── API-Port-Russell_v1.0.0-dev_02-PostDeploy.json     ← Collection Postman (API v1.0.0-dev - Post-déploiement)
       │
       ├── client/                             ← Catégorie des tests Client
       │   └── tests-fonctionnalités.md.md           ← Tests des fonctions opérationnelles du Client
@@ -279,7 +276,9 @@ docs-dev/                   ← Documentation interne versionnée
           ├── v0.3.0-dev.a_01_predeploy_2026-04-15_21-20/ ← Tests des validations - version v0.3.0-dev patch a
           ├── v0.3.0-dev.a_02_deploy_2026-04-15_21-28/    ← Tests des vérifications - version v0.2.0-dev patch a
           ├── v0.3.0-dev.b_01_predeploy_2026-04-16_07-58/ ← Tests des validations - version v0.2.0-dev patch b
-          └── v0.3.0-dev.b_02_deploy_2026-04-16_08-06/    ← Tests des vérifications - version v0.2.0-dev patch b
+          ├── v0.3.0-dev.b_02_deploy_2026-04-16_08-06/    ← Tests des vérifications - version v0.2.0-dev patch b
+          ├── v1.0.0-dev_01_predeploy_2026-04-21_11-28/   ← Tests des validations - version v1.0.0-dev (version livrée)
+          └── v1.0.0-dev_02_deploy_2026-04-21_12-34/      ← Tests des vérifications - version v1.0.0-dev (version livrée)
     
 ```
 
@@ -358,7 +357,9 @@ L’architecture est construite progressivement selon les phases fonctionnelles 
 
 #### 1.3.7 Phase 8 — Documentation API
 
-(sera complété avec les issues lors de l'engagement de la phase)
+- Issue-43 : Mise à jour de la documentation de l'API REST en version v1.0.0-doc
+
+> Note : les issues 44 et 45 relatives à la mise à jour de la JSDoc associée au code n'ont pas été utiles. Elles ont été fermées sans réalisation particulière.
 
 ---
 
@@ -2740,6 +2741,150 @@ L'issue-41 établit la mise à jour et finalise la version de développement (ve
 
 ### 2.7 Phase 8 — Documentation API
 
-(sera complété avec les issues correspondantes)
+### 2.7 Phase 8 — Documentation API (v1.0.0‑doc)
+
+La Phase 8 finalise la documentation complète de l’API REST du Port de Plaisance Russell.  
+Cette documentation constitue la référence officielle pour l’ensemble des endpoints exposés par l’API.
+
+#### 2.7.1 Contenu de la documentation API
+
+La documentation API v1.0.0‑doc inclut :
+
+- **authentification.md**  
+  - Description du mécanisme JWT (stateless)  
+  - Route `/auth/login`  
+  - Absence volontaire de route `/auth/logout` (gestion côté client)  
+  - Distinction API REST / pages EJS  
+
+- **users.md**  
+  - Endpoints CRUD complets  
+  - Payloads, réponses, erreurs possibles  
+
+- **catways.md**  
+  - Endpoints CRUD complets  
+  - Gestion des états et validations  
+
+- **reservations.md**  
+  - Endpoints liés aux réservations d’un catway  
+  - Structure des données, erreurs, cas limites  
+
+- **errors.md**  
+  - Standardisation des erreurs HTTP  
+  - Format JSON unifié  
+
+- **glossary.md**  
+  - Définitions des termes techniques utilisés dans l’API  
+
+#### 2.7.2 Publication de la documentation
+
+La documentation API est :
+
+- **rédigée en Markdown** dans `docs-dev/api/`  
+- **exportée en HTML** via Visual Studio Code (option _HTML Offline_)  
+- **publiée dans** `public/docs-api/` pour consultation via le dashboard  
+
+#### 2.7.3 Version de la documentation
+
+La version publiée est :
+
+- **v1.0.0‑doc**  
+- cohérente avec la version applicative **v1.0.0‑dev**  
+- intégrée dans la page `docs-api.ejs` du dashboard
+
+Cette phase clôture la partie documentaire du projet et prépare le déploiement final.
+
+---
+
+### 2.8 Phase 9 — Déploiement final (v1.0.0‑dev)
+
+La Phase 9 réalise le déploiement final de la version v1.0.0‑dev sur Alwaysdata, ainsi que l’archivage complet des validations techniques associées.
+
+Cette phase s’appuie sur les pipelines de déploiement introduits en Phase 6.
+
+---
+
+#### 2.8.1 Pré-déploiement (PreDeploy)
+
+Le pipeline `validate-predeploy` exécute les vérifications suivantes :
+
+- cohérence de la structure du projet  
+- présence des fichiers critiques  
+- vérification des dépendances  
+- vérification de la configuration Alwaysdata  
+- test de connexion MongoDB  
+- génération des artefacts de validation  
+
+Les résultats sont archivés dans :
+
+```bash
+docs-dev/tests/deploiements/v1.0.0-dev_01_predeploy_2026-04-21_11-28/
+```
+
+Contenu typique :
+
+- `checklist-validation.md`  
+- `resume-validation.md`  
+- logs des tests (unitaires, intégration, modèles, e2e)  
+- collection Postman PreDeploy  
+
+---
+
+#### 2.8.2 Déploiement (Deploy)
+
+Le déploiement est réalisé via :
+
+```js
+npm run deploy
+```
+
+Ce script :
+
+- synchronise les fichiers locaux vers Alwaysdata via `rsync`  
+- met à jour le dossier distant  
+- nécessite un redémarrage manuel du site dans l’interface Alwaysdata  
+
+La version active est vérifiée via le header :
+
+```js
+X-API-SYSTEM: v1.0.0-dev
+```
+
+---
+
+#### 2.8.3 Vérification post-déploiement (PostDeploy)
+
+Le pipeline `verify-deploy` exécute :
+
+- tests des routes publiques  
+- tests des routes protégées (JWT)  
+- vérification de la connexion MongoDB  
+- vérification de la version active  
+- validation du fonctionnement global en production  
+
+Les résultats sont archivés dans :
+
+```bash
+docs-dev/tests/deploiements/v1.0.0-dev_02_deploy_2026-04-21_12-34/
+```
+
+Contenu typique :
+
+- `checklist-deployment.md`  
+- `resume-deploy.md`  
+- logs des tests (unitaires, intégration, modèles, e2e)  
+- collection Postman PostDeploy  
+
+---
+
+#### 2.8.4 Résultat de la Phase 9
+
+La version **v1.0.0‑dev** est :
+
+- déployée sur Alwaysdata  
+- validée par les pipelines PreDeploy et PostDeploy  
+- documentée et archivée  
+- prête pour la livraison du projet
+
+Cette phase marque la mise en production de la version finale du projet.
 
 ---
